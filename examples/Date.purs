@@ -20,21 +20,21 @@ main = do
   print $ date 2003 January 01
   print $ dateTime 2044 February 01 13 26 48 06
   
-  print $ toYear d
-  print $ toMonth d
-  print $ toDay d
-  print $ toHours d
-  print $ toMinutes d
-  print $ toSeconds d
-  print $ toMilliseconds d
+  print $ year d
+  print $ month d
+  print $ day d
+  print $ hour d
+  print $ minute d
+  print $ second d
+  print $ millisecond d
   
-  print $ toUTCYear d
-  print $ toUTCMonth d
-  print $ toUTCDay d
-  print $ toUTCHours d
-  print $ toUTCMinutes d
-  print $ toUTCSeconds d
-  print $ toUTCMilliseconds d
+  print $ yearUTC d
+  print $ monthUTC d
+  print $ dayUTC d
+  print $ hourUTC d
+  print $ minuteUTC d
+  print $ secondUTC d
+  print $ millisecondUTC d
   
   print $ timezoneOffset d
   print $ toEpochMilliseconds d
@@ -43,5 +43,5 @@ main = do
   print $ fromEpochMilliseconds 999999999999
   print $ fromEpochMilliseconds (0-999999999999)
   
-  print $ (unsafeFromJust (date 2003 January 01)) < d
+  print $ pure (<) <*> (date 2003 January 01) <*> pure d
   print $ d == d

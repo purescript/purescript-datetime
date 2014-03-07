@@ -1,4 +1,41 @@
-module Data.Date where
+module Data.Date
+  ( JSDate()
+  , Now()
+  , Date()
+  , Year()
+  , Month(..)
+  , Day()
+  , DayOfWeek()
+  , Hours()
+  , Minutes()
+  , Seconds()
+  , Milliseconds()
+  , fromJSDate
+  , toJSDate
+  , now
+  , dateTime
+  , date
+  , year
+  , yearUTC
+  , month
+  , monthUTC
+  , day
+  , dayUTC
+  , dayOfWeek
+  , dayOfWeekUTC
+  , hour
+  , hourUTC
+  , minute
+  , minuteUTC
+  , second
+  , secondUTC
+  , millisecond
+  , millisecondUTC
+  , timezoneOffset
+  , toEpochMilliseconds
+  , fromEpochMilliseconds
+  , fromString
+  ) where
 
 import Prelude
 import Data.Enum
@@ -185,53 +222,53 @@ dateTime y m d h n s ms =
 date :: Year -> Month -> Day -> Maybe Date
 date y m d = dateTime y m d 0 0 0 0
 
-toYear :: Date -> Year
-toYear = liftDate $ jsDateMethod "getFullYear"
+year :: Date -> Year
+year = liftDate $ jsDateMethod "getFullYear"
 
-toMonth :: Date -> Month
-toMonth = unsafeFromJust <<< toEnum <<< liftDate (jsDateMethod "getMonth")
+yearUTC :: Date -> Year
+yearUTC = liftDate $ jsDateMethod "getUTCFullYear"
 
-toDay :: Date -> Day
-toDay = liftDate $ jsDateMethod "getDate"
+month :: Date -> Month
+month = unsafeFromJust <<< toEnum <<< liftDate (jsDateMethod "getMonth")
 
-toDayOfWeek :: Date -> DayOfWeek
-toDayOfWeek = unsafeFromJust <<< toEnum <<< liftDate (jsDateMethod "getDay")
+monthUTC :: Date -> Month
+monthUTC = unsafeFromJust <<< toEnum <<< liftDate (jsDateMethod "getUTCMonth")
 
-toHours :: Date -> Hours
-toHours = liftDate $ jsDateMethod "getHours"
+day :: Date -> Day
+day = liftDate $ jsDateMethod "getDate"
 
-toMinutes :: Date -> Minutes
-toMinutes = liftDate $ jsDateMethod "getMinutes"
+dayUTC :: Date -> Day
+dayUTC = liftDate $ jsDateMethod "getUTCDate"
 
-toSeconds :: Date -> Seconds
-toSeconds = liftDate $ jsDateMethod "getSeconds"
+dayOfWeek :: Date -> DayOfWeek
+dayOfWeek = unsafeFromJust <<< toEnum <<< liftDate (jsDateMethod "getDay")
 
-toMilliseconds :: Date -> Seconds
-toMilliseconds = liftDate $ jsDateMethod "getMilliseconds"
+dayOfWeekUTC :: Date -> DayOfWeek
+dayOfWeekUTC = unsafeFromJust <<< toEnum <<< liftDate (jsDateMethod "getUTCDay")
 
-toUTCYear :: Date -> Year
-toUTCYear = liftDate $ jsDateMethod "getUTCFullYear"
+hour :: Date -> Hours
+hour = liftDate $ jsDateMethod "getHours"
 
-toUTCMonth :: Date -> Month
-toUTCMonth = unsafeFromJust <<< toEnum <<< liftDate (jsDateMethod "getUTCMonth")
+hourUTC :: Date -> Hours
+hourUTC = liftDate $ jsDateMethod "getUTCHours"
 
-toUTCDay :: Date -> Day
-toUTCDay = liftDate $ jsDateMethod "getUTCDate"
+minute :: Date -> Minutes
+minute = liftDate $ jsDateMethod "getMinutes"
 
-toUTCDayOfWeek :: Date -> DayOfWeek
-toUTCDayOfWeek = unsafeFromJust <<< toEnum <<< liftDate (jsDateMethod "getUTCDay")
+minuteUTC :: Date -> Minutes
+minuteUTC = liftDate $ jsDateMethod "getUTCMinutes"
 
-toUTCHours :: Date -> Hours
-toUTCHours = liftDate $ jsDateMethod "getUTCHours"
+second :: Date -> Seconds
+second = liftDate $ jsDateMethod "getSeconds"
 
-toUTCMinutes :: Date -> Minutes
-toUTCMinutes = liftDate $ jsDateMethod "getUTCMinutes"
+secondUTC :: Date -> Seconds
+secondUTC = liftDate $ jsDateMethod "getUTCSeconds"
 
-toUTCSeconds :: Date -> Seconds
-toUTCSeconds = liftDate $ jsDateMethod "getUTCSeconds"
+millisecond :: Date -> Seconds
+millisecond = liftDate $ jsDateMethod "getMilliseconds"
 
-toUTCMilliseconds :: Date -> Seconds
-toUTCMilliseconds = liftDate $ jsDateMethod "getUTCMilliseconds"
+millisecondUTC :: Date -> Seconds
+millisecondUTC = liftDate $ jsDateMethod "getUTCMilliseconds"
 
 timezoneOffset :: Date -> Minutes
 timezoneOffset = liftDate $ jsDateMethod "getTimezoneOffset"
