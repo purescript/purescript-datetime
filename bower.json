@@ -1,7 +1,7 @@
 {
-  "name": "purescript-date",
+  "name": "purescript-datetime",
   "version": "0.0.0",
-  "homepage": "https://github.com/purescript/purescript-date",
+  "homepage": "https://github.com/purescript/purescript-datetime",
   "authors": [
     "Gary Burgess <gary.burgess@gmail.com>"
   ],
