@@ -78,10 +78,7 @@ instance eqDate :: Prelude.Eq Date where
   (/=) = liftOp (/=) 
 
 instance ordDate :: Prelude.Ord Date where
-  (<) = liftOp (<)
-  (<=) = liftOp (<=)
-  (>) = liftOp (>)
-  (>=) =  liftOp (>=)
+  compare = liftOp compare
 
 liftOp :: forall b. (Number -> Number -> b) -> Date -> Date -> b
 liftOp op x y = toEpochMilliseconds x `op` toEpochMilliseconds y
