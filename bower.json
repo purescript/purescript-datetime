@@ -17,5 +17,10 @@
     "examples",
     "externs",
     "js"
-  ]
+  ],
+  "dependencies": {
+    "purescript-enums": "*",
+    "purescript-maybe": "*",
+    "purescript-globals": "*"
+  }
 }
