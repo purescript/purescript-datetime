@@ -37,13 +37,10 @@ module Data.Date
   , fromString
   ) where
 
-import Prelude
+import Control.Monad.Eff
 import Data.Enum
 import Data.Maybe
-import Control.Monad.Eff
-
-unsafeFromJust :: forall a. Maybe a -> a
-unsafeFromJust (Just a) = a
+import qualified Data.Maybe.Unsafe as U
   
 foreign import jsDateMethod
   "function jsDateMethod(method) { \
@@ -226,10 +223,10 @@ yearUTC :: Date -> Year
 yearUTC = liftDate $ jsDateMethod "getUTCFullYear"
 
 month :: Date -> Month
-month = unsafeFromJust <<< toEnum <<< liftDate (jsDateMethod "getMonth")
+month = U.fromJust <<< toEnum <<< liftDate (jsDateMethod "getMonth")
 
 monthUTC :: Date -> Month
-monthUTC = unsafeFromJust <<< toEnum <<< liftDate (jsDateMethod "getUTCMonth")
+monthUTC = U.fromJust <<< toEnum <<< liftDate (jsDateMethod "getUTCMonth")
 
 day :: Date -> Day
 day = liftDate $ jsDateMethod "getDate"
@@ -238,10 +235,10 @@ dayUTC :: Date -> Day
 dayUTC = liftDate $ jsDateMethod "getUTCDate"
 
 dayOfWeek :: Date -> DayOfWeek
-dayOfWeek = unsafeFromJust <<< toEnum <<< liftDate (jsDateMethod "getDay")
+dayOfWeek = U.fromJust <<< toEnum <<< liftDate (jsDateMethod "getDay")
 
 dayOfWeekUTC :: Date -> DayOfWeek
-dayOfWeekUTC = unsafeFromJust <<< toEnum <<< liftDate (jsDateMethod "getUTCDay")
+dayOfWeekUTC = U.fromJust <<< toEnum <<< liftDate (jsDateMethod "getUTCDay")
 
 hour :: Date -> Hours
 hour = liftDate $ jsDateMethod "getHours"
