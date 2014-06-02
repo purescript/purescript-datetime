@@ -70,11 +70,11 @@ foreign import data Now :: !
 
 data Date = DateTime JSDate
 
-instance eqDate :: Prelude.Eq Date where
+instance eqDate :: Eq Date where
   (==) = liftOp (==)  
   (/=) = liftOp (/=) 
 
-instance ordDate :: Prelude.Ord Date where
+instance ordDate :: Ord Date where
   compare = liftOp compare
 
 liftOp :: forall b. (Number -> Number -> b) -> Date -> Date -> b
@@ -112,7 +112,7 @@ type Minutes = Number
 type Seconds = Number
 type Milliseconds = Number
 
-instance enumMonth :: Data.Enum.Enum Month where
+instance enumMonth :: Enum Month where
 
   toEnum 0  = Just January
   toEnum 1  = Just February
@@ -141,7 +141,7 @@ instance enumMonth :: Data.Enum.Enum Month where
   fromEnum November  = 10
   fromEnum December  = 11
   
-instance showMonth :: Prelude.Show Month where
+instance showMonth :: Show Month where
 
   show January   = "January"
   show February  = "February"
@@ -156,7 +156,7 @@ instance showMonth :: Prelude.Show Month where
   show November  = "November"
   show December  = "December"
   
-instance enumDayOfWeek :: Data.Enum.Enum DayOfWeek where
+instance enumDayOfWeek :: Enum DayOfWeek where
 
   toEnum 0  = Just Sunday
   toEnum 1  = Just Monday
@@ -175,7 +175,7 @@ instance enumDayOfWeek :: Data.Enum.Enum DayOfWeek where
   fromEnum Friday    = 5
   fromEnum Saturday  = 6
   
-instance showDayOfWeek :: Prelude.Show DayOfWeek where
+instance showDayOfWeek :: Show DayOfWeek where
 
   show Sunday    = "Sunday"   
   show Monday    = "Monday"  
@@ -276,5 +276,5 @@ fromEpochMilliseconds = fromJSDate <<< jsDateConstructor
 fromString :: String -> Maybe Date
 fromString = fromJSDate <<< jsDateConstructor
 
-instance showDate :: Prelude.Show Date where
+instance showDate :: Show Date where
   show = liftDate $ jsDateMethod "toString"

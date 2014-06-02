@@ -41,19 +41,19 @@
 
 ### Type Class Instances
 
-    instance enumDayOfWeek :: Data.Enum.Enum DayOfWeek
+    instance enumDayOfWeek :: Enum DayOfWeek
 
-    instance enumMonth :: Data.Enum.Enum Month
+    instance enumMonth :: Enum Month
 
-    instance eqDate :: Prelude.Eq Date
+    instance eqDate :: Eq Date
 
-    instance ordDate :: Prelude.Ord Date
+    instance ordDate :: Ord Date
 
-    instance showDate :: Prelude.Show Date
+    instance showDate :: Show Date
 
-    instance showDayOfWeek :: Prelude.Show DayOfWeek
+    instance showDayOfWeek :: Show DayOfWeek
 
-    instance showMonth :: Prelude.Show Month
+    instance showMonth :: Show Month
 
 
 ### Values
