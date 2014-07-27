@@ -1,6 +1,6 @@
 {
   "name": "purescript-datetime",
-  "homepage": "https://github.com/purescript/purescript-datetime",
+  "homepage": "https://github.com/purescript-contrib/purescript-datetime",
   "authors": [
     "Gary Burgess <gary.burgess@gmail.com>"
   ],
