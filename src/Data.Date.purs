@@ -197,7 +197,7 @@ liftDate :: forall a. (JSDate -> a) -> Date -> a
 liftDate f (DateTime d) = f d
   
 foreign import nowImpl 
-  "function now(f) { \
+  "function nowImpl(f) { \
   \  return f(new Date()); \
   \}" :: forall e. (JSDate -> Date) -> Eff (now :: Now | e) Date
   
