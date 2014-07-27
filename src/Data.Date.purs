@@ -196,10 +196,13 @@ toJSDate (DateTime d) = d
 liftDate :: forall a. (JSDate -> a) -> Date -> a
 liftDate f (DateTime d) = f d
   
-foreign import now 
-  "function now() { \
-  \  return DateTime(new Date()); \
-  \}" :: forall e. Eff (now :: Now | e) Date
+foreign import nowImpl 
+  "function now(f) { \
+  \  return f(new Date()); \
+  \}" :: forall e. (JSDate -> Date) -> Eff (now :: Now | e) Date
+  
+now :: forall e. Eff (now :: Now | e) Date
+now = nowImpl DateTime
   
 dateTime :: Year -> Month -> Day 
          -> Hours -> Minutes -> Seconds -> Milliseconds
