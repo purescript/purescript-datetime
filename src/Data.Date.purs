@@ -112,37 +112,60 @@ type Minutes = Number
 type Seconds = Number
 type Milliseconds = Number
 
-instance enumMonth :: Enum Month where
+instance eqMonth :: Eq Month where
+  (==) January January = true
+  (==) February February = true
+  (==) March March = true
+  (==) April April = true
+  (==) May May = true
+  (==) June June = true
+  (==) July July = true
+  (==) August August = true
+  (==) September September = true
+  (==) October October = true
+  (==) November November = true
+  (==) December December = true
+  (==) _ _ = false
 
-  toEnum 0  = Just January
-  toEnum 1  = Just February
-  toEnum 2  = Just March
-  toEnum 3  = Just April
-  toEnum 4  = Just May
-  toEnum 5  = Just June
-  toEnum 6  = Just July
-  toEnum 7  = Just August
-  toEnum 8  = Just September
-  toEnum 8  = Just October
-  toEnum 10 = Just November
-  toEnum 11 = Just December
-  toEnum _  = Nothing
-  
-  fromEnum January   = 0
-  fromEnum February  = 1
-  fromEnum March     = 2
-  fromEnum April     = 3
-  fromEnum May       = 4
-  fromEnum June      = 5
-  fromEnum July      = 6
-  fromEnum August    = 7
-  fromEnum September = 8
-  fromEnum October   = 9
-  fromEnum November  = 10
-  fromEnum December  = 11
+  (/=) a b = not (a == b)
+
+instance ordMonth :: Ord Month where
+  compare a b = compare (fromEnum a) (fromEnum b)
+
+instance enumMonth :: Enum Month where
+  cardinality = Cardinality 12
+
+  firstEnum = January
+
+  lastEnum = December
+
+  succ January    = Just February
+  succ February   = Just March
+  succ March      = Just April
+  succ April      = Just May
+  succ May        = Just June
+  succ June       = Just July
+  succ July       = Just August
+  succ August     = Just September
+  succ September  = Just October
+  succ October    = Just November
+  succ November   = Just December
+  succ December   = Nothing
+
+  pred January    = Nothing
+  pred February   = Just January
+  pred March      = Just February
+  pred April      = Just March
+  pred May        = Just April
+  pred June       = Just May
+  pred July       = Just June
+  pred August     = Just July
+  pred September  = Just August
+  pred October    = Just September
+  pred November   = Just October
+  pred December   = Just November
   
 instance showMonth :: Show Month where
-
   show January   = "January"
   show February  = "February"
   show March     = "March"
@@ -155,28 +178,46 @@ instance showMonth :: Show Month where
   show October   = "October"
   show November  = "November"
   show December  = "December"
+
+instance eqDayOfWeek :: Eq DayOfWeek where
+  (==) Sunday Sunday = true
+  (==) Monday Monday = true
+  (==) Tuesday Tuesday = true
+  (==) Wednesday Wednesday = true
+  (==) Thursday Thursday = true
+  (==) Friday Friday = true
+  (==) Saturday Saturday = true
+  (==) _ _ = false
+  
+  (/=) a b = not (a == b)
+
+instance ordDayOfWeek :: Ord DayOfWeek where
+  compare a b = compare (fromEnum a) (fromEnum b)  
   
 instance enumDayOfWeek :: Enum DayOfWeek where
+  cardinality = Cardinality 7
 
-  toEnum 0  = Just Sunday
-  toEnum 1  = Just Monday
-  toEnum 2  = Just Tuesday
-  toEnum 3  = Just Wednesday
-  toEnum 4  = Just Thursday
-  toEnum 5  = Just Friday
-  toEnum 6  = Just Saturday
-  toEnum _  = Nothing
-  
-  fromEnum Sunday    = 0
-  fromEnum Monday    = 1
-  fromEnum Tuesday   = 2
-  fromEnum Wednesday = 3
-  fromEnum Thursday  = 4
-  fromEnum Friday    = 5
-  fromEnum Saturday  = 6
+  firstEnum = Sunday
+
+  lastEnum = Saturday
+
+  succ Sunday     = Just Monday
+  succ Monday     = Just Tuesday
+  succ Tuesday    = Just Wednesday
+  succ Wednesday  = Just Thursday
+  succ Thursday   = Just Friday
+  succ Friday     = Just Saturday
+  succ Saturday   = Nothing
+
+  pred Sunday     = Nothing
+  pred Monday     = Just Sunday
+  pred Tuesday    = Just Monday
+  pred Wednesday  = Just Tuesday
+  pred Thursday   = Just Wednesday
+  pred Friday     = Just Thursday
+  pred Saturday   = Just Friday
   
 instance showDayOfWeek :: Show DayOfWeek where
-
   show Sunday    = "Sunday"   
   show Monday    = "Monday"  
   show Tuesday   = "Tuesday"  
