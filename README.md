@@ -6,17 +6,17 @@
 
     data Date
 
-    type Day = Prim.Number
+    type Day  = Number
 
     data DayOfWeek
 
-    type Hours = Prim.Number
+    type Hours  = Number
 
     data JSDate :: *
 
-    type Milliseconds = Prim.Number
+    type Milliseconds  = Number
 
-    type Minutes = Prim.Number
+    type Minutes  = Number
 
     data Month where
       January :: Month
@@ -34,9 +34,9 @@
 
     data Now :: !
 
-    type Seconds = Prim.Number
+    type Seconds  = Number
 
-    type Year = Prim.Number
+    type Year  = Number
 
 
 ### Type Class Instances
@@ -47,7 +47,15 @@
 
     instance eqDate :: Eq Date
 
+    instance eqDayOfWeek :: Eq DayOfWeek
+
+    instance eqMonth :: Eq Month
+
     instance ordDate :: Ord Date
+
+    instance ordDayOfWeek :: Ord DayOfWeek
+
+    instance ordMonth :: Ord Month
 
     instance showDate :: Show Date
 
@@ -74,7 +82,7 @@
 
     fromJSDate :: JSDate -> Maybe Date
 
-    fromString :: Prim.String -> Maybe Date
+    fromString :: String -> Maybe Date
 
     hour :: Date -> Hours
 

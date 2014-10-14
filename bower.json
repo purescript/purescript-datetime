@@ -22,8 +22,8 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-enums": "*",
-    "purescript-maybe": "*",
-    "purescript-globals": "*"
+    "purescript-enums":   "~0.2.1",
+    "purescript-maybe":   "~0.2.1",
+    "purescript-globals": "~0.1.5"
   }
 }
