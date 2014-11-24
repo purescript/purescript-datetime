@@ -13,7 +13,7 @@ module.exports = function(grunt) {
   
     pscMake: ["<%=libFiles%>"],
     dotPsci: ["<%=libFiles%>"],
-    docgen: {
+    pscDocs: {
         readme: {
             src: "src/**/*.purs",
             dest: "README.md"
@@ -37,6 +37,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-purescript");
   grunt.loadNpmTasks('grunt-jsvalidate');
   
-  grunt.registerTask("make", ["pscMake", "jsvalidate", "dotPsci", "docgen"]);
+  grunt.registerTask("make", ["pscMake", "jsvalidate", "dotPsci", "pscDocs"]);
   grunt.registerTask("default", ["make"]);
 };
