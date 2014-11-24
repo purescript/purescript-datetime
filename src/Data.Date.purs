@@ -35,11 +35,13 @@ module Data.Date
   , toEpochMilliseconds
   , fromEpochMilliseconds
   , fromString
+  , fromStringStrict
   ) where
 
 import Control.Monad.Eff
 import Data.Enum
 import Data.Maybe
+import Data.Function
 import qualified Data.Maybe.Unsafe as U
   
 foreign import jsDateMethod
@@ -53,6 +55,17 @@ foreign import jsDateConstructor
   "function jsDateConstructor(x) { \
   \  return new Date(x); \
   \}" :: forall a. a -> JSDate
+
+foreign import strictJsDate
+  """function strictJsDate(Just, Nothing, s) {
+    var epoch = Date.parse(s);
+    if (isNaN(epoch)) return Nothing;
+    var date = new Date(epoch);
+    var s2 = date.toISOString();
+    var idx = s2.indexOf(s);
+    if (idx < 0) return Nothing;
+    else return Just(date);
+  }""" :: Fn3 (forall a. a -> Maybe a) (forall a. Maybe a) String (Maybe JSDate)
 
 foreign import jsDateFromRecord
   "function jsDateFromRecord(r) {\
@@ -319,6 +332,9 @@ fromEpochMilliseconds = fromJSDate <<< jsDateConstructor
 
 fromString :: String -> Maybe Date
 fromString = fromJSDate <<< jsDateConstructor
+
+fromStringStrict :: String -> Maybe Date
+fromStringStrict s = runFn3 strictJsDate Just Nothing s >>= fromJSDate
 
 instance showDate :: Show Date where
   show = liftDate $ jsDateMethod "toString"
