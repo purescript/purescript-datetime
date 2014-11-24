@@ -6,17 +6,17 @@
 
     data Date
 
-    type Day  = Number
+    type Day = Number
 
     data DayOfWeek
 
-    type Hours  = Number
+    type Hours = Number
 
     data JSDate :: *
 
-    type Milliseconds  = Number
+    type Milliseconds = Number
 
-    type Minutes  = Number
+    type Minutes = Number
 
     data Month where
       January :: Month
@@ -34,9 +34,9 @@
 
     data Now :: !
 
-    type Seconds  = Number
+    type Seconds = Number
 
-    type Year  = Number
+    type Year = Number
 
 
 ### Type Class Instances
@@ -83,6 +83,8 @@
     fromJSDate :: JSDate -> Maybe Date
 
     fromString :: String -> Maybe Date
+
+    fromStringStrict :: String -> Maybe Date
 
     hour :: Date -> Hours
 
