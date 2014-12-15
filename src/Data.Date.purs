@@ -250,10 +250,13 @@ toJSDate (DateTime d) = d
 liftDate :: forall a. (JSDate -> a) -> Date -> a
 liftDate f (DateTime d) = f d
   
-foreign import nowImpl 
-  "function nowImpl(f) { \
-  \  return f(new Date()); \
-  \}" :: forall e. (JSDate -> Date) -> Eff (now :: Now | e) Date
+foreign import nowImpl """
+  function nowImpl(f) {
+    return function(){
+      return f(new Date()); 
+    };    
+  }
+  """ :: forall e. (JSDate -> Date) -> Eff (now :: Now | e) Date
   
 now :: forall e. Eff (now :: Now | e) Date
 now = nowImpl DateTime
