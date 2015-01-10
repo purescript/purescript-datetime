@@ -178,6 +178,33 @@ instance enumMonth :: Enum Month where
   pred November   = Just October
   pred December   = Just November
   
+  toEnum  0 = Just January
+  toEnum  1 = Just February
+  toEnum  2 = Just March
+  toEnum  3 = Just April
+  toEnum  4 = Just May
+  toEnum  5 = Just June
+  toEnum  6 = Just July
+  toEnum  7 = Just August
+  toEnum  8 = Just September
+  toEnum  9 = Just October
+  toEnum 10 = Just November
+  toEnum 11 = Just December
+  toEnum  _ = Nothing
+
+  fromEnum January    = 0
+  fromEnum February   = 1
+  fromEnum March      = 2
+  fromEnum April      = 3
+  fromEnum May        = 4
+  fromEnum June       = 5
+  fromEnum July       = 6
+  fromEnum August     = 7
+  fromEnum September  = 8
+  fromEnum October    = 9
+  fromEnum November   = 10
+  fromEnum December   = 11
+
 instance showMonth :: Show Month where
   show January   = "January"
   show February  = "February"
@@ -230,6 +257,23 @@ instance enumDayOfWeek :: Enum DayOfWeek where
   pred Friday     = Just Thursday
   pred Saturday   = Just Friday
   
+  toEnum 0 = Just Sunday
+  toEnum 1 = Just Monday
+  toEnum 2 = Just Tuesday
+  toEnum 3 = Just Wednesday
+  toEnum 4 = Just Thursday
+  toEnum 5 = Just Friday
+  toEnum 6 = Just Saturday
+  toEnum _ = Nothing
+
+  fromEnum Sunday     = 0
+  fromEnum Monday     = 1
+  fromEnum Tuesday    = 2
+  fromEnum Wednesday  = 3
+  fromEnum Thursday   = 4
+  fromEnum Friday     = 5
+  fromEnum Saturday   = 6
+
 instance showDayOfWeek :: Show DayOfWeek where
   show Sunday    = "Sunday"   
   show Monday    = "Monday"  
