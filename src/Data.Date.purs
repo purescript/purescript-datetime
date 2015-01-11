@@ -152,32 +152,43 @@ instance enumMonth :: Enum Month where
 
   lastEnum = December
 
-  succ January    = Just February
-  succ February   = Just March
-  succ March      = Just April
-  succ April      = Just May
-  succ May        = Just June
-  succ June       = Just July
-  succ July       = Just August
-  succ August     = Just September
-  succ September  = Just October
-  succ October    = Just November
-  succ November   = Just December
-  succ December   = Nothing
+  succ = defaultSucc monthToEnum monthFromEnum
 
-  pred January    = Nothing
-  pred February   = Just January
-  pred March      = Just February
-  pred April      = Just March
-  pred May        = Just April
-  pred June       = Just May
-  pred July       = Just June
-  pred August     = Just July
-  pred September  = Just August
-  pred October    = Just September
-  pred November   = Just October
-  pred December   = Just November
+  pred = defaultPred monthToEnum monthFromEnum
+
+  toEnum = monthToEnum
+
+  fromEnum = monthFromEnum
   
+monthToEnum :: Number -> Maybe Month
+monthToEnum  0 = Just January
+monthToEnum  1 = Just February
+monthToEnum  2 = Just March
+monthToEnum  3 = Just April
+monthToEnum  4 = Just May
+monthToEnum  5 = Just June
+monthToEnum  6 = Just July
+monthToEnum  7 = Just August
+monthToEnum  8 = Just September
+monthToEnum  9 = Just October
+monthToEnum 10 = Just November
+monthToEnum 11 = Just December
+monthToEnum  _ = Nothing
+
+monthFromEnum :: Month -> Number
+monthFromEnum January    = 0
+monthFromEnum February   = 1
+monthFromEnum March      = 2
+monthFromEnum April      = 3
+monthFromEnum May        = 4
+monthFromEnum June       = 5
+monthFromEnum July       = 6
+monthFromEnum August     = 7
+monthFromEnum September  = 8
+monthFromEnum October    = 9
+monthFromEnum November   = 10
+monthFromEnum December   = 11
+
 instance showMonth :: Show Month where
   show January   = "January"
   show February  = "February"
@@ -214,22 +225,34 @@ instance enumDayOfWeek :: Enum DayOfWeek where
 
   lastEnum = Saturday
 
-  succ Sunday     = Just Monday
-  succ Monday     = Just Tuesday
-  succ Tuesday    = Just Wednesday
-  succ Wednesday  = Just Thursday
-  succ Thursday   = Just Friday
-  succ Friday     = Just Saturday
-  succ Saturday   = Nothing
+  succ = defaultSucc dayOfWeekToEnum dayOfWeekFromEnum
 
-  pred Sunday     = Nothing
-  pred Monday     = Just Sunday
-  pred Tuesday    = Just Monday
-  pred Wednesday  = Just Tuesday
-  pred Thursday   = Just Wednesday
-  pred Friday     = Just Thursday
-  pred Saturday   = Just Friday
+  pred = defaultPred dayOfWeekToEnum dayOfWeekFromEnum
+
+  toEnum = dayOfWeekToEnum
+
+  fromEnum = dayOfWeekFromEnum
+
   
+dayOfWeekToEnum :: Number -> Maybe DayOfWeek
+dayOfWeekToEnum 0 = Just Sunday
+dayOfWeekToEnum 1 = Just Monday
+dayOfWeekToEnum 2 = Just Tuesday
+dayOfWeekToEnum 3 = Just Wednesday
+dayOfWeekToEnum 4 = Just Thursday
+dayOfWeekToEnum 5 = Just Friday
+dayOfWeekToEnum 6 = Just Saturday
+dayOfWeekToEnum _ = Nothing
+
+dayOfWeekFromEnum :: DayOfWeek -> Number
+dayOfWeekFromEnum Sunday     = 0
+dayOfWeekFromEnum Monday     = 1
+dayOfWeekFromEnum Tuesday    = 2
+dayOfWeekFromEnum Wednesday  = 3
+dayOfWeekFromEnum Thursday   = 4
+dayOfWeekFromEnum Friday     = 5
+dayOfWeekFromEnum Saturday   = 6
+
 instance showDayOfWeek :: Show DayOfWeek where
   show Sunday    = "Sunday"   
   show Monday    = "Monday"  
