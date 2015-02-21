@@ -2,118 +2,349 @@
 
 ## Module Data.Date
 
-### Types
+#### `JSDate`
 
-    data Date
-
-    type Day = Number
-
-    data DayOfWeek
-
-    type Hours = Number
-
-    data JSDate :: *
-
-    type Milliseconds = Number
-
-    type Minutes = Number
-
-    data Month where
-      January :: Month
-      February :: Month
-      March :: Month
-      April :: Month
-      May :: Month
-      June :: Month
-      July :: Month
-      August :: Month
-      September :: Month
-      October :: Month
-      November :: Month
-      December :: Month
-
-    data Now :: !
-
-    type Seconds = Number
-
-    type Year = Number
+``` purescript
+data JSDate :: *
+```
 
 
-### Type Class Instances
+#### `Now`
 
-    instance enumDayOfWeek :: Enum DayOfWeek
-
-    instance enumMonth :: Enum Month
-
-    instance eqDate :: Eq Date
-
-    instance eqDayOfWeek :: Eq DayOfWeek
-
-    instance eqMonth :: Eq Month
-
-    instance ordDate :: Ord Date
-
-    instance ordDayOfWeek :: Ord DayOfWeek
-
-    instance ordMonth :: Ord Month
-
-    instance showDate :: Show Date
-
-    instance showDayOfWeek :: Show DayOfWeek
-
-    instance showMonth :: Show Month
+``` purescript
+data Now :: !
+```
 
 
-### Values
+#### `Date`
 
-    date :: Year -> Month -> Day -> Maybe Date
+``` purescript
+data Date
+```
 
-    dateTime :: Year -> Month -> Day -> Hours -> Minutes -> Seconds -> Milliseconds -> Maybe Date
 
-    day :: Date -> Day
+#### `eqDate`
 
-    dayOfWeek :: Date -> DayOfWeek
+``` purescript
+instance eqDate :: Eq Date
+```
 
-    dayOfWeekUTC :: Date -> DayOfWeek
 
-    dayUTC :: Date -> Day
+#### `ordDate`
 
-    fromEpochMilliseconds :: Milliseconds -> Maybe Date
+``` purescript
+instance ordDate :: Ord Date
+```
 
-    fromJSDate :: JSDate -> Maybe Date
 
-    fromString :: String -> Maybe Date
+#### `Year`
 
-    fromStringStrict :: String -> Maybe Date
+``` purescript
+type Year = Number
+```
 
-    hour :: Date -> Hours
 
-    hourUTC :: Date -> Hours
+#### `Month`
 
-    millisecond :: Date -> Seconds
+``` purescript
+data Month
+  = January 
+  | February 
+  | March 
+  | April 
+  | May 
+  | June 
+  | July 
+  | August 
+  | September 
+  | October 
+  | November 
+  | December 
+```
 
-    millisecondUTC :: Date -> Seconds
 
-    minute :: Date -> Minutes
+#### `Day`
 
-    minuteUTC :: Date -> Minutes
+``` purescript
+type Day = Number
+```
 
-    month :: Date -> Month
 
-    monthUTC :: Date -> Month
+#### `DayOfWeek`
 
-    now :: forall e. Eff (now :: Now | e) Date
+``` purescript
+data DayOfWeek
+```
 
-    second :: Date -> Seconds
 
-    secondUTC :: Date -> Seconds
+#### `Hours`
 
-    timezoneOffset :: Date -> Minutes
+``` purescript
+type Hours = Number
+```
 
-    toEpochMilliseconds :: Date -> Milliseconds
 
-    toJSDate :: Date -> JSDate
+#### `Minutes`
 
-    year :: Date -> Year
+``` purescript
+type Minutes = Number
+```
 
-    yearUTC :: Date -> Year
+
+#### `Seconds`
+
+``` purescript
+type Seconds = Number
+```
+
+
+#### `Milliseconds`
+
+``` purescript
+type Milliseconds = Number
+```
+
+
+#### `eqMonth`
+
+``` purescript
+instance eqMonth :: Eq Month
+```
+
+
+#### `ordMonth`
+
+``` purescript
+instance ordMonth :: Ord Month
+```
+
+
+#### `enumMonth`
+
+``` purescript
+instance enumMonth :: Enum Month
+```
+
+
+#### `showMonth`
+
+``` purescript
+instance showMonth :: Show Month
+```
+
+
+#### `eqDayOfWeek`
+
+``` purescript
+instance eqDayOfWeek :: Eq DayOfWeek
+```
+
+
+#### `ordDayOfWeek`
+
+``` purescript
+instance ordDayOfWeek :: Ord DayOfWeek
+```
+
+
+#### `enumDayOfWeek`
+
+``` purescript
+instance enumDayOfWeek :: Enum DayOfWeek
+```
+
+
+#### `showDayOfWeek`
+
+``` purescript
+instance showDayOfWeek :: Show DayOfWeek
+```
+
+
+#### `fromJSDate`
+
+``` purescript
+fromJSDate :: JSDate -> Maybe Date
+```
+
+
+#### `toJSDate`
+
+``` purescript
+toJSDate :: Date -> JSDate
+```
+
+
+#### `now`
+
+``` purescript
+now :: forall e. Eff (now :: Now | e) Date
+```
+
+
+#### `dateTime`
+
+``` purescript
+dateTime :: Year -> Month -> Day -> Hours -> Minutes -> Seconds -> Milliseconds -> Maybe Date
+```
+
+
+#### `date`
+
+``` purescript
+date :: Year -> Month -> Day -> Maybe Date
+```
+
+
+#### `year`
+
+``` purescript
+year :: Date -> Year
+```
+
+
+#### `yearUTC`
+
+``` purescript
+yearUTC :: Date -> Year
+```
+
+
+#### `month`
+
+``` purescript
+month :: Date -> Month
+```
+
+
+#### `monthUTC`
+
+``` purescript
+monthUTC :: Date -> Month
+```
+
+
+#### `day`
+
+``` purescript
+day :: Date -> Day
+```
+
+
+#### `dayUTC`
+
+``` purescript
+dayUTC :: Date -> Day
+```
+
+
+#### `dayOfWeek`
+
+``` purescript
+dayOfWeek :: Date -> DayOfWeek
+```
+
+
+#### `dayOfWeekUTC`
+
+``` purescript
+dayOfWeekUTC :: Date -> DayOfWeek
+```
+
+
+#### `hour`
+
+``` purescript
+hour :: Date -> Hours
+```
+
+
+#### `hourUTC`
+
+``` purescript
+hourUTC :: Date -> Hours
+```
+
+
+#### `minute`
+
+``` purescript
+minute :: Date -> Minutes
+```
+
+
+#### `minuteUTC`
+
+``` purescript
+minuteUTC :: Date -> Minutes
+```
+
+
+#### `second`
+
+``` purescript
+second :: Date -> Seconds
+```
+
+
+#### `secondUTC`
+
+``` purescript
+secondUTC :: Date -> Seconds
+```
+
+
+#### `millisecond`
+
+``` purescript
+millisecond :: Date -> Seconds
+```
+
+
+#### `millisecondUTC`
+
+``` purescript
+millisecondUTC :: Date -> Seconds
+```
+
+
+#### `timezoneOffset`
+
+``` purescript
+timezoneOffset :: Date -> Minutes
+```
+
+
+#### `toEpochMilliseconds`
+
+``` purescript
+toEpochMilliseconds :: Date -> Milliseconds
+```
+
+
+#### `fromEpochMilliseconds`
+
+``` purescript
+fromEpochMilliseconds :: Milliseconds -> Maybe Date
+```
+
+
+#### `fromString`
+
+``` purescript
+fromString :: String -> Maybe Date
+```
+
+
+#### `fromStringStrict`
+
+``` purescript
+fromStringStrict :: String -> Maybe Date
+```
+
+
+#### `showDate`
+
+``` purescript
+instance showDate :: Show Date
+```
