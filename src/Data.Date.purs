@@ -14,6 +14,7 @@ module Data.Date
   , toJSDate
   , now
   , dateTime
+  , dateTimeUTC
   , date
   , year
   , yearUTC
@@ -69,6 +70,17 @@ foreign import strictJsDate
 
 foreign import jsDateFromRecord
   "function jsDateFromRecord(r) {\
+  \  return new Date(Date.UTC(r.year, r.month, r.day, r.hours, r.minutes, r.seconds, r.milliseconds)); \
+  \}" :: { year :: Number
+         , month :: Number
+         , day :: Number
+         , hours :: Number
+         , minutes :: Number
+         , seconds :: Number
+         , milliseconds :: Number } -> JSDate
+
+foreign import jsUtcDateFromRecord
+  "function jsUtcDateFromRecord(r) {\
   \  return new Date(r.year, r.month, r.day, r.hours, r.minutes, r.seconds, r.milliseconds); \
   \}" :: { year :: Number
          , month :: Number
@@ -288,6 +300,18 @@ dateTime :: Year -> Month -> Day
          -> Hours -> Minutes -> Seconds -> Milliseconds
          -> Maybe Date
 dateTime y m d h n s ms =
+  fromJSDate $ jsDateFromRecord { year: y
+                                , month: (fromEnum m)
+                                , day: d
+                                , hours: h
+                                , minutes: n
+                                , seconds: s
+                                , milliseconds: ms }
+
+dateTimeUTC :: Year -> Month -> Day 
+            -> Hours -> Minutes -> Seconds -> Milliseconds
+            -> Maybe Date
+dateTimeUTC y m d h n s ms =
   fromJSDate $ jsDateFromRecord { year: y
                                 , month: (fromEnum m)
                                 , day: d
