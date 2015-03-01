@@ -5,7 +5,7 @@ module Data.Date
   , Year()
   , Month(..)
   , Day()
-  , DayOfWeek()
+  , DayOfWeek(..)
   , Hours()
   , Minutes()
   , Seconds()
@@ -43,14 +43,14 @@ import Data.Enum
 import Data.Maybe
 import Data.Function
 import qualified Data.Maybe.Unsafe as U
-  
+
 foreign import jsDateMethod
   "function jsDateMethod(method) { \
   \  return function(date) { \
   \    return date[method](); \
   \  }; \
   \}" :: forall a. String -> JSDate -> a
-  
+
 foreign import jsDateConstructor
   "function jsDateConstructor(x) { \
   \  return new Date(x); \
@@ -84,8 +84,8 @@ foreign import data Now :: !
 data Date = DateTime JSDate
 
 instance eqDate :: Eq Date where
-  (==) = liftOp (==)  
-  (/=) = liftOp (/=) 
+  (==) = liftOp (==)
+  (/=) = liftOp (/=)
 
 instance ordDate :: Ord Date where
   compare = liftOp compare
@@ -95,7 +95,7 @@ liftOp op x y = toEpochMilliseconds x `op` toEpochMilliseconds y
 
 type Year = Number
 
-data Month 
+data Month
   = January
   | February
   | March
@@ -159,7 +159,7 @@ instance enumMonth :: Enum Month where
   toEnum = monthToEnum
 
   fromEnum = monthFromEnum
-  
+
 monthToEnum :: Number -> Maybe Month
 monthToEnum  0 = Just January
 monthToEnum  1 = Just February
@@ -212,12 +212,12 @@ instance eqDayOfWeek :: Eq DayOfWeek where
   (==) Friday Friday = true
   (==) Saturday Saturday = true
   (==) _ _ = false
-  
+
   (/=) a b = not (a == b)
 
 instance ordDayOfWeek :: Ord DayOfWeek where
-  compare a b = compare (fromEnum a) (fromEnum b)  
-  
+  compare a b = compare (fromEnum a) (fromEnum b)
+
 instance enumDayOfWeek :: Enum DayOfWeek where
   cardinality = Cardinality 7
 
@@ -233,7 +233,7 @@ instance enumDayOfWeek :: Enum DayOfWeek where
 
   fromEnum = dayOfWeekFromEnum
 
-  
+
 dayOfWeekToEnum :: Number -> Maybe DayOfWeek
 dayOfWeekToEnum 0 = Just Sunday
 dayOfWeekToEnum 1 = Just Monday
@@ -254,37 +254,37 @@ dayOfWeekFromEnum Friday     = 5
 dayOfWeekFromEnum Saturday   = 6
 
 instance showDayOfWeek :: Show DayOfWeek where
-  show Sunday    = "Sunday"   
-  show Monday    = "Monday"  
-  show Tuesday   = "Tuesday"  
+  show Sunday    = "Sunday"
+  show Monday    = "Monday"
+  show Tuesday   = "Tuesday"
   show Wednesday = "Wednesday"
-  show Thursday  = "Thursday" 
-  show Friday    = "Friday"   
-  show Saturday  = "Saturday" 
+  show Thursday  = "Thursday"
+  show Friday    = "Friday"
+  show Saturday  = "Saturday"
 
 fromJSDate :: JSDate -> Maybe Date
-fromJSDate d = if Global.isNaN (jsDateMethod "getTime" d) 
+fromJSDate d = if Global.isNaN (jsDateMethod "getTime" d)
                then Nothing
                else Just $ DateTime d
-  
+
 toJSDate :: Date -> JSDate
 toJSDate (DateTime d) = d
 
 liftDate :: forall a. (JSDate -> a) -> Date -> a
 liftDate f (DateTime d) = f d
-  
+
 foreign import nowImpl """
   function nowImpl(f) {
     return function(){
-      return f(new Date()); 
-    };    
+      return f(new Date());
+    };
   }
   """ :: forall e. (JSDate -> Date) -> Eff (now :: Now | e) Date
-  
+
 now :: forall e. Eff (now :: Now | e) Date
 now = nowImpl DateTime
-  
-dateTime :: Year -> Month -> Day 
+
+dateTime :: Year -> Month -> Day
          -> Hours -> Minutes -> Seconds -> Milliseconds
          -> Maybe Date
 dateTime y m d h n s ms =

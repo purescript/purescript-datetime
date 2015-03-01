@@ -74,6 +74,13 @@ type Day = Number
 
 ``` purescript
 data DayOfWeek
+  = Sunday 
+  | Monday 
+  | Tuesday 
+  | Wednesday 
+  | Thursday 
+  | Friday 
+  | Saturday 
 ```
 
 
