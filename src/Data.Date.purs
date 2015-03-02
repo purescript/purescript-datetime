@@ -357,7 +357,7 @@ foreign import epochMilliseconds """
       return Date.now();
     }
   }
-  """ :: forall e. Eff e Milliseconds
+  """ :: forall e. Eff (now :: Now | e) Milliseconds
 
 toEpochMilliseconds :: Date -> Milliseconds
 toEpochMilliseconds = liftDate $ jsDateMethod "getTime"
