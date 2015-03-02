@@ -32,6 +32,7 @@ module Data.Date
   , millisecond
   , millisecondUTC
   , timezoneOffset
+  , epochMilliseconds
   , toEpochMilliseconds
   , fromEpochMilliseconds
   , fromString
@@ -349,6 +350,14 @@ millisecondUTC = liftDate $ jsDateMethod "getUTCMilliseconds"
 
 timezoneOffset :: Date -> Minutes
 timezoneOffset = liftDate $ jsDateMethod "getTimezoneOffset"
+
+foreign import epochMilliseconds """
+  function epochMilliseconds() {
+    return function () {
+      return Date.now();
+    }
+  }
+  """ :: foreall e. Eff e Number
 
 toEpochMilliseconds :: Date -> Milliseconds
 toEpochMilliseconds = liftDate $ jsDateMethod "getTime"
