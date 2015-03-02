@@ -353,9 +353,7 @@ timezoneOffset = liftDate $ jsDateMethod "getTimezoneOffset"
 
 foreign import epochMilliseconds """
   function epochMilliseconds() {
-    return function () {
-      return Date.now();
-    }
+    return Date.now();
   }
   """ :: forall e. Eff (now :: Now | e) Milliseconds
 
