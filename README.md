@@ -2,13 +2,25 @@
 
 ## Module Data.Date
 
+#### `JSDate`
+
+``` purescript
+data JSDate :: *
+```
+
+A native JavaScript `Date` object.
+
 #### `Date`
 
 ``` purescript
 newtype Date
-  = DateTime JSDate
 ```
 
+A combined date/time value. `Date`s cannot be constructed directly to
+ensure they are not the `Invalid Date` value, and instead must be created
+via `fromJSDate`, `fromEpochMilliseconds`, `fromString`, etc. or the `date`
+and `dateTime` functions in the `Data.Date.Locale` and `Data.Date.UTC`
+modules.
 
 #### `eqDate`
 
@@ -31,19 +43,14 @@ instance showDate :: Show Date
 ```
 
 
-#### `JSDate`
-
-``` purescript
-data JSDate :: *
-```
-
-
 #### `fromJSDate`
 
 ``` purescript
 fromJSDate :: JSDate -> Maybe Date
 ```
 
+Attempts to create a `Date` from a `JSDate`. If the `JSDate` is an invalid
+date `Nothing` is returned.
 
 #### `toJSDate`
 
@@ -51,6 +58,7 @@ fromJSDate :: JSDate -> Maybe Date
 toJSDate :: Date -> JSDate
 ```
 
+Extracts a `JSDate` from a `Date`.
 
 #### `fromEpochMilliseconds`
 
@@ -58,6 +66,8 @@ toJSDate :: Date -> JSDate
 fromEpochMilliseconds :: Milliseconds -> Maybe Date
 ```
 
+Creates a `Date` value from a number of milliseconds elapsed since 1st
+January 1970 00:00:00 UTC.
 
 #### `toEpochMilliseconds`
 
@@ -65,6 +75,8 @@ fromEpochMilliseconds :: Milliseconds -> Maybe Date
 toEpochMilliseconds :: Date -> Milliseconds
 ```
 
+Gets the number of milliseconds elapsed since 1st January 1970 00:00:00
+UTC for a `Date`.
 
 #### `fromString`
 
@@ -72,6 +84,9 @@ toEpochMilliseconds :: Date -> Milliseconds
 fromString :: String -> Maybe Date
 ```
 
+Attempts to construct a date from a string value using JavaScript’s
+[Date.parse() method](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse).
+`Nothing` is returned if the parse fails or the resulting date is invalid.
 
 #### `fromStringStrict`
 
@@ -79,6 +94,9 @@ fromString :: String -> Maybe Date
 fromStringStrict :: String -> Maybe Date
 ```
 
+Attempts to construct a date from a simplified extended ISO 8601 format
+(`YYYY-MM-DDTHH:mm:ss.sssZ`). `Nothing` is returned if the format is not
+an exact match or the resulting date is invalid.
 
 #### `timezoneOffset`
 
@@ -86,6 +104,7 @@ fromStringStrict :: String -> Maybe Date
 timezoneOffset :: Date -> Minutes
 ```
 
+Get the locale time offset for a `Date`.
 
 #### `Now`
 
@@ -93,6 +112,7 @@ timezoneOffset :: Date -> Minutes
 data Now :: !
 ```
 
+Effect type for when accessing the current date/time.
 
 #### `now`
 
@@ -100,6 +120,8 @@ data Now :: !
 now :: forall e. Eff (now :: Now | e) Date
 ```
 
+Gets a `Date` value for the current date/time according to the current
+machine’s local time.
 
 #### `nowEpochMilliseconds`
 
@@ -107,6 +129,8 @@ now :: forall e. Eff (now :: Now | e) Date
 nowEpochMilliseconds :: forall e. Eff (now :: Now | e) Milliseconds
 ```
 
+Gets the number of milliseconds elapsed milliseconds since 1st January
+1970 00:00:00 UTC according to the current machine’s local time
 
 #### `Year`
 
@@ -215,6 +239,7 @@ data DayOfWeek
   | Saturday 
 ```
 
+A day-of-week date component value.
 
 #### `eqDayOfWeek`
 
@@ -516,6 +541,9 @@ instance showMilliseconds :: Show Milliseconds
 dateTime :: Year -> Month -> Day -> Hours -> Minutes -> Seconds -> Milliseconds -> Maybe Date
 ```
 
+Attempts to create a `Date` from date and time components based on the
+current machine’s locale. `Nothing` is returned if the resulting date is
+invalid.
 
 #### `date`
 
@@ -523,6 +551,8 @@ dateTime :: Year -> Month -> Day -> Hours -> Minutes -> Seconds -> Milliseconds 
 date :: Year -> Month -> Day -> Maybe Date
 ```
 
+Attempts to create a `Date` from date components based on the current
+machine’s locale. `Nothing` is returned if the resulting date is invalid.
 
 #### `year`
 
@@ -530,6 +560,7 @@ date :: Year -> Month -> Day -> Maybe Date
 year :: Date -> Year
 ```
 
+Gets the year component for a date based on the current machine’s locale.
 
 #### `month`
 
@@ -537,13 +568,16 @@ year :: Date -> Year
 month :: Date -> Month
 ```
 
+Gets the month component for a date based on the current machine’s locale.
 
-#### `day`
+#### `dayOfMonth`
 
 ``` purescript
-day :: Date -> Day
+dayOfMonth :: Date -> Day
 ```
 
+Gets the day-of-month value for a date based on the current machine’s
+locale.
 
 #### `dayOfWeek`
 
@@ -551,34 +585,44 @@ day :: Date -> Day
 dayOfWeek :: Date -> DayOfWeek
 ```
 
+Gets the day-of-week value for a date based on the current machine’s
+locale.
 
-#### `hour`
-
-``` purescript
-hour :: Date -> Hours
-```
-
-
-#### `minute`
+#### `hourOfDay`
 
 ``` purescript
-minute :: Date -> Minutes
+hourOfDay :: Date -> Hours
 ```
 
+Gets the hour-of-day value for a date based on the current machine’s
+locale.
 
-#### `second`
+#### `minuteOfHour`
 
 ``` purescript
-second :: Date -> Seconds
+minuteOfHour :: Date -> Minutes
 ```
 
+Gets the minute-of-hour value for a date based on the current machine’s
+locale.
 
-#### `millisecond`
+#### `secondOfMinute`
 
 ``` purescript
-millisecond :: Date -> Milliseconds
+secondOfMinute :: Date -> Seconds
 ```
 
+Get the second-of-minute value for a date based on the current machine’s
+locale.
+
+#### `millisecondOfSecond`
+
+``` purescript
+millisecondOfSecond :: Date -> Milliseconds
+```
+
+Get the millisecond-of-second value for a date based on the current
+machine’s locale.
 
 
 ## Module Data.Date.UTC
@@ -589,6 +633,8 @@ millisecond :: Date -> Milliseconds
 dateTime :: Year -> Month -> Day -> Hours -> Minutes -> Seconds -> Milliseconds -> Maybe Date
 ```
 
+Attempts to create a `Date` from UTC date and time components. `Nothing`
+is returned if the resulting date is invalid.
 
 #### `date`
 
@@ -596,6 +642,8 @@ dateTime :: Year -> Month -> Day -> Hours -> Minutes -> Seconds -> Milliseconds 
 date :: Year -> Month -> Day -> Maybe Date
 ```
 
+Attempts to create a `Date` from UTC date components. `Nothing` is
+returned if the resulting date is invalid.
 
 #### `year`
 
@@ -603,6 +651,7 @@ date :: Year -> Month -> Day -> Maybe Date
 year :: Date -> Year
 ```
 
+Gets the UTC year component for a date.
 
 #### `month`
 
@@ -610,13 +659,15 @@ year :: Date -> Year
 month :: Date -> Month
 ```
 
+Gets the UTC month component for a date.
 
-#### `day`
+#### `dayOfMonth`
 
 ``` purescript
-day :: Date -> Day
+dayOfMonth :: Date -> Day
 ```
 
+Gets the UTC day-of-month value for a date.
 
 #### `dayOfWeek`
 
@@ -624,34 +675,39 @@ day :: Date -> Day
 dayOfWeek :: Date -> DayOfWeek
 ```
 
+Gets the UTC day-of-week value for a date.
 
-#### `hour`
-
-``` purescript
-hour :: Date -> Hours
-```
-
-
-#### `minute`
+#### `hourOfDay`
 
 ``` purescript
-minute :: Date -> Minutes
+hourOfDay :: Date -> Hours
 ```
 
+Gets the UTC hour-of-day value for a date.
 
-#### `second`
+#### `minuteOfHour`
 
 ``` purescript
-second :: Date -> Seconds
+minuteOfHour :: Date -> Minutes
 ```
 
+Gets the UTC minute-of-hour value for a date.
 
-#### `millisecond`
+#### `secondOfMinute`
 
 ``` purescript
-millisecond :: Date -> Milliseconds
+secondOfMinute :: Date -> Seconds
 ```
 
+Get the UTC second-of-minute value for a date.
+
+#### `millisecondOfSecond`
+
+``` purescript
+millisecondOfSecond :: Date -> Milliseconds
+```
+
+Get the UTC millisecond-of-second value for a date.
 
 
 
