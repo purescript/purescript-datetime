@@ -139,6 +139,8 @@ newtype Year
   = Year Int
 ```
 
+A year date component value.
+
 #### `eqYear`
 
 ``` purescript
@@ -192,6 +194,8 @@ data Month
   | December 
 ```
 
+A month date component value.
+
 #### `eqMonth`
 
 ``` purescript
@@ -225,6 +229,8 @@ instance enumMonth :: Enum Month
 ``` purescript
 type Day = Int
 ```
+
+A day-of-month date component value.
 
 #### `DayOfWeek`
 

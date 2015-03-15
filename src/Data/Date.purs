@@ -99,8 +99,6 @@ foreign import nowEpochMilliseconds
   }
   """ :: forall e. Eff (now :: Now | e) Milliseconds
 
--------------------------------------------------------------------------------
-
 -- | A year date component value.
 newtype Year = Year Int
 
@@ -122,8 +120,6 @@ instance ringYear :: Ring Year where
 
 instance showYear :: Show Year where
   show (Year n) = "(Year " ++ show n ++ ")"
-
--------------------------------------------------------------------------------
 
 -- | A month date component value.
 data Month
@@ -211,8 +207,6 @@ monthFromEnum October   = 9
 monthFromEnum November  = 10
 monthFromEnum December  = 11
 
--------------------------------------------------------------------------------
-
 -- | A day-of-month date component value.
 type Day = Int
 
@@ -276,8 +270,6 @@ dayOfWeekFromEnum Wednesday = 3
 dayOfWeekFromEnum Thursday  = 4
 dayOfWeekFromEnum Friday    = 5
 dayOfWeekFromEnum Saturday  = 6
-
--------------------------------------------------------------------------------
 
 foreign import nowImpl
   """
