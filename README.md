@@ -658,6 +658,49 @@ instance showMilliseconds :: Show Milliseconds
 ```
 
 
+#### `TimeValue`
+
+``` purescript
+class TimeValue a where
+  toHours :: a -> Hours
+  toMinutes :: a -> Minutes
+  toSeconds :: a -> Seconds
+  toMilliseconds :: a -> Milliseconds
+  fromHours :: Hours -> a
+  fromMinutes :: Minutes -> a
+  fromSeconds :: Seconds -> a
+  fromMilliseconds :: Milliseconds -> a
+```
+
+
+#### `timeValueHours`
+
+``` purescript
+instance timeValueHours :: TimeValue Hours
+```
+
+
+#### `timeValueMinutes`
+
+``` purescript
+instance timeValueMinutes :: TimeValue Minutes
+```
+
+
+#### `timeValueSeconds`
+
+``` purescript
+instance timeValueSeconds :: TimeValue Seconds
+```
+
+
+#### `timeValueMilliseconds`
+
+``` purescript
+instance timeValueMilliseconds :: TimeValue Milliseconds
+```
+
+
 
 ## Module Data.Date.Locale
 

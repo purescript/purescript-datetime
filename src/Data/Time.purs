@@ -165,3 +165,53 @@ instance numMilliseconds :: Num Milliseconds
 
 instance showMilliseconds :: Show Milliseconds where
   show (Milliseconds n) = "(Milliseconds " ++ show n ++ ")"
+
+class TimeValue a where
+  toHours :: a -> Hours
+  toMinutes :: a -> Minutes
+  toSeconds :: a -> Seconds
+  toMilliseconds :: a -> Milliseconds
+  fromHours :: Hours -> a
+  fromMinutes :: Minutes -> a
+  fromSeconds :: Seconds -> a
+  fromMilliseconds :: Milliseconds -> a
+
+instance timeValueHours :: TimeValue Hours where
+  toHours n = n
+  toMinutes (Hours n) = Minutes (n * 60)
+  toSeconds (Hours n) = Seconds (n * 3600)
+  toMilliseconds (Hours n) = Milliseconds (n * 3600000)
+  fromHours n = n
+  fromMinutes (Minutes n) = Hours (n / 60)
+  fromSeconds (Seconds n) = Hours (n / 3600)
+  fromMilliseconds (Milliseconds n) = Hours (n / 3600000)
+
+instance timeValueMinutes :: TimeValue Minutes where
+  toHours (Minutes n) = Hours (n / 60)
+  toMinutes n = n
+  toSeconds (Minutes n) = Seconds (n * 60)
+  toMilliseconds (Minutes n) = Milliseconds (n * 60000)
+  fromHours (Hours n) = Minutes (n * 60)
+  fromMinutes n = n
+  fromSeconds (Seconds n) = Minutes (n / 60)
+  fromMilliseconds (Milliseconds n) = Minutes (n / 60000)
+
+instance timeValueSeconds :: TimeValue Seconds where
+  toHours (Seconds n) = Hours (n / 3600)
+  toMinutes (Seconds n) = Minutes (n / 60)
+  toSeconds n = n
+  toMilliseconds (Seconds n) = Milliseconds (n * 1000)
+  fromHours (Hours n) = Seconds (n * 3600)
+  fromMinutes (Minutes n) = Seconds (n * 60)
+  fromSeconds n = n
+  fromMilliseconds (Milliseconds n) = Seconds (n / 1000)
+
+instance timeValueMilliseconds :: TimeValue Milliseconds where
+  toHours (Milliseconds n) = Hours (n / 3600000)
+  toMinutes (Milliseconds n) = Minutes (n / 60000)
+  toSeconds (Milliseconds n) = Seconds (n / 1000)
+  toMilliseconds n = n
+  fromHours (Hours n) = Milliseconds (n * 3600000)
+  fromMinutes (Minutes n) = Milliseconds (n * 60000)
+  fromSeconds (Seconds n) = Milliseconds (n * 1000)
+  fromMilliseconds n = n
