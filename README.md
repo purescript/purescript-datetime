@@ -98,14 +98,6 @@ Attempts to construct a date from a simplified extended ISO 8601 format
 (`YYYY-MM-DDTHH:mm:ss.sssZ`). `Nothing` is returned if the format is not
 an exact match or the resulting date is invalid.
 
-#### `timezoneOffset`
-
-``` purescript
-timezoneOffset :: Date -> Minutes
-```
-
-Get the locale time offset for a `Date`.
-
 #### `Now`
 
 ``` purescript
@@ -131,6 +123,23 @@ nowEpochMilliseconds :: forall e. Eff (now :: Now | e) Milliseconds
 
 Gets the number of milliseconds elapsed milliseconds since 1st January
 1970 00:00:00 UTC according to the current machine’s local time
+
+#### `LocaleOffset`
+
+``` purescript
+newtype LocaleOffset
+  = LocaleOffset Minutes
+```
+
+A timezone locale offset, measured in minutes.
+
+#### `timezoneOffset`
+
+``` purescript
+timezoneOffset :: Date -> LocaleOffset
+```
+
+Get the locale time offset for a `Date`.
 
 #### `Year`
 
@@ -224,13 +233,28 @@ instance enumMonth :: Enum Month
 ```
 
 
-#### `Day`
+#### `DayOfMonth`
 
 ``` purescript
-type Day = Int
+newtype DayOfMonth
+  = DayOfMonth Int
 ```
 
 A day-of-month date component value.
+
+#### `eqDayOfMonth`
+
+``` purescript
+instance eqDayOfMonth :: Eq DayOfMonth
+```
+
+
+#### `ordDayOfMonth`
+
+``` purescript
+instance ordDayOfMonth :: Ord DayOfMonth
+```
+
 
 #### `DayOfWeek`
 
@@ -277,6 +301,30 @@ instance enumDayOfWeek :: Enum DayOfWeek
 
 
 ## Module Data.Time
+
+#### `HourOfDay`
+
+``` purescript
+newtype HourOfDay
+  = HourOfDay Int
+```
+
+An hour component from a time value. Should fall between 0 and 23
+inclusive.
+
+#### `eqHourOfDay`
+
+``` purescript
+instance eqHourOfDay :: Eq HourOfDay
+```
+
+
+#### `ordHourOfDay`
+
+``` purescript
+instance ordHourOfDay :: Ord HourOfDay
+```
+
 
 #### `Hours`
 
@@ -340,6 +388,30 @@ instance numHours :: Num Hours
 
 ``` purescript
 instance showHours :: Show Hours
+```
+
+
+#### `MinuteOfHour`
+
+``` purescript
+newtype MinuteOfHour
+  = MinuteOfHour Int
+```
+
+A minute component from a time value. Should fall between 0 and 59
+inclusive.
+
+#### `eqMinuteOfHour`
+
+``` purescript
+instance eqMinuteOfHour :: Eq MinuteOfHour
+```
+
+
+#### `ordMinuteOfHour`
+
+``` purescript
+instance ordMinuteOfHour :: Ord MinuteOfHour
 ```
 
 
@@ -408,6 +480,30 @@ instance showMinutes :: Show Minutes
 ```
 
 
+#### `SecondOfMinute`
+
+``` purescript
+newtype SecondOfMinute
+  = SecondOfMinute Int
+```
+
+A second component from a time value. Should fall between 0 and 59
+inclusive.
+
+#### `eqSecondOfMinute`
+
+``` purescript
+instance eqSecondOfMinute :: Eq SecondOfMinute
+```
+
+
+#### `ordSecondOfMinute`
+
+``` purescript
+instance ordSecondOfMinute :: Ord SecondOfMinute
+```
+
+
 #### `Seconds`
 
 ``` purescript
@@ -470,6 +566,30 @@ instance numSeconds :: Num Seconds
 
 ``` purescript
 instance showSeconds :: Show Seconds
+```
+
+
+#### `MillisecondOfSecond`
+
+``` purescript
+newtype MillisecondOfSecond
+  = MillisecondOfSecond Int
+```
+
+A millisecond component from a time value. Should fall between 0 and 999
+inclusive.
+
+#### `eqMillisecondOfSecond`
+
+``` purescript
+instance eqMillisecondOfSecond :: Eq MillisecondOfSecond
+```
+
+
+#### `ordMillisecondOfSecond`
+
+``` purescript
+instance ordMillisecondOfSecond :: Ord MillisecondOfSecond
 ```
 
 
@@ -544,7 +664,7 @@ instance showMilliseconds :: Show Milliseconds
 #### `dateTime`
 
 ``` purescript
-dateTime :: Year -> Month -> Day -> Hours -> Minutes -> Seconds -> Milliseconds -> Maybe Date
+dateTime :: Year -> Month -> DayOfMonth -> HourOfDay -> MinuteOfHour -> SecondOfMinute -> MillisecondOfSecond -> Maybe Date
 ```
 
 Attempts to create a `Date` from date and time components based on the
@@ -554,7 +674,7 @@ invalid.
 #### `date`
 
 ``` purescript
-date :: Year -> Month -> Day -> Maybe Date
+date :: Year -> Month -> DayOfMonth -> Maybe Date
 ```
 
 Attempts to create a `Date` from date components based on the current
@@ -579,7 +699,7 @@ Gets the month component for a date based on the current machine’s locale.
 #### `dayOfMonth`
 
 ``` purescript
-dayOfMonth :: Date -> Day
+dayOfMonth :: Date -> DayOfMonth
 ```
 
 Gets the day-of-month value for a date based on the current machine’s
@@ -597,7 +717,7 @@ locale.
 #### `hourOfDay`
 
 ``` purescript
-hourOfDay :: Date -> Hours
+hourOfDay :: Date -> HourOfDay
 ```
 
 Gets the hour-of-day value for a date based on the current machine’s
@@ -606,7 +726,7 @@ locale.
 #### `minuteOfHour`
 
 ``` purescript
-minuteOfHour :: Date -> Minutes
+minuteOfHour :: Date -> MinuteOfHour
 ```
 
 Gets the minute-of-hour value for a date based on the current machine’s
@@ -615,7 +735,7 @@ locale.
 #### `secondOfMinute`
 
 ``` purescript
-secondOfMinute :: Date -> Seconds
+secondOfMinute :: Date -> SecondOfMinute
 ```
 
 Get the second-of-minute value for a date based on the current machine’s
@@ -624,7 +744,7 @@ locale.
 #### `millisecondOfSecond`
 
 ``` purescript
-millisecondOfSecond :: Date -> Milliseconds
+millisecondOfSecond :: Date -> MillisecondOfSecond
 ```
 
 Get the millisecond-of-second value for a date based on the current
@@ -636,7 +756,7 @@ machine’s locale.
 #### `dateTime`
 
 ``` purescript
-dateTime :: Year -> Month -> Day -> Hours -> Minutes -> Seconds -> Milliseconds -> Maybe Date
+dateTime :: Year -> Month -> DayOfMonth -> HourOfDay -> MinuteOfHour -> SecondOfMinute -> MillisecondOfSecond -> Maybe Date
 ```
 
 Attempts to create a `Date` from UTC date and time components. `Nothing`
@@ -645,7 +765,7 @@ is returned if the resulting date is invalid.
 #### `date`
 
 ``` purescript
-date :: Year -> Month -> Day -> Maybe Date
+date :: Year -> Month -> DayOfMonth -> Maybe Date
 ```
 
 Attempts to create a `Date` from UTC date components. `Nothing` is
@@ -670,7 +790,7 @@ Gets the UTC month component for a date.
 #### `dayOfMonth`
 
 ``` purescript
-dayOfMonth :: Date -> Day
+dayOfMonth :: Date -> DayOfMonth
 ```
 
 Gets the UTC day-of-month value for a date.
@@ -686,7 +806,7 @@ Gets the UTC day-of-week value for a date.
 #### `hourOfDay`
 
 ``` purescript
-hourOfDay :: Date -> Hours
+hourOfDay :: Date -> HourOfDay
 ```
 
 Gets the UTC hour-of-day value for a date.
@@ -694,7 +814,7 @@ Gets the UTC hour-of-day value for a date.
 #### `minuteOfHour`
 
 ``` purescript
-minuteOfHour :: Date -> Minutes
+minuteOfHour :: Date -> MinuteOfHour
 ```
 
 Gets the UTC minute-of-hour value for a date.
@@ -702,7 +822,7 @@ Gets the UTC minute-of-hour value for a date.
 #### `secondOfMinute`
 
 ``` purescript
-secondOfMinute :: Date -> Seconds
+secondOfMinute :: Date -> SecondOfMinute
 ```
 
 Get the UTC second-of-minute value for a date.
@@ -710,7 +830,7 @@ Get the UTC second-of-minute value for a date.
 #### `millisecondOfSecond`
 
 ``` purescript
-millisecondOfSecond :: Date -> Milliseconds
+millisecondOfSecond :: Date -> MillisecondOfSecond
 ```
 
 Get the UTC millisecond-of-second value for a date.

@@ -1,5 +1,18 @@
 module Data.Time where
 
+import Data.Int (Int())
+
+-- | An hour component from a time value. Should fall between 0 and 23
+-- | inclusive.
+newtype HourOfDay = HourOfDay Int
+
+instance eqHourOfDay :: Eq HourOfDay where
+  (==) (HourOfDay x) (HourOfDay y) = x == y
+  (/=) (HourOfDay x) (HourOfDay y) = x /= y
+
+instance ordHourOfDay :: Ord HourOfDay where
+  compare (HourOfDay x) (HourOfDay y) = compare x y
+
 -- | A quantity of hours (not necessarily a value between 0 and 23).
 newtype Hours = Hours Number
 
@@ -29,6 +42,17 @@ instance numHours :: Num Hours
 
 instance showHours :: Show Hours where
   show (Hours n) = "(Hours " ++ show n ++ ")"
+
+-- | A minute component from a time value. Should fall between 0 and 59
+-- | inclusive.
+newtype MinuteOfHour = MinuteOfHour Int
+
+instance eqMinuteOfHour :: Eq MinuteOfHour where
+  (==) (MinuteOfHour x) (MinuteOfHour y) = x == y
+  (/=) (MinuteOfHour x) (MinuteOfHour y) = x /= y
+
+instance ordMinuteOfHour :: Ord MinuteOfHour where
+  compare (MinuteOfHour x) (MinuteOfHour y) = compare x y
 
 -- | A quantity of minutes (not necessarily a value between 0 and 60).
 newtype Minutes = Minutes Number
@@ -60,6 +84,17 @@ instance numMinutes :: Num Minutes
 instance showMinutes :: Show Minutes where
   show (Minutes n) = "(Minutes " ++ show n ++ ")"
 
+-- | A second component from a time value. Should fall between 0 and 59
+-- | inclusive.
+newtype SecondOfMinute = SecondOfMinute Int
+
+instance eqSecondOfMinute :: Eq SecondOfMinute where
+  (==) (SecondOfMinute x) (SecondOfMinute y) = x == y
+  (/=) (SecondOfMinute x) (SecondOfMinute y) = x /= y
+
+instance ordSecondOfMinute :: Ord SecondOfMinute where
+  compare (SecondOfMinute x) (SecondOfMinute y) = compare x y
+
 -- | A quantity of seconds (not necessarily a value between 0 and 60).
 newtype Seconds = Seconds Number
 
@@ -89,6 +124,17 @@ instance numSeconds :: Num Seconds
 
 instance showSeconds :: Show Seconds where
   show (Seconds n) = "(Seconds " ++ show n ++ ")"
+
+-- | A millisecond component from a time value. Should fall between 0 and 999
+-- | inclusive.
+newtype MillisecondOfSecond = MillisecondOfSecond Int
+
+instance eqMillisecondOfSecond :: Eq MillisecondOfSecond where
+  (==) (MillisecondOfSecond x) (MillisecondOfSecond y) = x == y
+  (/=) (MillisecondOfSecond x) (MillisecondOfSecond y) = x /= y
+
+instance ordMillisecondOfSecond :: Ord MillisecondOfSecond where
+  compare (MillisecondOfSecond x) (MillisecondOfSecond y) = compare x y
 
 -- | A quantity of milliseconds (not necessarily a value between 0 and 1000).
 newtype Milliseconds = Milliseconds Number

@@ -7,13 +7,14 @@ module Data.Date
   , toEpochMilliseconds
   , fromString
   , fromStringStrict
-  , timezoneOffset
   , Now()
   , now
   , nowEpochMilliseconds
+  , LocaleOffset(..)
+  , timezoneOffset
   , Year(..)
   , Month(..)
-  , Day(..)
+  , DayOfMonth(..)
   , DayOfWeek(..)
   ) where
 
@@ -78,10 +79,6 @@ fromString = fromJSDate <<< jsDateConstructor
 fromStringStrict :: String -> Maybe Date
 fromStringStrict s = runFn3 strictJsDate Just Nothing s >>= fromJSDate
 
--- | Get the locale time offset for a `Date`.
-timezoneOffset :: Date -> Minutes
-timezoneOffset (DateTime d) = runFn2 jsDateMethod "getTimezoneOffset" d
-
 -- | Effect type for when accessing the current date/time.
 foreign import data Now :: !
 
@@ -98,6 +95,13 @@ foreign import nowEpochMilliseconds
     return Date.now();
   }
   """ :: forall e. Eff (now :: Now | e) Milliseconds
+
+-- | A timezone locale offset, measured in minutes.
+newtype LocaleOffset = LocaleOffset Minutes
+
+-- | Get the locale time offset for a `Date`.
+timezoneOffset :: Date -> LocaleOffset
+timezoneOffset (DateTime d) = runFn2 jsDateMethod "getTimezoneOffset" d
 
 -- | A year date component value.
 newtype Year = Year Int
@@ -208,7 +212,14 @@ monthFromEnum November  = 10
 monthFromEnum December  = 11
 
 -- | A day-of-month date component value.
-type Day = Int
+newtype DayOfMonth = DayOfMonth Int
+
+instance eqDayOfMonth :: Eq DayOfMonth where
+  (==) (DayOfMonth x) (DayOfMonth y) = x == y
+  (/=) (DayOfMonth x) (DayOfMonth y) = x /= y
+
+instance ordDayOfMonth :: Ord DayOfMonth where
+  compare (DayOfMonth x) (DayOfMonth y) = compare x y
 
 -- | A day-of-week date component value.
 data DayOfWeek
