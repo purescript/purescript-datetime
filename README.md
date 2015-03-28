@@ -734,7 +734,7 @@ machine’s locale. `Nothing` is returned if the resulting date is invalid.
 #### `year`
 
 ``` purescript
-year :: Date -> Year
+year :: forall e. Date -> Eff (locale :: Locale | e) Year
 ```
 
 Gets the year component for a date based on the current machine’s locale.
@@ -742,7 +742,7 @@ Gets the year component for a date based on the current machine’s locale.
 #### `month`
 
 ``` purescript
-month :: Date -> Month
+month :: forall e. Date -> Eff (locale :: Locale | e) Month
 ```
 
 Gets the month component for a date based on the current machine’s locale.
@@ -750,7 +750,7 @@ Gets the month component for a date based on the current machine’s locale.
 #### `dayOfMonth`
 
 ``` purescript
-dayOfMonth :: Date -> DayOfMonth
+dayOfMonth :: forall e. Date -> Eff (locale :: Locale | e) DayOfMonth
 ```
 
 Gets the day-of-month value for a date based on the current machine’s
@@ -759,7 +759,7 @@ locale.
 #### `dayOfWeek`
 
 ``` purescript
-dayOfWeek :: Date -> DayOfWeek
+dayOfWeek :: forall e. Date -> Eff (locale :: Locale | e) DayOfWeek
 ```
 
 Gets the day-of-week value for a date based on the current machine’s
@@ -768,7 +768,7 @@ locale.
 #### `hourOfDay`
 
 ``` purescript
-hourOfDay :: Date -> HourOfDay
+hourOfDay :: forall e. Date -> Eff (locale :: Locale | e) HourOfDay
 ```
 
 Gets the hour-of-day value for a date based on the current machine’s
@@ -777,7 +777,7 @@ locale.
 #### `minuteOfHour`
 
 ``` purescript
-minuteOfHour :: Date -> MinuteOfHour
+minuteOfHour :: forall e. Date -> Eff (locale :: Locale | e) MinuteOfHour
 ```
 
 Gets the minute-of-hour value for a date based on the current machine’s
@@ -786,7 +786,7 @@ locale.
 #### `secondOfMinute`
 
 ``` purescript
-secondOfMinute :: Date -> SecondOfMinute
+secondOfMinute :: forall e. Date -> Eff (locale :: Locale | e) SecondOfMinute
 ```
 
 Get the second-of-minute value for a date based on the current machine’s
@@ -795,7 +795,7 @@ locale.
 #### `millisecondOfSecond`
 
 ``` purescript
-millisecondOfSecond :: Date -> MillisecondOfSecond
+millisecondOfSecond :: forall e. Date -> Eff (locale :: Locale | e) MillisecondOfSecond
 ```
 
 Get the millisecond-of-second value for a date based on the current

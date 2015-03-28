@@ -46,7 +46,7 @@ dayOfMonth d = runFn2 dateMethod "getUTCDate" d
 
 -- | Gets the UTC day-of-week value for a date.
 dayOfWeek :: Date -> DayOfWeek
-dayOfWeek d = fromJust (toEnum (runFn2 dateMethod "getUTCDay"d ))
+dayOfWeek d = fromJust (toEnum (runFn2 dateMethod "getUTCDay" d))
 
 -- | Gets the UTC hour-of-day value for a date.
 hourOfDay :: Date -> HourOfDay
