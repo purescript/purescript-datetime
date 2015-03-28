@@ -6,24 +6,24 @@
   ],
   "description": "PureScript library for date and time values",
   "keywords": [
-    "purescript"
+    "purescript",
+    "date",
+    "time"
   ],
   "license": "MIT",
   "ignore": [
     "**/.*",
     "bower_components",
-    "examples",
     "node_modules",
     "output",
-    "tests",
-    "tmp",
     "bower.json",
-    "Gruntfile.js",
+    "gulpfile.js",
     "package.json"
   ],
   "dependencies": {
-    "purescript-enums":   "~0.4.0",
-    "purescript-maybe":   "~0.2.1",
-    "purescript-globals": "~0.1.5"
+    "purescript-enums": "~0.4.0",
+    "purescript-maybe": "~0.2.1",
+    "purescript-globals": "~0.1.5",
+    "purescript-integers": "~0.0.1"
   }
 }
