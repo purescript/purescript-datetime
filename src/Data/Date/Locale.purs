@@ -1,5 +1,6 @@
 module Data.Date.Locale
-  ( dateTime
+  ( Locale()
+  , dateTime
   , date
   , year
   , month
@@ -11,6 +12,7 @@ module Data.Date.Locale
   , millisecondOfSecond
   ) where
 
+import Control.Monad.Eff (Eff())
 import Data.Date
 import Data.Enum (fromEnum, toEnum)
 import Data.Function (Fn2(), runFn2, Fn7(), runFn7)
@@ -19,18 +21,21 @@ import Data.Maybe (Maybe())
 import Data.Maybe.Unsafe (fromJust)
 import Data.Time
 
+-- | The effect of reading the current system locale/timezone.
+foreign import data Locale :: !
+
 -- | Attempts to create a `Date` from date and time components based on the
 -- | current machine’s locale. `Nothing` is returned if the resulting date is
 -- | invalid.
-dateTime :: Year -> Month -> DayOfMonth
+dateTime :: forall e. Year -> Month -> DayOfMonth
          -> HourOfDay -> MinuteOfHour -> SecondOfMinute -> MillisecondOfSecond
-         -> Maybe Date
+         -> Eff (locale :: Locale | e) (Maybe Date)
 dateTime y mo d h mi s ms =
-  fromJSDate (runFn7 jsDateFromValues y (fromEnum mo) d h mi s ms)
+  fromJSDate <$> runFn7 jsDateFromValues y (fromEnum mo) d h mi s ms
 
 -- | Attempts to create a `Date` from date components based on the current
 -- | machine’s locale. `Nothing` is returned if the resulting date is invalid.
-date :: Year -> Month -> DayOfMonth -> Maybe Date
+date :: forall e. Year -> Month -> DayOfMonth -> Eff (locale :: Locale | e) (Maybe Date)
 date y m d = dateTime y m d (HourOfDay zero) (MinuteOfHour zero) (SecondOfMinute zero) (MillisecondOfSecond zero)
 
 -- | Gets the year component for a date based on the current machine’s locale.
@@ -81,6 +86,8 @@ foreign import dateMethod
 foreign import jsDateFromValues
   """
   function jsDateFromValues(y, mo, d, h, mi, s, ms) {
-    return new Date(y, mo, d, h, mi, s, ms);
+    return function () {
+      return new Date(y, mo, d, h, mi, s, ms);
+    };
   }
-  """ :: Fn7 Year Number DayOfMonth HourOfDay MinuteOfHour SecondOfMinute MillisecondOfSecond JSDate
+  """ :: forall e. Fn7 Year Number DayOfMonth HourOfDay MinuteOfHour SecondOfMinute MillisecondOfSecond (Eff (locale :: Locale | e) JSDate)

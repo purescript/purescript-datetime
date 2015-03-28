@@ -704,10 +704,18 @@ instance timeValueMilliseconds :: TimeValue Milliseconds
 
 ## Module Data.Date.Locale
 
+#### `Locale`
+
+``` purescript
+data Locale :: !
+```
+
+The effect of reading the current system locale/timezone.
+
 #### `dateTime`
 
 ``` purescript
-dateTime :: Year -> Month -> DayOfMonth -> HourOfDay -> MinuteOfHour -> SecondOfMinute -> MillisecondOfSecond -> Maybe Date
+dateTime :: forall e. Year -> Month -> DayOfMonth -> HourOfDay -> MinuteOfHour -> SecondOfMinute -> MillisecondOfSecond -> Eff (locale :: Locale | e) (Maybe Date)
 ```
 
 Attempts to create a `Date` from date and time components based on the
@@ -717,7 +725,7 @@ invalid.
 #### `date`
 
 ``` purescript
-date :: Year -> Month -> DayOfMonth -> Maybe Date
+date :: forall e. Year -> Month -> DayOfMonth -> Eff (locale :: Locale | e) (Maybe Date)
 ```
 
 Attempts to create a `Date` from date components based on the current
