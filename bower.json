@@ -24,6 +24,6 @@
     "purescript-enums": "~0.4.0",
     "purescript-maybe": "~0.2.1",
     "purescript-globals": "~0.1.5",
-    "purescript-integers": "~0.0.1"
+    "purescript-integers": "~0.1.0"
   }
 }
