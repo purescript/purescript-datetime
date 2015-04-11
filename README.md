@@ -219,6 +219,13 @@ instance ordMonth :: Ord Month
 ```
 
 
+#### `boundedMonth`
+
+``` purescript
+instance boundedMonth :: Bounded Month
+```
+
+
 #### `showMonth`
 
 ``` purescript
@@ -285,6 +292,13 @@ instance ordDayOfWeek :: Ord DayOfWeek
 ```
 
 
+#### `boundedDayOfWeek`
+
+``` purescript
+instance boundedDayOfWeek :: Bounded DayOfWeek
+```
+
+
 #### `showDayOfWeek`
 
 ``` purescript
@@ -323,6 +337,13 @@ instance eqHourOfDay :: Eq HourOfDay
 
 ``` purescript
 instance ordHourOfDay :: Ord HourOfDay
+```
+
+
+#### `boundedHourOfDay`
+
+``` purescript
+instance boundedHourOfDay :: Bounded HourOfDay
 ```
 
 
@@ -415,6 +436,13 @@ instance ordMinuteOfHour :: Ord MinuteOfHour
 ```
 
 
+#### `boundedMinuteOfHour`
+
+``` purescript
+instance boundedMinuteOfHour :: Bounded MinuteOfHour
+```
+
+
 #### `Minutes`
 
 ``` purescript
@@ -504,6 +532,13 @@ instance ordSecondOfMinute :: Ord SecondOfMinute
 ```
 
 
+#### `boundedSecondOfMinute`
+
+``` purescript
+instance boundedSecondOfMinute :: Bounded SecondOfMinute
+```
+
+
 #### `Seconds`
 
 ``` purescript
@@ -590,6 +625,13 @@ instance eqMillisecondOfSecond :: Eq MillisecondOfSecond
 
 ``` purescript
 instance ordMillisecondOfSecond :: Ord MillisecondOfSecond
+```
+
+
+#### `boundedMillisecondOfSecond`
+
+``` purescript
+instance boundedMillisecondOfSecond :: Bounded MillisecondOfSecond
 ```
 
 

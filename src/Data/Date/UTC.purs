@@ -76,4 +76,4 @@ foreign import jsDateFromValues
   function jsDateFromValues(y, mo, d, h, mi, s, ms) {
     return Date.UTC(y, mo, d, h, mi, s, ms);
   }
-  """ :: Fn7 Year Number DayOfMonth HourOfDay MinuteOfHour SecondOfMinute MillisecondOfSecond JSDate
+  """ :: Fn7 Year Int DayOfMonth HourOfDay MinuteOfHour SecondOfMinute MillisecondOfSecond JSDate

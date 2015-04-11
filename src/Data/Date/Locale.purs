@@ -92,4 +92,4 @@ foreign import jsDateFromValues
       return new Date(y, mo, d, h, mi, s, ms);
     };
   }
-  """ :: forall e. Fn7 Year Number DayOfMonth HourOfDay MinuteOfHour SecondOfMinute MillisecondOfSecond (Eff (locale :: Locale | e) JSDate)
+  """ :: forall e. Fn7 Year Int DayOfMonth HourOfDay MinuteOfHour SecondOfMinute MillisecondOfSecond (Eff (locale :: Locale | e) JSDate)
