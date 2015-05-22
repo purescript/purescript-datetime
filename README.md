@@ -801,6 +801,37 @@ millisecondOfSecond :: forall e. Date -> Eff (locale :: Locale | e) MillisecondO
 Get the millisecond-of-second value for a date based on the current
 machine’s locale.
 
+#### `toLocaleString`
+
+``` purescript
+toLocaleString :: forall e. Date -> Eff (locale :: Locale | e) String
+```
+
+Format a date as a human-readable string (including the date and the
+time), based on the current machine's locale. Example output:
+"Fri May 22 2015 19:45:07 GMT+0100 (BST)", although bear in mind that this
+can vary significantly across platforms.
+
+#### `toLocaleTimeString`
+
+``` purescript
+toLocaleTimeString :: forall e. Date -> Eff (locale :: Locale | e) String
+```
+
+Format a time as a human-readable string, based on the current machine's
+locale. Example output: "19:45:07", although bear in mind that this
+can vary significantly across platforms.
+
+#### `toLocaleDateString`
+
+``` purescript
+toLocaleDateString :: forall e. Date -> Eff (locale :: Locale | e) String
+```
+
+Format a date as a human-readable string, based on the current machine's
+locale. Example output: "Friday, May 22, 2015", although bear in mind that
+this can vary significantly across platforms.
+
 
 ## Module Data.Date.UTC
 

@@ -10,6 +10,9 @@ module Data.Date.Locale
   , minuteOfHour
   , secondOfMinute
   , millisecondOfSecond
+  , toLocaleString
+  , toLocaleTimeString
+  , toLocaleDateString
   ) where
 
 import Control.Monad.Eff (Eff())
@@ -75,6 +78,25 @@ secondOfMinute d = runFn2 dateMethod "getSeconds" d
 -- | machine’s locale.
 millisecondOfSecond :: forall e. Date -> Eff (locale :: Locale | e) MillisecondOfSecond
 millisecondOfSecond d = runFn2 dateMethod "getMilliseconds" d
+
+-- | Format a date as a human-readable string (including the date and the
+-- | time), based on the current machine's locale. Example output:
+-- | "Fri May 22 2015 19:45:07 GMT+0100 (BST)", although bear in mind that this
+-- | can vary significantly across platforms.
+toLocaleString :: forall e. Date -> Eff (locale :: Locale | e) String
+toLocaleString d = runFn2 dateMethod "toLocaleString" d
+
+-- | Format a time as a human-readable string, based on the current machine's
+-- | locale. Example output: "19:45:07", although bear in mind that this
+-- | can vary significantly across platforms.
+toLocaleTimeString :: forall e. Date -> Eff (locale :: Locale | e) String
+toLocaleTimeString d = runFn2 dateMethod "toLocaleTimeString" d
+
+-- | Format a date as a human-readable string, based on the current machine's
+-- | locale. Example output: "Friday, May 22, 2015", although bear in mind that
+-- | this can vary significantly across platforms.
+toLocaleDateString :: forall e. Date -> Eff (locale :: Locale | e) String
+toLocaleDateString d = runFn2 dateMethod "toLocaleDateString" d
 
 foreign import dateMethod
   """
