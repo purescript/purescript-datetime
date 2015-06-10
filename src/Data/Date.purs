@@ -18,10 +18,10 @@ module Data.Date
   , DayOfWeek(..)
   ) where
 
-import Control.Monad.Eff
-import Data.Enum
+import Control.Monad.Eff (Eff())
+import Data.Enum (Enum, Cardinality(..), fromEnum, defaultPred, defaultSucc)
 import Data.Function (on, Fn2(), runFn2, Fn3(), runFn3, Fn7(), runFn7)
-import Data.Int (Int())
+import Data.Int (Int(), fromNumber, toNumber)
 import Data.Maybe (Maybe(..))
 import Data.Time
 
@@ -159,6 +159,10 @@ instance eqMonth :: Eq Month where
 instance ordMonth :: Ord Month where
   compare = compare `on` fromEnum
 
+instance boundedMonth :: Bounded Month where
+  top = December
+  bottom = January
+
 instance showMonth :: Show Month where
   show January   = "January"
   show February  = "February"
@@ -174,42 +178,42 @@ instance showMonth :: Show Month where
   show December  = "December"
 
 instance enumMonth :: Enum Month where
-  cardinality = Cardinality 12
-  firstEnum = January
-  lastEnum = December
+  cardinality = Cardinality (fromNumber 12)
   succ = defaultSucc monthToEnum monthFromEnum
   pred = defaultPred monthToEnum monthFromEnum
   toEnum = monthToEnum
   fromEnum = monthFromEnum
 
-monthToEnum :: Number -> Maybe Month
-monthToEnum 0  = Just January
-monthToEnum 1  = Just February
-monthToEnum 2  = Just March
-monthToEnum 3  = Just April
-monthToEnum 4  = Just May
-monthToEnum 5  = Just June
-monthToEnum 6  = Just July
-monthToEnum 7  = Just August
-monthToEnum 8  = Just September
-monthToEnum 9  = Just October
-monthToEnum 10 = Just November
-monthToEnum 11 = Just December
-monthToEnum _  = Nothing
+monthToEnum :: Int -> Maybe Month
+monthToEnum = monthToEnum' <<< toNumber
+  where
+  monthToEnum' 0  = Just January
+  monthToEnum' 1  = Just February
+  monthToEnum' 2  = Just March
+  monthToEnum' 3  = Just April
+  monthToEnum' 4  = Just May
+  monthToEnum' 5  = Just June
+  monthToEnum' 6  = Just July
+  monthToEnum' 7  = Just August
+  monthToEnum' 8  = Just September
+  monthToEnum' 9  = Just October
+  monthToEnum' 10 = Just November
+  monthToEnum' 11 = Just December
+  monthToEnum' _  = Nothing
 
-monthFromEnum :: Month -> Number
-monthFromEnum January   = 0
-monthFromEnum February  = 1
-monthFromEnum March     = 2
-monthFromEnum April     = 3
-monthFromEnum May       = 4
-monthFromEnum June      = 5
-monthFromEnum July      = 6
-monthFromEnum August    = 7
-monthFromEnum September = 8
-monthFromEnum October   = 9
-monthFromEnum November  = 10
-monthFromEnum December  = 11
+monthFromEnum :: Month -> Int
+monthFromEnum January   = fromNumber 0
+monthFromEnum February  = fromNumber 1
+monthFromEnum March     = fromNumber 2
+monthFromEnum April     = fromNumber 3
+monthFromEnum May       = fromNumber 4
+monthFromEnum June      = fromNumber 5
+monthFromEnum July      = fromNumber 6
+monthFromEnum August    = fromNumber 7
+monthFromEnum September = fromNumber 8
+monthFromEnum October   = fromNumber 9
+monthFromEnum November  = fromNumber 10
+monthFromEnum December  = fromNumber 11
 
 -- | A day-of-month date component value.
 newtype DayOfMonth = DayOfMonth Int
@@ -245,6 +249,10 @@ instance eqDayOfWeek :: Eq DayOfWeek where
 instance ordDayOfWeek :: Ord DayOfWeek where
   compare = compare `on` fromEnum
 
+instance boundedDayOfWeek :: Bounded DayOfWeek where
+  top = Saturday
+  bottom = Sunday
+
 instance showDayOfWeek :: Show DayOfWeek where
   show Sunday    = "Sunday"
   show Monday    = "Monday"
@@ -255,32 +263,32 @@ instance showDayOfWeek :: Show DayOfWeek where
   show Saturday  = "Saturday"
 
 instance enumDayOfWeek :: Enum DayOfWeek where
-  cardinality = Cardinality 7
-  firstEnum = Sunday
-  lastEnum = Saturday
+  cardinality = Cardinality (fromNumber 7)
   succ = defaultSucc dayOfWeekToEnum dayOfWeekFromEnum
   pred = defaultPred dayOfWeekToEnum dayOfWeekFromEnum
   toEnum = dayOfWeekToEnum
   fromEnum = dayOfWeekFromEnum
 
-dayOfWeekToEnum :: Number -> Maybe DayOfWeek
-dayOfWeekToEnum 0 = Just Sunday
-dayOfWeekToEnum 1 = Just Monday
-dayOfWeekToEnum 2 = Just Tuesday
-dayOfWeekToEnum 3 = Just Wednesday
-dayOfWeekToEnum 4 = Just Thursday
-dayOfWeekToEnum 5 = Just Friday
-dayOfWeekToEnum 6 = Just Saturday
-dayOfWeekToEnum _ = Nothing
+dayOfWeekToEnum :: Int -> Maybe DayOfWeek
+dayOfWeekToEnum = dayOfWeekToEnum' <<< toNumber
+  where
+  dayOfWeekToEnum' 0 = Just Sunday
+  dayOfWeekToEnum' 1 = Just Monday
+  dayOfWeekToEnum' 2 = Just Tuesday
+  dayOfWeekToEnum' 3 = Just Wednesday
+  dayOfWeekToEnum' 4 = Just Thursday
+  dayOfWeekToEnum' 5 = Just Friday
+  dayOfWeekToEnum' 6 = Just Saturday
+  dayOfWeekToEnum' _ = Nothing
 
-dayOfWeekFromEnum :: DayOfWeek -> Number
-dayOfWeekFromEnum Sunday    = 0
-dayOfWeekFromEnum Monday    = 1
-dayOfWeekFromEnum Tuesday   = 2
-dayOfWeekFromEnum Wednesday = 3
-dayOfWeekFromEnum Thursday  = 4
-dayOfWeekFromEnum Friday    = 5
-dayOfWeekFromEnum Saturday  = 6
+dayOfWeekFromEnum :: DayOfWeek -> Int
+dayOfWeekFromEnum Sunday    = fromNumber 0
+dayOfWeekFromEnum Monday    = fromNumber 1
+dayOfWeekFromEnum Tuesday   = fromNumber 2
+dayOfWeekFromEnum Wednesday = fromNumber 3
+dayOfWeekFromEnum Thursday  = fromNumber 4
+dayOfWeekFromEnum Friday    = fromNumber 5
+dayOfWeekFromEnum Saturday  = fromNumber 6
 
 foreign import nowImpl
   """

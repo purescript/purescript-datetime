@@ -1,6 +1,6 @@
 module Data.Time where
 
-import Data.Int (Int())
+import Data.Int (Int(), fromNumber)
 
 -- | An hour component from a time value. Should fall between 0 and 23
 -- | inclusive.
@@ -12,6 +12,10 @@ instance eqHourOfDay :: Eq HourOfDay where
 
 instance ordHourOfDay :: Ord HourOfDay where
   compare (HourOfDay x) (HourOfDay y) = compare x y
+
+instance boundedHourOfDay :: Bounded HourOfDay where
+  top = HourOfDay (fromNumber 23)
+  bottom = HourOfDay zero
 
 -- | A quantity of hours (not necessarily a value between 0 and 23).
 newtype Hours = Hours Number
@@ -54,6 +58,10 @@ instance eqMinuteOfHour :: Eq MinuteOfHour where
 instance ordMinuteOfHour :: Ord MinuteOfHour where
   compare (MinuteOfHour x) (MinuteOfHour y) = compare x y
 
+instance boundedMinuteOfHour :: Bounded MinuteOfHour where
+  top = MinuteOfHour (fromNumber 59)
+  bottom = MinuteOfHour zero
+
 -- | A quantity of minutes (not necessarily a value between 0 and 60).
 newtype Minutes = Minutes Number
 
@@ -95,6 +103,10 @@ instance eqSecondOfMinute :: Eq SecondOfMinute where
 instance ordSecondOfMinute :: Ord SecondOfMinute where
   compare (SecondOfMinute x) (SecondOfMinute y) = compare x y
 
+instance boundedSecondOfMinute :: Bounded SecondOfMinute where
+  top = SecondOfMinute (fromNumber 59)
+  bottom = SecondOfMinute zero
+
 -- | A quantity of seconds (not necessarily a value between 0 and 60).
 newtype Seconds = Seconds Number
 
@@ -135,6 +147,10 @@ instance eqMillisecondOfSecond :: Eq MillisecondOfSecond where
 
 instance ordMillisecondOfSecond :: Ord MillisecondOfSecond where
   compare (MillisecondOfSecond x) (MillisecondOfSecond y) = compare x y
+
+instance boundedMillisecondOfSecond :: Bounded MillisecondOfSecond where
+  top = MillisecondOfSecond (fromNumber 999)
+  bottom = MillisecondOfSecond zero
 
 -- | A quantity of milliseconds (not necessarily a value between 0 and 1000).
 newtype Milliseconds = Milliseconds Number
