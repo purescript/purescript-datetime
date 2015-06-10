@@ -14,10 +14,12 @@ module Data.Date.UTC
 import Data.Date
 import Data.Enum (fromEnum, toEnum)
 import Data.Function (Fn2(), runFn2, Fn7(), runFn7)
-import Data.Int (Int())
 import Data.Maybe (Maybe())
 import Data.Maybe.Unsafe (fromJust)
 import Data.Time
+
+import Prelude
+  ( zero )
 
 -- | Attempts to create a `Date` from UTC date and time components. `Nothing`
 -- | is returned if the resulting date is invalid.
@@ -64,16 +66,6 @@ secondOfMinute d = runFn2 dateMethod "getUTCSeconds" d
 millisecondOfSecond :: Date -> MillisecondOfSecond
 millisecondOfSecond d = runFn2 dateMethod "getUTCMilliseconds" d
 
-foreign import dateMethod
-  """
-  function dateMethod(method, date) {
-    return date[method]();
-  }
-  """ :: forall a. Fn2 String Date a
+foreign import dateMethod :: forall a. Fn2 String Date a
 
-foreign import jsDateFromValues
-  """
-  function jsDateFromValues(y, mo, d, h, mi, s, ms) {
-    return new Date(Date.UTC(y, mo, d, h, mi, s, ms));
-  }
-  """ :: Fn7 Year Number DayOfMonth HourOfDay MinuteOfHour SecondOfMinute MillisecondOfSecond JSDate
+foreign import jsDateFromValues :: Fn7 Year Int DayOfMonth HourOfDay MinuteOfHour SecondOfMinute MillisecondOfSecond JSDate

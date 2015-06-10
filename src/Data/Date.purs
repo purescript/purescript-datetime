@@ -21,9 +21,29 @@ module Data.Date
 import Control.Monad.Eff
 import Data.Enum
 import Data.Function (on, Fn2(), runFn2, Fn3(), runFn3, Fn7(), runFn7)
-import Data.Int (Int())
 import Data.Maybe (Maybe(..))
 import Data.Time
+
+import Prelude
+  ( (*)
+  , (+)
+  , (++)
+  , (-)
+  , (/=)
+  , (<<<)
+  , (==)
+  , (>>=)
+  , Bounded
+  , Eq
+  , Ord
+  , Ring
+  , Semiring
+  , Show
+  , compare
+  , not
+  , one
+  , show
+  , zero )
 
 -- | A native JavaScript `Date` object.
 foreign import data JSDate :: *
@@ -36,8 +56,7 @@ foreign import data JSDate :: *
 newtype Date = DateTime JSDate
 
 instance eqDate :: Eq Date where
-  (==) = (==) `on` toEpochMilliseconds
-  (/=) = (/=) `on` toEpochMilliseconds
+  eq = (==) `on` toEpochMilliseconds
 
 instance ordDate :: Ord Date where
   compare = compare `on` toEpochMilliseconds
@@ -89,12 +108,7 @@ now = nowImpl DateTime
 
 -- | Gets the number of milliseconds elapsed milliseconds since 1st January
 -- | 1970 00:00:00 UTC according to the current machine’s local time
-foreign import nowEpochMilliseconds
-  """
-  function nowEpochMilliseconds() {
-    return Date.now();
-  }
-  """ :: forall e. Eff (now :: Now | e) Milliseconds
+foreign import nowEpochMilliseconds :: forall e. Eff (now :: Now | e) Milliseconds
 
 -- | A timezone locale offset, measured in minutes.
 newtype LocaleOffset = LocaleOffset Minutes
@@ -107,20 +121,19 @@ timezoneOffset (DateTime d) = runFn2 jsDateMethod "getTimezoneOffset" d
 newtype Year = Year Int
 
 instance eqYear :: Eq Year where
-  (==) (Year x) (Year y) = x == y
-  (/=) (Year x) (Year y) = x /= y
+  eq (Year x) (Year y) = x == y
 
 instance ordYear :: Ord Year where
   compare (Year x) (Year y) = compare x y
 
 instance semiringYear :: Semiring Year where
-  (+) (Year x) (Year y) = Year (x + y)
-  (*) (Year x) (Year y) = Year (x * y)
+  add (Year x) (Year y) = Year (x + y)
+  mul (Year x) (Year y) = Year (x * y)
   zero = Year zero
   one = Year one
 
 instance ringYear :: Ring Year where
-  (-) (Year x) (Year y) = Year (x - y)
+  sub (Year x) (Year y) = Year (x - y)
 
 instance showYear :: Show Year where
   show (Year n) = "(Year " ++ show n ++ ")"
@@ -141,20 +154,19 @@ data Month
   | December
 
 instance eqMonth :: Eq Month where
-  (==) January   January   = true
-  (==) February  February  = true
-  (==) March     March     = true
-  (==) April     April     = true
-  (==) May       May       = true
-  (==) June      June      = true
-  (==) July      July      = true
-  (==) August    August    = true
-  (==) September September = true
-  (==) October   October   = true
-  (==) November  November  = true
-  (==) December  December  = true
-  (==) _         _         = false
-  (/=) a         b         = not (a == b)
+  eq January   January   = true
+  eq February  February  = true
+  eq March     March     = true
+  eq April     April     = true
+  eq May       May       = true
+  eq June      June      = true
+  eq July      July      = true
+  eq August    August    = true
+  eq September September = true
+  eq October   October   = true
+  eq November  November  = true
+  eq December  December  = true
+  eq _         _         = false
 
 instance ordMonth :: Ord Month where
   compare = compare `on` fromEnum
@@ -173,16 +185,18 @@ instance showMonth :: Show Month where
   show November  = "November"
   show December  = "December"
 
+instance boundedMonth :: Bounded Month where
+  bottom = January
+  top = December
+
 instance enumMonth :: Enum Month where
   cardinality = Cardinality 12
-  firstEnum = January
-  lastEnum = December
   succ = defaultSucc monthToEnum monthFromEnum
   pred = defaultPred monthToEnum monthFromEnum
   toEnum = monthToEnum
   fromEnum = monthFromEnum
 
-monthToEnum :: Number -> Maybe Month
+monthToEnum :: Int -> Maybe Month
 monthToEnum 0  = Just January
 monthToEnum 1  = Just February
 monthToEnum 2  = Just March
@@ -197,7 +211,7 @@ monthToEnum 10 = Just November
 monthToEnum 11 = Just December
 monthToEnum _  = Nothing
 
-monthFromEnum :: Month -> Number
+monthFromEnum :: Month -> Int
 monthFromEnum January   = 0
 monthFromEnum February  = 1
 monthFromEnum March     = 2
@@ -215,8 +229,7 @@ monthFromEnum December  = 11
 newtype DayOfMonth = DayOfMonth Int
 
 instance eqDayOfMonth :: Eq DayOfMonth where
-  (==) (DayOfMonth x) (DayOfMonth y) = x == y
-  (/=) (DayOfMonth x) (DayOfMonth y) = x /= y
+  eq (DayOfMonth x) (DayOfMonth y) = x == y
 
 instance ordDayOfMonth :: Ord DayOfMonth where
   compare (DayOfMonth x) (DayOfMonth y) = compare x y
@@ -232,15 +245,14 @@ data DayOfWeek
   | Saturday
 
 instance eqDayOfWeek :: Eq DayOfWeek where
-  (==) Sunday    Sunday    = true
-  (==) Monday    Monday    = true
-  (==) Tuesday   Tuesday   = true
-  (==) Wednesday Wednesday = true
-  (==) Thursday  Thursday  = true
-  (==) Friday    Friday    = true
-  (==) Saturday  Saturday  = true
-  (==) _         _         = false
-  (/=) a         b         = not (a == b)
+  eq Sunday    Sunday    = true
+  eq Monday    Monday    = true
+  eq Tuesday   Tuesday   = true
+  eq Wednesday Wednesday = true
+  eq Thursday  Thursday  = true
+  eq Friday    Friday    = true
+  eq Saturday  Saturday  = true
+  eq _         _         = false
 
 instance ordDayOfWeek :: Ord DayOfWeek where
   compare = compare `on` fromEnum
@@ -254,16 +266,18 @@ instance showDayOfWeek :: Show DayOfWeek where
   show Friday    = "Friday"
   show Saturday  = "Saturday"
 
+instance boundedDayOfWeek :: Bounded DayOfWeek where
+  bottom = Sunday
+  top = Saturday
+
 instance enumDayOfWeek :: Enum DayOfWeek where
   cardinality = Cardinality 7
-  firstEnum = Sunday
-  lastEnum = Saturday
   succ = defaultSucc dayOfWeekToEnum dayOfWeekFromEnum
   pred = defaultPred dayOfWeekToEnum dayOfWeekFromEnum
   toEnum = dayOfWeekToEnum
   fromEnum = dayOfWeekFromEnum
 
-dayOfWeekToEnum :: Number -> Maybe DayOfWeek
+dayOfWeekToEnum :: Int -> Maybe DayOfWeek
 dayOfWeekToEnum 0 = Just Sunday
 dayOfWeekToEnum 1 = Just Monday
 dayOfWeekToEnum 2 = Just Tuesday
@@ -273,7 +287,7 @@ dayOfWeekToEnum 5 = Just Friday
 dayOfWeekToEnum 6 = Just Saturday
 dayOfWeekToEnum _ = Nothing
 
-dayOfWeekFromEnum :: DayOfWeek -> Number
+dayOfWeekFromEnum :: DayOfWeek -> Int
 dayOfWeekFromEnum Sunday    = 0
 dayOfWeekFromEnum Monday    = 1
 dayOfWeekFromEnum Tuesday   = 2
@@ -282,38 +296,10 @@ dayOfWeekFromEnum Thursday  = 4
 dayOfWeekFromEnum Friday    = 5
 dayOfWeekFromEnum Saturday  = 6
 
-foreign import nowImpl
-  """
-  function nowImpl(ctor) {
-    return function(){
-      return ctor(new Date());
-    };
-  }
-  """ :: forall e. (JSDate -> Date) -> Eff (now :: Now | e) Date
+foreign import nowImpl :: forall e. (JSDate -> Date) -> Eff (now :: Now | e) Date
 
-foreign import jsDateConstructor
-  """
-  function jsDateConstructor(x) {
-    return new Date(x);
-  }
-  """ :: forall a. a -> JSDate
+foreign import jsDateConstructor :: forall a. a -> JSDate
 
-foreign import jsDateMethod
-  """
-  function jsDateMethod(method, date) {
-    return date[method]();
-  }
-  """ :: forall a. Fn2 String JSDate a
+foreign import jsDateMethod :: forall a. Fn2 String JSDate a
 
-foreign import strictJsDate
-  """
-  function strictJsDate(Just, Nothing, s) {
-    var epoch = Date.parse(s);
-    if (isNaN(epoch)) return Nothing;
-    var date = new Date(epoch);
-    var s2 = date.toISOString();
-    var idx = s2.indexOf(s);
-    if (idx < 0) return Nothing;
-    else return Just(date);
-  }
-  """ :: Fn3 (forall a. a -> Maybe a) (forall a. Maybe a) String (Maybe JSDate)
+foreign import strictJsDate :: Fn3 (forall a. a -> Maybe a) (forall a. Maybe a) String (Maybe JSDate)
