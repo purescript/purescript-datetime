@@ -1,39 +1,54 @@
 module Data.Time where
 
-import Data.Int (Int())
+import Prelude
+  ( (*)
+  , (+)
+  , (++)
+  , (-)
+  , (/)
+  , (/=)
+  , (==)
+  , DivisionRing
+  , Eq
+  , ModuloSemiring
+  , Num
+  , Ord
+  , Ring
+  , Semiring
+  , Show
+  , compare
+  , show )
 
 -- | An hour component from a time value. Should fall between 0 and 23
 -- | inclusive.
 newtype HourOfDay = HourOfDay Int
 
 instance eqHourOfDay :: Eq HourOfDay where
-  (==) (HourOfDay x) (HourOfDay y) = x == y
-  (/=) (HourOfDay x) (HourOfDay y) = x /= y
+  eq (HourOfDay x) (HourOfDay y) = x == y
 
 instance ordHourOfDay :: Ord HourOfDay where
   compare (HourOfDay x) (HourOfDay y) = compare x y
 
 -- | A quantity of hours (not necessarily a value between 0 and 23).
-newtype Hours = Hours Number
+newtype Hours = Hours Int
 
 instance eqHours :: Eq Hours where
-  (==) (Hours x) (Hours y) = x == y
-  (/=) (Hours x) (Hours y) = x /= y
+  eq (Hours x) (Hours y) = x == y
 
 instance ordHours :: Ord Hours where
   compare (Hours x) (Hours y) = compare x y
 
 instance semiringHours :: Semiring Hours where
-  (+) (Hours x) (Hours y) = Hours (x + y)
-  (*) (Hours x) (Hours y) = Hours (x * y)
+  add (Hours x) (Hours y) = Hours (x + y)
+  mul (Hours x) (Hours y) = Hours (x * y)
   zero = Hours 0
   one = Hours 1
 
 instance ringHours :: Ring Hours where
-  (-) (Hours x) (Hours y) = Hours (x - y)
+  sub (Hours x) (Hours y) = Hours (x - y)
 
 instance moduloSemiringHours :: ModuloSemiring Hours where
-  (/) (Hours x) (Hours y) = Hours (x / y)
+  div (Hours x) (Hours y) = Hours (x / y)
   mod _ _ = Hours 0
 
 instance divisionRingHours :: DivisionRing Hours
@@ -48,33 +63,31 @@ instance showHours :: Show Hours where
 newtype MinuteOfHour = MinuteOfHour Int
 
 instance eqMinuteOfHour :: Eq MinuteOfHour where
-  (==) (MinuteOfHour x) (MinuteOfHour y) = x == y
-  (/=) (MinuteOfHour x) (MinuteOfHour y) = x /= y
+  eq (MinuteOfHour x) (MinuteOfHour y) = x == y
 
 instance ordMinuteOfHour :: Ord MinuteOfHour where
   compare (MinuteOfHour x) (MinuteOfHour y) = compare x y
 
 -- | A quantity of minutes (not necessarily a value between 0 and 60).
-newtype Minutes = Minutes Number
+newtype Minutes = Minutes Int
 
 instance eqMinutes :: Eq Minutes where
-  (==) (Minutes x) (Minutes y) = x == y
-  (/=) (Minutes x) (Minutes y) = x /= y
+  eq (Minutes x) (Minutes y) = x == y
 
 instance ordMinutes :: Ord Minutes where
   compare (Minutes x) (Minutes y) = compare x y
 
 instance semiringMinutes :: Semiring Minutes where
-  (+) (Minutes x) (Minutes y) = Minutes (x + y)
-  (*) (Minutes x) (Minutes y) = Minutes (x * y)
+  add (Minutes x) (Minutes y) = Minutes (x + y)
+  mul (Minutes x) (Minutes y) = Minutes (x * y)
   zero = Minutes 0
   one = Minutes 1
 
 instance ringMinutes :: Ring Minutes where
-  (-) (Minutes x) (Minutes y) = Minutes (x - y)
+  sub (Minutes x) (Minutes y) = Minutes (x - y)
 
 instance moduloSemiringMinutes :: ModuloSemiring Minutes where
-  (/) (Minutes x) (Minutes y) = Minutes (x / y)
+  div (Minutes x) (Minutes y) = Minutes (x / y)
   mod _ _ = Minutes 0
 
 instance divisionRingMinutes :: DivisionRing Minutes
@@ -89,33 +102,31 @@ instance showMinutes :: Show Minutes where
 newtype SecondOfMinute = SecondOfMinute Int
 
 instance eqSecondOfMinute :: Eq SecondOfMinute where
-  (==) (SecondOfMinute x) (SecondOfMinute y) = x == y
-  (/=) (SecondOfMinute x) (SecondOfMinute y) = x /= y
+  eq (SecondOfMinute x) (SecondOfMinute y) = x == y
 
 instance ordSecondOfMinute :: Ord SecondOfMinute where
   compare (SecondOfMinute x) (SecondOfMinute y) = compare x y
 
 -- | A quantity of seconds (not necessarily a value between 0 and 60).
-newtype Seconds = Seconds Number
+newtype Seconds = Seconds Int
 
 instance eqSeconds :: Eq Seconds where
-  (==) (Seconds x) (Seconds y) = x == y
-  (/=) (Seconds x) (Seconds y) = x /= y
+  eq (Seconds x) (Seconds y) = x == y
 
 instance ordSeconds :: Ord Seconds where
   compare (Seconds x) (Seconds y) = compare x y
 
 instance semiringSeconds :: Semiring Seconds where
-  (+) (Seconds x) (Seconds y) = Seconds (x + y)
-  (*) (Seconds x) (Seconds y) = Seconds (x * y)
+  add (Seconds x) (Seconds y) = Seconds (x + y)
+  mul (Seconds x) (Seconds y) = Seconds (x * y)
   zero = Seconds 0
   one = Seconds 1
 
 instance ringSeconds :: Ring Seconds where
-  (-) (Seconds x) (Seconds y) = Seconds (x - y)
+  sub (Seconds x) (Seconds y) = Seconds (x - y)
 
 instance moduloSemiringSeconds :: ModuloSemiring Seconds where
-  (/) (Seconds x) (Seconds y) = Seconds (x / y)
+  div (Seconds x) (Seconds y) = Seconds (x / y)
   mod _ _ = Seconds 0
 
 instance divisionRingSeconds :: DivisionRing Seconds
@@ -130,33 +141,31 @@ instance showSeconds :: Show Seconds where
 newtype MillisecondOfSecond = MillisecondOfSecond Int
 
 instance eqMillisecondOfSecond :: Eq MillisecondOfSecond where
-  (==) (MillisecondOfSecond x) (MillisecondOfSecond y) = x == y
-  (/=) (MillisecondOfSecond x) (MillisecondOfSecond y) = x /= y
+  eq (MillisecondOfSecond x) (MillisecondOfSecond y) = x == y
 
 instance ordMillisecondOfSecond :: Ord MillisecondOfSecond where
   compare (MillisecondOfSecond x) (MillisecondOfSecond y) = compare x y
 
 -- | A quantity of milliseconds (not necessarily a value between 0 and 1000).
-newtype Milliseconds = Milliseconds Number
+newtype Milliseconds = Milliseconds Int
 
 instance eqMilliseconds :: Eq Milliseconds where
-  (==) (Milliseconds x) (Milliseconds y) = x == y
-  (/=) (Milliseconds x) (Milliseconds y) = x /= y
+  eq (Milliseconds x) (Milliseconds y) = x == y
 
 instance ordMilliseconds :: Ord Milliseconds where
   compare (Milliseconds x) (Milliseconds y) = compare x y
 
 instance semiringMilliseconds :: Semiring Milliseconds where
-  (+) (Milliseconds x) (Milliseconds y) = Milliseconds (x + y)
-  (*) (Milliseconds x) (Milliseconds y) = Milliseconds (x * y)
+  add (Milliseconds x) (Milliseconds y) = Milliseconds (x + y)
+  mul (Milliseconds x) (Milliseconds y) = Milliseconds (x * y)
   zero = Milliseconds 0
   one = Milliseconds 1
 
 instance ringMilliseconds :: Ring Milliseconds where
-  (-) (Milliseconds x) (Milliseconds y) = Milliseconds (x - y)
+  sub (Milliseconds x) (Milliseconds y) = Milliseconds (x - y)
 
 instance moduloSemiringMilliseconds :: ModuloSemiring Milliseconds where
-  (/) (Milliseconds x) (Milliseconds y) = Milliseconds (x / y)
+  div (Milliseconds x) (Milliseconds y) = Milliseconds (x / y)
   mod _ _ = Milliseconds 0
 
 instance divisionRingMilliseconds :: DivisionRing Milliseconds

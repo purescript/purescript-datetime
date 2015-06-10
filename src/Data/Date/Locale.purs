@@ -19,10 +19,14 @@ import Control.Monad.Eff (Eff())
 import Data.Date
 import Data.Enum (fromEnum, toEnum)
 import Data.Function (Fn2(), runFn2, Fn7(), runFn7)
-import Data.Int (Int())
 import Data.Maybe (Maybe())
 import Data.Maybe.Unsafe (fromJust)
 import Data.Time
+
+import Prelude
+  ( (<$>)
+  , (<<<)
+  , zero )
 
 -- | The effect of reading the current system locale/timezone.
 foreign import data Locale :: !
@@ -98,20 +102,6 @@ toLocaleTimeString d = runFn2 dateMethod "toLocaleTimeString" d
 toLocaleDateString :: forall e. Date -> Eff (locale :: Locale | e) String
 toLocaleDateString d = runFn2 dateMethod "toLocaleDateString" d
 
-foreign import dateMethod
-  """
-  function dateMethod(method, date) {
-    return function () {
-      return date[method]();
-    };
-  }
-  """ :: forall e a. Fn2 String Date (Eff (locale :: Locale | e) a)
+foreign import dateMethod :: forall e a. Fn2 String Date (Eff (locale :: Locale | e) a)
 
-foreign import jsDateFromValues
-  """
-  function jsDateFromValues(y, mo, d, h, mi, s, ms) {
-    return function () {
-      return new Date(y, mo, d, h, mi, s, ms);
-    };
-  }
-  """ :: forall e. Fn7 Year Number DayOfMonth HourOfDay MinuteOfHour SecondOfMinute MillisecondOfSecond (Eff (locale :: Locale | e) JSDate)
+foreign import jsDateFromValues :: forall e. Fn7 Year Int DayOfMonth HourOfDay MinuteOfHour SecondOfMinute MillisecondOfSecond (Eff (locale :: Locale | e) JSDate)
