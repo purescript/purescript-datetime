@@ -9,7 +9,6 @@ install:
   - tar -xvf $HOME/purescript.tar.gz -C $HOME/
   - chmod a+x $HOME/purescript
   - npm install bower gulp -g
-  - npm install
-  - bower install
+  - npm install && bower install
 script:
-  - gulp
+  - gulp test

@@ -18,32 +18,13 @@ module Data.Date
   , DayOfWeek(..)
   ) where
 
+import Prelude
+
 import Control.Monad.Eff
-import Data.Enum
-import Data.Function (on, Fn2(), runFn2, Fn3(), runFn3, Fn7(), runFn7)
+import Data.Enum (Enum, Cardinality(..), fromEnum, defaultSucc, defaultPred)
+import Data.Function (on, Fn2(), runFn2, Fn3(), runFn3)
 import Data.Maybe (Maybe(..))
 import Data.Time
-
-import Prelude
-  ( (*)
-  , (+)
-  , (++)
-  , (-)
-  , (/=)
-  , (<<<)
-  , (==)
-  , (>>=)
-  , Bounded
-  , Eq
-  , Ord
-  , Ring
-  , Semiring
-  , Show
-  , compare
-  , not
-  , one
-  , show
-  , zero )
 
 -- | A native JavaScript `Date` object.
 foreign import data JSDate :: *
@@ -56,7 +37,7 @@ foreign import data JSDate :: *
 newtype Date = DateTime JSDate
 
 instance eqDate :: Eq Date where
-  eq = (==) `on` toEpochMilliseconds
+  eq = eq `on` toEpochMilliseconds
 
 instance ordDate :: Ord Date where
   compare = compare `on` toEpochMilliseconds
@@ -171,6 +152,12 @@ instance eqMonth :: Eq Month where
 instance ordMonth :: Ord Month where
   compare = compare `on` fromEnum
 
+instance boundedMonth :: Bounded Month where
+  bottom = January
+  top = December
+
+instance boundedOrdMonth :: BoundedOrd Month
+
 instance showMonth :: Show Month where
   show January   = "January"
   show February  = "February"
@@ -184,10 +171,6 @@ instance showMonth :: Show Month where
   show October   = "October"
   show November  = "November"
   show December  = "December"
-
-instance boundedMonth :: Bounded Month where
-  bottom = January
-  top = December
 
 instance enumMonth :: Enum Month where
   cardinality = Cardinality 12
@@ -257,6 +240,12 @@ instance eqDayOfWeek :: Eq DayOfWeek where
 instance ordDayOfWeek :: Ord DayOfWeek where
   compare = compare `on` fromEnum
 
+instance boundedDayOfWeek :: Bounded DayOfWeek where
+  bottom = Sunday
+  top = Saturday
+
+instance boundedOrdDayOfWeek :: BoundedOrd DayOfWeek
+
 instance showDayOfWeek :: Show DayOfWeek where
   show Sunday    = "Sunday"
   show Monday    = "Monday"
@@ -265,10 +254,6 @@ instance showDayOfWeek :: Show DayOfWeek where
   show Thursday  = "Thursday"
   show Friday    = "Friday"
   show Saturday  = "Saturday"
-
-instance boundedDayOfWeek :: Bounded DayOfWeek where
-  bottom = Sunday
-  top = Saturday
 
 instance enumDayOfWeek :: Enum DayOfWeek where
   cardinality = Cardinality 7

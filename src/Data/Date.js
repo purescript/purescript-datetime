@@ -3,30 +3,29 @@
 
 // module Data.Date
 
-exports.nowEpochMilliseconds = function() {
-    return Date.now();
+exports.nowEpochMilliseconds = function () {
+  return Date.now();
 };
 
-exports.nowImpl = function(ctor) {
-    return function(){
-        return ctor(new Date());
-    };
+exports.nowImpl = function (ctor) {
+  return function () {
+    return ctor(new Date());
+  };
 };
 
-exports.jsDateConstructor = function(x) {
-    return new Date(x);
+exports.jsDateConstructor = function (x) {
+  return new Date(x);
 };
 
-exports.jsDateMethod = function(method, date) {
-    return date[method]();
+exports.jsDateMethod = function (method, date) {
+  return date[method]();
 };
 
-exports.strictJsDate = function(Just, Nothing, s) {
-    var epoch = Date.parse(s);
-    if (isNaN(epoch)) return Nothing;
-    var date = new Date(epoch);
-    var s2 = date.toISOString();
-    var idx = s2.indexOf(s);
-    if (idx < 0) return Nothing;
-    else return Just(date);
+exports.strictJsDate = function (just, nothing, s) {
+  var epoch = Date.parse(s);
+  if (isNaN(epoch)) return nothing;
+  var date = new Date(epoch);
+  var s2 = date.toISOString();
+  var idx = s2.indexOf(s);
+  return idx < 0 ? nothing : just(date);
 };
