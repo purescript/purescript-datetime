@@ -17,10 +17,12 @@ exports.jsDateConstructor = function (x) {
   return new Date(x);
 };
 
+// jshint maxparams: 2
 exports.jsDateMethod = function (method, date) {
   return date[method]();
 };
 
+// jshint maxparams: 3
 exports.strictJsDate = function (just, nothing, s) {
   var epoch = Date.parse(s);
   if (isNaN(epoch)) return nothing;

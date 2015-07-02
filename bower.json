@@ -1,6 +1,6 @@
 {
   "name": "purescript-datetime",
-  "homepage": "https://github.com/purescript-contrib/purescript-datetime",
+  "homepage": "https://github.com/purescript/purescript-datetime",
   "authors": [
     "Gary Burgess <gary.burgess@gmail.com>"
   ],
@@ -11,13 +11,16 @@
     "time"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/purescript/purescript-datetime.git"
+  },
   "ignore": [
     "**/.*",
     "bower_components",
     "node_modules",
     "output",
     "bower.json",
-    "gulpfile.js",
     "package.json"
   ],
   "dependencies": {
