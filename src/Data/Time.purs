@@ -30,7 +30,7 @@ instance ordHourOfDay :: Ord HourOfDay where
   compare (HourOfDay x) (HourOfDay y) = compare x y
 
 -- | A quantity of hours (not necessarily a value between 0 and 23).
-newtype Hours = Hours Int
+newtype Hours = Hours Number
 
 instance eqHours :: Eq Hours where
   eq (Hours x) (Hours y) = x == y
@@ -41,15 +41,15 @@ instance ordHours :: Ord Hours where
 instance semiringHours :: Semiring Hours where
   add (Hours x) (Hours y) = Hours (x + y)
   mul (Hours x) (Hours y) = Hours (x * y)
-  zero = Hours 0
-  one = Hours 1
+  zero = Hours 0.0
+  one = Hours 1.0
 
 instance ringHours :: Ring Hours where
   sub (Hours x) (Hours y) = Hours (x - y)
 
 instance moduloSemiringHours :: ModuloSemiring Hours where
   div (Hours x) (Hours y) = Hours (x / y)
-  mod _ _ = Hours 0
+  mod _ _ = Hours 0.0
 
 instance divisionRingHours :: DivisionRing Hours
 
@@ -69,7 +69,7 @@ instance ordMinuteOfHour :: Ord MinuteOfHour where
   compare (MinuteOfHour x) (MinuteOfHour y) = compare x y
 
 -- | A quantity of minutes (not necessarily a value between 0 and 60).
-newtype Minutes = Minutes Int
+newtype Minutes = Minutes Number
 
 instance eqMinutes :: Eq Minutes where
   eq (Minutes x) (Minutes y) = x == y
@@ -80,15 +80,15 @@ instance ordMinutes :: Ord Minutes where
 instance semiringMinutes :: Semiring Minutes where
   add (Minutes x) (Minutes y) = Minutes (x + y)
   mul (Minutes x) (Minutes y) = Minutes (x * y)
-  zero = Minutes 0
-  one = Minutes 1
+  zero = Minutes 0.0
+  one = Minutes 1.0
 
 instance ringMinutes :: Ring Minutes where
   sub (Minutes x) (Minutes y) = Minutes (x - y)
 
 instance moduloSemiringMinutes :: ModuloSemiring Minutes where
   div (Minutes x) (Minutes y) = Minutes (x / y)
-  mod _ _ = Minutes 0
+  mod _ _ = Minutes 0.0
 
 instance divisionRingMinutes :: DivisionRing Minutes
 
@@ -108,7 +108,7 @@ instance ordSecondOfMinute :: Ord SecondOfMinute where
   compare (SecondOfMinute x) (SecondOfMinute y) = compare x y
 
 -- | A quantity of seconds (not necessarily a value between 0 and 60).
-newtype Seconds = Seconds Int
+newtype Seconds = Seconds Number
 
 instance eqSeconds :: Eq Seconds where
   eq (Seconds x) (Seconds y) = x == y
@@ -119,15 +119,15 @@ instance ordSeconds :: Ord Seconds where
 instance semiringSeconds :: Semiring Seconds where
   add (Seconds x) (Seconds y) = Seconds (x + y)
   mul (Seconds x) (Seconds y) = Seconds (x * y)
-  zero = Seconds 0
-  one = Seconds 1
+  zero = Seconds 0.0
+  one = Seconds 1.0
 
 instance ringSeconds :: Ring Seconds where
   sub (Seconds x) (Seconds y) = Seconds (x - y)
 
 instance moduloSemiringSeconds :: ModuloSemiring Seconds where
   div (Seconds x) (Seconds y) = Seconds (x / y)
-  mod _ _ = Seconds 0
+  mod _ _ = Seconds 0.0
 
 instance divisionRingSeconds :: DivisionRing Seconds
 
@@ -147,7 +147,7 @@ instance ordMillisecondOfSecond :: Ord MillisecondOfSecond where
   compare (MillisecondOfSecond x) (MillisecondOfSecond y) = compare x y
 
 -- | A quantity of milliseconds (not necessarily a value between 0 and 1000).
-newtype Milliseconds = Milliseconds Int
+newtype Milliseconds = Milliseconds Number
 
 instance eqMilliseconds :: Eq Milliseconds where
   eq (Milliseconds x) (Milliseconds y) = x == y
@@ -158,15 +158,15 @@ instance ordMilliseconds :: Ord Milliseconds where
 instance semiringMilliseconds :: Semiring Milliseconds where
   add (Milliseconds x) (Milliseconds y) = Milliseconds (x + y)
   mul (Milliseconds x) (Milliseconds y) = Milliseconds (x * y)
-  zero = Milliseconds 0
-  one = Milliseconds 1
+  zero = Milliseconds 0.0
+  one = Milliseconds 1.0
 
 instance ringMilliseconds :: Ring Milliseconds where
   sub (Milliseconds x) (Milliseconds y) = Milliseconds (x - y)
 
 instance moduloSemiringMilliseconds :: ModuloSemiring Milliseconds where
   div (Milliseconds x) (Milliseconds y) = Milliseconds (x / y)
-  mod _ _ = Milliseconds 0
+  mod _ _ = Milliseconds 0.0
 
 instance divisionRingMilliseconds :: DivisionRing Milliseconds
 
@@ -187,40 +187,40 @@ class TimeValue a where
 
 instance timeValueHours :: TimeValue Hours where
   toHours n = n
-  toMinutes (Hours n) = Minutes (n * 60)
-  toSeconds (Hours n) = Seconds (n * 3600)
-  toMilliseconds (Hours n) = Milliseconds (n * 3600000)
+  toMinutes (Hours n) = Minutes (n * 60.0)
+  toSeconds (Hours n) = Seconds (n * 3600.0)
+  toMilliseconds (Hours n) = Milliseconds (n * 3600000.0)
   fromHours n = n
-  fromMinutes (Minutes n) = Hours (n / 60)
-  fromSeconds (Seconds n) = Hours (n / 3600)
-  fromMilliseconds (Milliseconds n) = Hours (n / 3600000)
+  fromMinutes (Minutes n) = Hours (n / 60.0)
+  fromSeconds (Seconds n) = Hours (n / 3600.0)
+  fromMilliseconds (Milliseconds n) = Hours (n / 3600000.0)
 
 instance timeValueMinutes :: TimeValue Minutes where
-  toHours (Minutes n) = Hours (n / 60)
+  toHours (Minutes n) = Hours (n / 60.0)
   toMinutes n = n
-  toSeconds (Minutes n) = Seconds (n * 60)
-  toMilliseconds (Minutes n) = Milliseconds (n * 60000)
-  fromHours (Hours n) = Minutes (n * 60)
+  toSeconds (Minutes n) = Seconds (n * 60.0)
+  toMilliseconds (Minutes n) = Milliseconds (n * 60000.0)
+  fromHours (Hours n) = Minutes (n * 60.0)
   fromMinutes n = n
-  fromSeconds (Seconds n) = Minutes (n / 60)
-  fromMilliseconds (Milliseconds n) = Minutes (n / 60000)
+  fromSeconds (Seconds n) = Minutes (n / 60.0)
+  fromMilliseconds (Milliseconds n) = Minutes (n / 60000.0)
 
 instance timeValueSeconds :: TimeValue Seconds where
-  toHours (Seconds n) = Hours (n / 3600)
-  toMinutes (Seconds n) = Minutes (n / 60)
+  toHours (Seconds n) = Hours (n / 3600.0)
+  toMinutes (Seconds n) = Minutes (n / 60.0)
   toSeconds n = n
-  toMilliseconds (Seconds n) = Milliseconds (n * 1000)
-  fromHours (Hours n) = Seconds (n * 3600)
-  fromMinutes (Minutes n) = Seconds (n * 60)
+  toMilliseconds (Seconds n) = Milliseconds (n * 1000.0)
+  fromHours (Hours n) = Seconds (n * 3600.0)
+  fromMinutes (Minutes n) = Seconds (n * 60.0)
   fromSeconds n = n
-  fromMilliseconds (Milliseconds n) = Seconds (n / 1000)
+  fromMilliseconds (Milliseconds n) = Seconds (n / 1000.0)
 
 instance timeValueMilliseconds :: TimeValue Milliseconds where
-  toHours (Milliseconds n) = Hours (n / 3600000)
-  toMinutes (Milliseconds n) = Minutes (n / 60000)
-  toSeconds (Milliseconds n) = Seconds (n / 1000)
+  toHours (Milliseconds n) = Hours (n / 3600000.0)
+  toMinutes (Milliseconds n) = Minutes (n / 60000.0)
+  toSeconds (Milliseconds n) = Seconds (n / 1000.0)
   toMilliseconds n = n
-  fromHours (Hours n) = Milliseconds (n * 3600000)
-  fromMinutes (Minutes n) = Milliseconds (n * 60000)
-  fromSeconds (Seconds n) = Milliseconds (n * 1000)
+  fromHours (Hours n) = Milliseconds (n * 3600000.0)
+  fromMinutes (Minutes n) = Milliseconds (n * 60000.0)
+  fromSeconds (Seconds n) = Milliseconds (n * 1000.0)
   fromMilliseconds n = n
