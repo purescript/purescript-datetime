@@ -20,7 +20,7 @@ instance ordHourOfDay :: Ord HourOfDay
 
 ``` purescript
 newtype Hours
-  = Hours Int
+  = Hours Number
 ```
 
 A quantity of hours (not necessarily a value between 0 and 23).
@@ -58,7 +58,7 @@ instance ordMinuteOfHour :: Ord MinuteOfHour
 
 ``` purescript
 newtype Minutes
-  = Minutes Int
+  = Minutes Number
 ```
 
 A quantity of minutes (not necessarily a value between 0 and 60).
@@ -96,7 +96,7 @@ instance ordSecondOfMinute :: Ord SecondOfMinute
 
 ``` purescript
 newtype Seconds
-  = Seconds Int
+  = Seconds Number
 ```
 
 A quantity of seconds (not necessarily a value between 0 and 60).
@@ -134,7 +134,7 @@ instance ordMillisecondOfSecond :: Ord MillisecondOfSecond
 
 ``` purescript
 newtype Milliseconds
-  = Milliseconds Int
+  = Milliseconds Number
 ```
 
 A quantity of milliseconds (not necessarily a value between 0 and 1000).
