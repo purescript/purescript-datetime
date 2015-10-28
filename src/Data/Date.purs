@@ -24,6 +24,7 @@ import Control.Monad.Eff
 import Data.Enum (Enum, Cardinality(..), fromEnum, defaultSucc, defaultPred)
 import Data.Function (on, Fn2(), runFn2, Fn3(), runFn3)
 import Data.Maybe (Maybe(..))
+import Data.Generic
 import Data.Time
 
 -- | A native JavaScript `Date` object.
@@ -36,11 +37,18 @@ foreign import data JSDate :: *
 -- | modules.
 newtype Date = DateTime JSDate
 
+instance genericDate :: Generic Date where
+  toSpine d = SString (runFn2 jsDateMethod "toISOString" (toJSDate d))
+  toSignature _ = SigString
+  fromSpine (SString s) = fromStringStrict s
+  fromSpine _ = Nothing
+
+
 instance eqDate :: Eq Date where
-  eq = eq `on` toEpochMilliseconds
+  eq = gEq
 
 instance ordDate :: Ord Date where
-  compare = compare `on` toEpochMilliseconds
+  compare = gCompare
 
 instance showDate :: Show Date where
   show d = "(fromEpochMilliseconds " ++ show (toEpochMilliseconds d) ++ ")"
