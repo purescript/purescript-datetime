@@ -99,8 +99,8 @@ timezoneOffset :: Date -> LocaleOffset
 timezoneOffset (DateTime d) = runFn2 jsDateMethod "getTimezoneOffset" d
 
 -- | Renders a Date as an ISO 8601 string.
-iso8601 :: Date -> String
-iso8601 (DateTime d) = runFn2 jsDateMethod "toISOString" d
+toISOString :: Date -> String
+toISOString (DateTime d) = runFn2 jsDateMethod "toISOString" d
 
 -- | A year date component value.
 newtype Year = Year Int
