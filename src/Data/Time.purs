@@ -6,7 +6,6 @@ import Prelude
   , (++)
   , (-)
   , (/)
-  , (/=)
   , (==)
   , DivisionRing
   , Eq
