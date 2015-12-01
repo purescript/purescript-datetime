@@ -20,7 +20,8 @@ module Data.Date
 
 import Prelude
 
-import Control.Monad
+import Type.Proxy
+
 import Control.Monad.Eff
 import Data.Enum (Enum, Cardinality(..), fromEnum, defaultSucc, defaultPred)
 import Data.Function (on, Fn2(), runFn2, Fn3(), runFn3)
@@ -40,7 +41,7 @@ newtype Date = DateTime JSDate
 
 instance genericDate :: Generic Date where
   toSpine d = SProd "Date" [const (toSpine $ toEpochMilliseconds d)]
-  toSignature _ = SigProd [{ sigConstructor: "Date", sigValues: [const $ toSignature (anyProxy :: Proxy Milliseconds)] }]
+  toSignature _ = SigProd "Date" [{ sigConstructor: "Date", sigValues: [const $ toSignature (Proxy :: Proxy Milliseconds)] }]
   fromSpine (SProd "Date" [msf]) = fromSpine (msf unit) >>= fromEpochMilliseconds
   fromSpine _                    = Nothing
 
