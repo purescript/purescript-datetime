@@ -16,6 +16,7 @@ module Data.Date
   , Month(..)
   , DayOfMonth(..)
   , DayOfWeek(..)
+  , toISOString
   ) where
 
 import Prelude
