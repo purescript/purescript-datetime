@@ -217,6 +217,9 @@ instance eqDayOfMonth :: Eq DayOfMonth where
 instance ordDayOfMonth :: Ord DayOfMonth where
   compare (DayOfMonth x) (DayOfMonth y) = compare x y
 
+instance showDayOfMonth :: Show DayOfMonth where
+  show (DayOfMonth day) = "(DayOfMonth " ++ show day ++ ")"
+
 -- | A day-of-week date component value.
 data DayOfWeek
   = Sunday
