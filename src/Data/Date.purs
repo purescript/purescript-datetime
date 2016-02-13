@@ -18,13 +18,13 @@ module Data.Date
   , DayOfWeek(..)
   ) where
 
-import Prelude
+import Prelude (class Show, class BoundedOrd, class Bounded, class Ord, class Eq, class Ring, class Semiring, compare, show, (++), (==), (-), one, zero, (*), (+), (>>=), (<<<), eq)
 
-import Control.Monad.Eff
-import Data.Enum (Enum, Cardinality(..), fromEnum, defaultSucc, defaultPred)
+import Control.Monad.Eff (Eff)
+import Data.Enum (class Enum, Cardinality(..), fromEnum, defaultSucc, defaultPred)
 import Data.Function (on, Fn2(), runFn2, Fn3(), runFn3)
 import Data.Maybe (Maybe(..))
-import Data.Time
+import Data.Time (Minutes, Milliseconds)
 
 -- | A native JavaScript `Date` object.
 foreign import data JSDate :: *
