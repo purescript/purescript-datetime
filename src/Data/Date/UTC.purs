@@ -11,12 +11,12 @@ module Data.Date.UTC
   , millisecondOfSecond
   ) where
 
-import Data.Date
+import Data.Date (JSDate, DayOfMonth, Year, Date, DayOfWeek, Month, fromJSDate)
 import Data.Enum (fromEnum, toEnum)
 import Data.Function (Fn2(), runFn2, Fn7(), runFn7)
 import Data.Maybe (Maybe())
 import Data.Maybe.Unsafe (fromJust)
-import Data.Time
+import Data.Time (HourOfDay(HourOfDay), MillisecondOfSecond(MillisecondOfSecond), MinuteOfHour(MinuteOfHour), SecondOfMinute(SecondOfMinute))
 
 import Prelude
   ( zero )

@@ -3,18 +3,18 @@ module Data.Time where
 import Prelude
   ( (*)
   , (+)
-  , (++)
   , (-)
   , (/)
   , (==)
-  , DivisionRing
-  , Eq
-  , ModuloSemiring
-  , Num
-  , Ord
-  , Ring
-  , Semiring
-  , Show
+  , class DivisionRing
+  , class Eq
+  , class ModuloSemiring
+  , class Num
+  , class Ord
+  , class Ring
+  , class Semiring
+  , class Show
+  , append
   , compare
   , show )
 
@@ -55,7 +55,7 @@ instance divisionRingHours :: DivisionRing Hours
 instance numHours :: Num Hours
 
 instance showHours :: Show Hours where
-  show (Hours n) = "(Hours " ++ show n ++ ")"
+  show (Hours n) = "(Hours " `append` show n `append` ")"
 
 -- | A minute component from a time value. Should fall between 0 and 59
 -- | inclusive.
@@ -94,7 +94,7 @@ instance divisionRingMinutes :: DivisionRing Minutes
 instance numMinutes :: Num Minutes
 
 instance showMinutes :: Show Minutes where
-  show (Minutes n) = "(Minutes " ++ show n ++ ")"
+  show (Minutes n) = "(Minutes " `append` show n `append` ")"
 
 -- | A second component from a time value. Should fall between 0 and 59
 -- | inclusive.
@@ -133,7 +133,7 @@ instance divisionRingSeconds :: DivisionRing Seconds
 instance numSeconds :: Num Seconds
 
 instance showSeconds :: Show Seconds where
-  show (Seconds n) = "(Seconds " ++ show n ++ ")"
+  show (Seconds n) = "(Seconds " `append` show n `append` ")"
 
 -- | A millisecond component from a time value. Should fall between 0 and 999
 -- | inclusive.
@@ -172,7 +172,7 @@ instance divisionRingMilliseconds :: DivisionRing Milliseconds
 instance numMilliseconds :: Num Milliseconds
 
 instance showMilliseconds :: Show Milliseconds where
-  show (Milliseconds n) = "(Milliseconds " ++ show n ++ ")"
+  show (Milliseconds n) = "(Milliseconds " `append` show n `append` ")"
 
 class TimeValue a where
   toHours :: a -> Hours
