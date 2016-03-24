@@ -7,6 +7,8 @@ module Data.Date
   , toEpochMilliseconds
   , fromString
   , fromStringStrict
+  , toDateString
+  , toISOString
   , Now()
   , now
   , nowEpochMilliseconds
@@ -21,6 +23,7 @@ module Data.Date
 import Prelude
 
 import Control.Monad.Eff
+import Data.Generic (class Generic, GenericSignature(..), GenericSpine(..))
 import Data.Enum (Enum, Cardinality(..), fromEnum, defaultSucc, defaultPred)
 import Data.Function (on, Fn2(), runFn2, Fn3(), runFn3)
 import Data.Maybe (Maybe(..))
@@ -35,6 +38,12 @@ foreign import data JSDate :: *
 -- | and `dateTime` functions in the `Data.Date.Locale` and `Data.Date.UTC`
 -- | modules.
 newtype Date = DateTime JSDate
+
+instance genericDate :: Generic Date where
+  fromSpine (SString str) = fromString str
+  fromSpine _ = Nothing
+  toSpine = SString <<< toISOString
+  toSignature _ = SigString
 
 instance eqDate :: Eq Date where
   eq = eq `on` toEpochMilliseconds
@@ -78,6 +87,14 @@ fromString = fromJSDate <<< jsDateConstructor
 -- | an exact match or the resulting date is invalid.
 fromStringStrict :: String -> Maybe Date
 fromStringStrict s = runFn3 strictJsDate Just Nothing s >>= fromJSDate
+
+-- | Returns the "date" portion of `Date` as a human-readable string.
+toDateString :: Date -> String
+toDateString (DateTime d) = runFn2 jsDateMethod "toDateString" d
+
+-- | Converts a date to a string following the ISO 8601 Extended Format.
+toISOString :: Date -> String
+toISOString (DateTime d) = runFn2 jsDateMethod "toISOString" d
 
 -- | Effect type for when accessing the current date/time.
 foreign import data Now :: !

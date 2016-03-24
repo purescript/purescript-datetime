@@ -26,6 +26,7 @@
   "dependencies": {
     "purescript-enums": "^0.7.0",
     "purescript-functions": "^0.1.0",
-    "purescript-globals": "^0.2.0"
+    "purescript-globals": "^0.2.0",
+    "purescript-generics": "^0.7.2"
   }
 }
