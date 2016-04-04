@@ -7,6 +7,7 @@ module Data.Date
   , toEpochMilliseconds
   , fromString
   , fromStringStrict
+  , toISOString
   , Now()
   , now
   , nowEpochMilliseconds
@@ -78,6 +79,10 @@ fromString = fromJSDate <<< jsDateConstructor
 -- | an exact match or the resulting date is invalid.
 fromStringStrict :: String -> Maybe Date
 fromStringStrict s = runFn3 strictJsDate Just Nothing s >>= fromJSDate
+
+-- | Renders a date in the ISO 8601 format.
+toISOString :: Date -> String
+toISOString = runFn2 jsDateMethod "toISOString" <<< toJSDate
 
 -- | Effect type for when accessing the current date/time.
 foreign import data Now :: !
