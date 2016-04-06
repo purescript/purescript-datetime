@@ -21,11 +21,14 @@ module Data.Date
 
 import Prelude
 
+import Type.Proxy
+
 import Control.Monad.Eff
 import Data.Enum (Enum, Cardinality(..), fromEnum, defaultSucc, defaultPred)
 import Data.Function (on, Fn2(), runFn2, Fn3(), runFn3)
 import Data.Maybe (Maybe(..))
 import Data.Time
+import Data.Generic
 
 -- | A native JavaScript `Date` object.
 foreign import data JSDate :: *
@@ -36,6 +39,12 @@ foreign import data JSDate :: *
 -- | and `dateTime` functions in the `Data.Date.Locale` and `Data.Date.UTC`
 -- | modules.
 newtype Date = DateTime JSDate
+
+instance genericDate :: Generic Date where
+  toSpine d = SProd "Date" [const (toSpine $ toEpochMilliseconds d)]
+  toSignature _ = SigProd "Date" [{ sigConstructor: "Date", sigValues: [const $ toSignature (Proxy :: Proxy Milliseconds)] }]
+  fromSpine (SProd "Date" [msf]) = fromSpine (msf unit) >>= fromEpochMilliseconds
+  fromSpine _                    = Nothing
 
 instance eqDate :: Eq Date where
   eq = eq `on` toEpochMilliseconds
