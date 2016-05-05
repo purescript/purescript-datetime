@@ -21,11 +21,14 @@ module Data.Date
 
 import Prelude
 
+import Type.Proxy
+
 import Control.Monad.Eff
 import Data.Enum (Enum, Cardinality(..), fromEnum, defaultSucc, defaultPred)
 import Data.Function (on, Fn2(), runFn2, Fn3(), runFn3)
 import Data.Maybe (Maybe(..))
 import Data.Time
+import Data.Generic
 
 -- | A native JavaScript `Date` object.
 foreign import data JSDate :: *
@@ -36,6 +39,12 @@ foreign import data JSDate :: *
 -- | and `dateTime` functions in the `Data.Date.Locale` and `Data.Date.UTC`
 -- | modules.
 newtype Date = DateTime JSDate
+
+instance genericDate :: Generic Date where
+  toSpine d = SProd "Date" [const (toSpine $ toEpochMilliseconds d)]
+  toSignature _ = SigProd "Date" [{ sigConstructor: "Date", sigValues: [const $ toSignature (Proxy :: Proxy Milliseconds)] }]
+  fromSpine (SProd "Date" [msf]) = fromSpine (msf unit) >>= fromEpochMilliseconds
+  fromSpine _                    = Nothing
 
 instance eqDate :: Eq Date where
   eq = eq `on` toEpochMilliseconds
@@ -95,6 +104,8 @@ foreign import nowEpochMilliseconds :: forall e. Eff (now :: Now | e) Millisecon
 -- | A timezone locale offset, measured in minutes.
 newtype LocaleOffset = LocaleOffset Minutes
 
+derive instance genericLocaleOffset :: Generic LocaleOffset
+
 -- | Get the locale time offset for a `Date`.
 timezoneOffset :: Date -> LocaleOffset
 timezoneOffset (DateTime d) = runFn2 jsDateMethod "getTimezoneOffset" d
@@ -105,6 +116,8 @@ toISOString (DateTime d) = runFn2 jsDateMethod "toISOString" d
 
 -- | A year date component value.
 newtype Year = Year Int
+
+derive instance genericYear :: Generic Year
 
 instance eqYear :: Eq Year where
   eq (Year x) (Year y) = x == y
@@ -138,6 +151,8 @@ data Month
   | October
   | November
   | December
+
+derive instance genericMonth :: Generic Month
 
 instance eqMonth :: Eq Month where
   eq January   January   = true
@@ -216,6 +231,8 @@ monthFromEnum December  = 11
 -- | A day-of-month date component value.
 newtype DayOfMonth = DayOfMonth Int
 
+derive instance genericDayOfMonth :: Generic DayOfMonth
+
 instance eqDayOfMonth :: Eq DayOfMonth where
   eq (DayOfMonth x) (DayOfMonth y) = x == y
 
@@ -234,6 +251,8 @@ data DayOfWeek
   | Thursday
   | Friday
   | Saturday
+
+derive instance genericDayOfWeek :: Generic DayOfWeek
 
 instance eqDayOfWeek :: Eq DayOfWeek where
   eq Sunday    Sunday    = true

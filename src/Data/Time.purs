@@ -18,9 +18,13 @@ import Prelude
   , compare
   , show )
 
+import Data.Generic
+
 -- | An hour component from a time value. Should fall between 0 and 23
 -- | inclusive.
 newtype HourOfDay = HourOfDay Int
+
+derive instance genericHourOfDay :: Generic HourOfDay
 
 instance eqHourOfDay :: Eq HourOfDay where
   eq (HourOfDay x) (HourOfDay y) = x == y
@@ -30,6 +34,8 @@ instance ordHourOfDay :: Ord HourOfDay where
 
 -- | A quantity of hours (not necessarily a value between 0 and 23).
 newtype Hours = Hours Number
+
+derive instance genericHours :: Generic Hours
 
 instance eqHours :: Eq Hours where
   eq (Hours x) (Hours y) = x == y
@@ -61,6 +67,8 @@ instance showHours :: Show Hours where
 -- | inclusive.
 newtype MinuteOfHour = MinuteOfHour Int
 
+derive instance genericMinuteOfHour :: Generic MinuteOfHour
+
 instance eqMinuteOfHour :: Eq MinuteOfHour where
   eq (MinuteOfHour x) (MinuteOfHour y) = x == y
 
@@ -69,6 +77,8 @@ instance ordMinuteOfHour :: Ord MinuteOfHour where
 
 -- | A quantity of minutes (not necessarily a value between 0 and 60).
 newtype Minutes = Minutes Number
+
+derive instance genericMinutes :: Generic Minutes
 
 instance eqMinutes :: Eq Minutes where
   eq (Minutes x) (Minutes y) = x == y
@@ -100,6 +110,8 @@ instance showMinutes :: Show Minutes where
 -- | inclusive.
 newtype SecondOfMinute = SecondOfMinute Int
 
+derive instance genericSecondOfMinute :: Generic SecondOfMinute
+
 instance eqSecondOfMinute :: Eq SecondOfMinute where
   eq (SecondOfMinute x) (SecondOfMinute y) = x == y
 
@@ -108,6 +120,8 @@ instance ordSecondOfMinute :: Ord SecondOfMinute where
 
 -- | A quantity of seconds (not necessarily a value between 0 and 60).
 newtype Seconds = Seconds Number
+
+derive instance genericSeconds :: Generic Seconds
 
 instance eqSeconds :: Eq Seconds where
   eq (Seconds x) (Seconds y) = x == y
@@ -139,6 +153,8 @@ instance showSeconds :: Show Seconds where
 -- | inclusive.
 newtype MillisecondOfSecond = MillisecondOfSecond Int
 
+derive instance genericMillisecondOfSecond :: Generic MillisecondOfSecond
+
 instance eqMillisecondOfSecond :: Eq MillisecondOfSecond where
   eq (MillisecondOfSecond x) (MillisecondOfSecond y) = x == y
 
@@ -147,6 +163,8 @@ instance ordMillisecondOfSecond :: Ord MillisecondOfSecond where
 
 -- | A quantity of milliseconds (not necessarily a value between 0 and 1000).
 newtype Milliseconds = Milliseconds Number
+
+derive instance genericMilliseconds :: Generic Milliseconds
 
 instance eqMilliseconds :: Eq Milliseconds where
   eq (Milliseconds x) (Milliseconds y) = x == y
