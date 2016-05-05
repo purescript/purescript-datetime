@@ -103,12 +103,16 @@ foreign import nowEpochMilliseconds :: forall e. Eff (now :: Now | e) Millisecon
 -- | A timezone locale offset, measured in minutes.
 newtype LocaleOffset = LocaleOffset Minutes
 
+derive instance genericLocaleOffset :: Generic LocaleOffset
+
 -- | Get the locale time offset for a `Date`.
 timezoneOffset :: Date -> LocaleOffset
 timezoneOffset (DateTime d) = runFn2 jsDateMethod "getTimezoneOffset" d
 
 -- | A year date component value.
 newtype Year = Year Int
+
+derive instance genericYear :: Generic Year
 
 instance eqYear :: Eq Year where
   eq (Year x) (Year y) = x == y
@@ -142,6 +146,8 @@ data Month
   | October
   | November
   | December
+
+derive instance genericMonth :: Generic Month
 
 instance eqMonth :: Eq Month where
   eq January   January   = true
@@ -220,6 +226,8 @@ monthFromEnum December  = 11
 -- | A day-of-month date component value.
 newtype DayOfMonth = DayOfMonth Int
 
+derive instance genericDayOfMonth :: Generic DayOfMonth
+
 instance eqDayOfMonth :: Eq DayOfMonth where
   eq (DayOfMonth x) (DayOfMonth y) = x == y
 
@@ -235,6 +243,8 @@ data DayOfWeek
   | Thursday
   | Friday
   | Saturday
+
+derive instance genericDayOfWeek :: Generic DayOfWeek
 
 instance eqDayOfWeek :: Eq DayOfWeek where
   eq Sunday    Sunday    = true
