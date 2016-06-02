@@ -1,33 +1,16 @@
-/* global exports */
 "use strict";
 
-// module Data.Date
-
-exports.nowEpochMilliseconds = function () {
-  return Date.now();
+exports.canonicalDateImpl = function (ctor, y, m, d) {
+  var date = new Date(Date.UTC(y, m - 1, d));
+  return ctor(date.getUTCFullYear())(date.getUTCMonth() + 1)(date.getUTCDate());
 };
 
-exports.nowImpl = function (ctor) {
-  return function () {
-    return ctor(new Date());
-  };
+exports.calcWeekday = function (y, m, d) {
+  return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
 };
 
-exports.jsDateConstructor = function (x) {
-  return new Date(x);
-};
-
-// jshint maxparams: 2
-exports.jsDateMethod = function (method, date) {
-  return date[method]();
-};
-
-// jshint maxparams: 3
-exports.strictJsDate = function (just, nothing, s) {
-  var epoch = Date.parse(s);
-  if (isNaN(epoch)) return nothing;
-  var date = new Date(epoch);
-  var s2 = date.toISOString();
-  var idx = s2.indexOf(s);
-  return idx < 0 ? nothing : just(date);
+exports.calcDiff = function (y1, m1, d1, y2, m2, d2) {
+  var dt1 = new Date(Date.UTC(y1, m1, d1));
+  var dt2 = new Date(Date.UTC(y2, m2, d2));
+  return dt1.getTime() - dt2.getTime();
 };

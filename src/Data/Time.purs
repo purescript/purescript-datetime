@@ -1,225 +1,124 @@
-module Data.Time where
+module Data.Time
+  ( Time(..)
+  , hour, setHour
+  , minute, setMinute
+  , second, setSecond
+  , millisecond, setMillisecond
+  , adjust
+  , diff
+  , module Data.Time.Component
+  ) where
 
 import Prelude
-  ( (*)
-  , (+)
-  , (++)
-  , (-)
-  , (/)
-  , (==)
-  , DivisionRing
-  , Eq
-  , ModuloSemiring
-  , Num
-  , Ord
-  , Ring
-  , Semiring
-  , Show
-  , compare
-  , show )
 
--- | An hour component from a time value. Should fall between 0 and 23
--- | inclusive.
-newtype HourOfDay = HourOfDay Int
+import Data.Enum (fromEnum, toEnum)
+import Data.Generic (class Generic)
+import Data.Int as Int
+import Data.Maybe (fromJust)
+import Data.Time.Component (Hour, Millisecond, Minute, Second)
+import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), unMilliseconds, fromDuration, toDuration)
+import Data.Tuple (Tuple(..))
 
-instance eqHourOfDay :: Eq HourOfDay where
-  eq (HourOfDay x) (HourOfDay y) = x == y
+import Math as Math
 
-instance ordHourOfDay :: Ord HourOfDay where
-  compare (HourOfDay x) (HourOfDay y) = compare x y
+import Partial.Unsafe (unsafePartial)
 
--- | A quantity of hours (not necessarily a value between 0 and 23).
-newtype Hours = Hours Number
+data Time = Time Hour Minute Second Millisecond
 
-instance eqHours :: Eq Hours where
-  eq (Hours x) (Hours y) = x == y
+derive instance eqTime :: Eq Time
+derive instance ordTime :: Ord Time
+derive instance genericTime :: Generic Time
 
-instance ordHours :: Ord Hours where
-  compare (Hours x) (Hours y) = compare x y
+instance boundedTime :: Bounded Time where
+  bottom = Time bottom bottom bottom bottom
+  top = Time top top top top
 
-instance semiringHours :: Semiring Hours where
-  add (Hours x) (Hours y) = Hours (x + y)
-  mul (Hours x) (Hours y) = Hours (x * y)
-  zero = Hours 0.0
-  one = Hours 1.0
+instance showTime :: Show Time where
+  show (Time h m s ms) = "(Time " <> show h <> " " <> show m <> " " <> show s <> " " <> show ms <> ")"
 
-instance ringHours :: Ring Hours where
-  sub (Hours x) (Hours y) = Hours (x - y)
+-- | The hour component of a time value.
+hour :: Time -> Hour
+hour (Time h _ _ _) = h
 
-instance moduloSemiringHours :: ModuloSemiring Hours where
-  div (Hours x) (Hours y) = Hours (x / y)
-  mod _ _ = Hours 0.0
+-- | Alters the hour component of a time value.
+setHour :: Hour -> Time -> Time
+setHour h (Time _ m s ms) = Time h m s ms
 
-instance divisionRingHours :: DivisionRing Hours
+-- | The minute component of a time value.
+minute :: Time -> Minute
+minute (Time _ m _ _) = m
 
-instance numHours :: Num Hours
+-- | Alters the minute component of a time value.
+setMinute :: Minute -> Time -> Time
+setMinute m (Time h _ s ms) = Time h m s ms
 
-instance showHours :: Show Hours where
-  show (Hours n) = "(Hours " ++ show n ++ ")"
+-- | The second component of a time value.
+second :: Time -> Second
+second (Time _ _ s _) = s
 
--- | A minute component from a time value. Should fall between 0 and 59
--- | inclusive.
-newtype MinuteOfHour = MinuteOfHour Int
+-- | Alters the second component of a time value.
+setSecond :: Second -> Time -> Time
+setSecond s (Time h m _ ms) = Time h m s ms
 
-instance eqMinuteOfHour :: Eq MinuteOfHour where
-  eq (MinuteOfHour x) (MinuteOfHour y) = x == y
+-- | The millisecond component of a time value.
+millisecond :: Time -> Millisecond
+millisecond (Time _ _ _ ms) = ms
 
-instance ordMinuteOfHour :: Ord MinuteOfHour where
-  compare (MinuteOfHour x) (MinuteOfHour y) = compare x y
+-- | Alters the millisecond component of a time value.
+setMillisecond :: Millisecond -> Time -> Time
+setMillisecond ms (Time h m s _) = Time h m s ms
 
--- | A quantity of minutes (not necessarily a value between 0 and 60).
-newtype Minutes = Minutes Number
+-- | Adjusts a time value with a duration offset. The result includes a
+-- | remainder value of the whole number of days involved in the adjustment,
+-- | for example, if a time of 23:00:00:00 has a duration of +2 hours added to
+-- | it, the result will be 1 day, and 01:00:00:00. Correspondingly, if the
+-- | duration is negative, a negative number of days may also be returned as
+-- | the remainder.
+adjust :: forall d. Duration d => d -> Time -> Tuple Days Time
+adjust d t =
+  let
+    d' = fromDuration d
+    tLength = timeToMillis t
+    dayLength = 86400000.0
+    wholeDays = Days $ Math.floor (unMilliseconds d' / dayLength)
+    msAdjust = d' - fromDuration wholeDays
+    msAdjusted = tLength + msAdjust
+    wrap = if msAdjusted > maxTime then 1.0 else if msAdjusted < -maxTime then -1.0 else 0.0
+  in
+    Tuple
+      (wholeDays + Days wrap)
+      (millisToTime (msAdjusted - Milliseconds (dayLength * wrap)))
 
-instance eqMinutes :: Eq Minutes where
-  eq (Minutes x) (Minutes y) = x == y
+maxTime :: Milliseconds
+maxTime = timeToMillis top
 
-instance ordMinutes :: Ord Minutes where
-  compare (Minutes x) (Minutes y) = compare x y
+timeToMillis :: Time -> Milliseconds
+timeToMillis t = Milliseconds
+  $ 3600000.0 * Int.toNumber (fromEnum (hour t))
+  + 60000.0 * Int.toNumber (fromEnum (minute t))
+  + 1000.0 * Int.toNumber (fromEnum (second t))
+  + Int.toNumber (fromEnum (millisecond t))
 
-instance semiringMinutes :: Semiring Minutes where
-  add (Minutes x) (Minutes y) = Minutes (x + y)
-  mul (Minutes x) (Minutes y) = Minutes (x * y)
-  zero = Minutes 0.0
-  one = Minutes 1.0
+millisToTime :: Milliseconds -> Time
+millisToTime ms =
+  let
+    ms' = unMilliseconds ms
+    hourLength = 3600000.0
+    minuteLength = 60000.0
+    secondLength = 1000.0
+    hours = Math.floor (ms' / hourLength)
+    minutes = Math.floor ((ms' - hours * hourLength) / minuteLength)
+    seconds = Math.floor ((ms' - (hours * hourLength + minutes * minuteLength)) / secondLength)
+    milliseconds = ms' - (hours * hourLength + minutes * minuteLength + seconds * secondLength)
+  in
+    unsafePartial fromJust $
+      Time
+        <$> toEnum (Int.floor hours)
+        <*> toEnum (Int.floor minutes)
+        <*> toEnum (Int.floor seconds)
+        <*> toEnum (Int.floor milliseconds)
 
-instance ringMinutes :: Ring Minutes where
-  sub (Minutes x) (Minutes y) = Minutes (x - y)
-
-instance moduloSemiringMinutes :: ModuloSemiring Minutes where
-  div (Minutes x) (Minutes y) = Minutes (x / y)
-  mod _ _ = Minutes 0.0
-
-instance divisionRingMinutes :: DivisionRing Minutes
-
-instance numMinutes :: Num Minutes
-
-instance showMinutes :: Show Minutes where
-  show (Minutes n) = "(Minutes " ++ show n ++ ")"
-
--- | A second component from a time value. Should fall between 0 and 59
--- | inclusive.
-newtype SecondOfMinute = SecondOfMinute Int
-
-instance eqSecondOfMinute :: Eq SecondOfMinute where
-  eq (SecondOfMinute x) (SecondOfMinute y) = x == y
-
-instance ordSecondOfMinute :: Ord SecondOfMinute where
-  compare (SecondOfMinute x) (SecondOfMinute y) = compare x y
-
--- | A quantity of seconds (not necessarily a value between 0 and 60).
-newtype Seconds = Seconds Number
-
-instance eqSeconds :: Eq Seconds where
-  eq (Seconds x) (Seconds y) = x == y
-
-instance ordSeconds :: Ord Seconds where
-  compare (Seconds x) (Seconds y) = compare x y
-
-instance semiringSeconds :: Semiring Seconds where
-  add (Seconds x) (Seconds y) = Seconds (x + y)
-  mul (Seconds x) (Seconds y) = Seconds (x * y)
-  zero = Seconds 0.0
-  one = Seconds 1.0
-
-instance ringSeconds :: Ring Seconds where
-  sub (Seconds x) (Seconds y) = Seconds (x - y)
-
-instance moduloSemiringSeconds :: ModuloSemiring Seconds where
-  div (Seconds x) (Seconds y) = Seconds (x / y)
-  mod _ _ = Seconds 0.0
-
-instance divisionRingSeconds :: DivisionRing Seconds
-
-instance numSeconds :: Num Seconds
-
-instance showSeconds :: Show Seconds where
-  show (Seconds n) = "(Seconds " ++ show n ++ ")"
-
--- | A millisecond component from a time value. Should fall between 0 and 999
--- | inclusive.
-newtype MillisecondOfSecond = MillisecondOfSecond Int
-
-instance eqMillisecondOfSecond :: Eq MillisecondOfSecond where
-  eq (MillisecondOfSecond x) (MillisecondOfSecond y) = x == y
-
-instance ordMillisecondOfSecond :: Ord MillisecondOfSecond where
-  compare (MillisecondOfSecond x) (MillisecondOfSecond y) = compare x y
-
--- | A quantity of milliseconds (not necessarily a value between 0 and 1000).
-newtype Milliseconds = Milliseconds Number
-
-instance eqMilliseconds :: Eq Milliseconds where
-  eq (Milliseconds x) (Milliseconds y) = x == y
-
-instance ordMilliseconds :: Ord Milliseconds where
-  compare (Milliseconds x) (Milliseconds y) = compare x y
-
-instance semiringMilliseconds :: Semiring Milliseconds where
-  add (Milliseconds x) (Milliseconds y) = Milliseconds (x + y)
-  mul (Milliseconds x) (Milliseconds y) = Milliseconds (x * y)
-  zero = Milliseconds 0.0
-  one = Milliseconds 1.0
-
-instance ringMilliseconds :: Ring Milliseconds where
-  sub (Milliseconds x) (Milliseconds y) = Milliseconds (x - y)
-
-instance moduloSemiringMilliseconds :: ModuloSemiring Milliseconds where
-  div (Milliseconds x) (Milliseconds y) = Milliseconds (x / y)
-  mod _ _ = Milliseconds 0.0
-
-instance divisionRingMilliseconds :: DivisionRing Milliseconds
-
-instance numMilliseconds :: Num Milliseconds
-
-instance showMilliseconds :: Show Milliseconds where
-  show (Milliseconds n) = "(Milliseconds " ++ show n ++ ")"
-
-class TimeValue a where
-  toHours :: a -> Hours
-  toMinutes :: a -> Minutes
-  toSeconds :: a -> Seconds
-  toMilliseconds :: a -> Milliseconds
-  fromHours :: Hours -> a
-  fromMinutes :: Minutes -> a
-  fromSeconds :: Seconds -> a
-  fromMilliseconds :: Milliseconds -> a
-
-instance timeValueHours :: TimeValue Hours where
-  toHours n = n
-  toMinutes (Hours n) = Minutes (n * 60.0)
-  toSeconds (Hours n) = Seconds (n * 3600.0)
-  toMilliseconds (Hours n) = Milliseconds (n * 3600000.0)
-  fromHours n = n
-  fromMinutes (Minutes n) = Hours (n / 60.0)
-  fromSeconds (Seconds n) = Hours (n / 3600.0)
-  fromMilliseconds (Milliseconds n) = Hours (n / 3600000.0)
-
-instance timeValueMinutes :: TimeValue Minutes where
-  toHours (Minutes n) = Hours (n / 60.0)
-  toMinutes n = n
-  toSeconds (Minutes n) = Seconds (n * 60.0)
-  toMilliseconds (Minutes n) = Milliseconds (n * 60000.0)
-  fromHours (Hours n) = Minutes (n * 60.0)
-  fromMinutes n = n
-  fromSeconds (Seconds n) = Minutes (n / 60.0)
-  fromMilliseconds (Milliseconds n) = Minutes (n / 60000.0)
-
-instance timeValueSeconds :: TimeValue Seconds where
-  toHours (Seconds n) = Hours (n / 3600.0)
-  toMinutes (Seconds n) = Minutes (n / 60.0)
-  toSeconds n = n
-  toMilliseconds (Seconds n) = Milliseconds (n * 1000.0)
-  fromHours (Hours n) = Seconds (n * 3600.0)
-  fromMinutes (Minutes n) = Seconds (n * 60.0)
-  fromSeconds n = n
-  fromMilliseconds (Milliseconds n) = Seconds (n / 1000.0)
-
-instance timeValueMilliseconds :: TimeValue Milliseconds where
-  toHours (Milliseconds n) = Hours (n / 3600000.0)
-  toMinutes (Milliseconds n) = Minutes (n / 60000.0)
-  toSeconds (Milliseconds n) = Seconds (n / 1000.0)
-  toMilliseconds n = n
-  fromHours (Hours n) = Milliseconds (n * 3600000.0)
-  fromMinutes (Minutes n) = Milliseconds (n * 60000.0)
-  fromSeconds (Seconds n) = Milliseconds (n * 1000.0)
-  fromMilliseconds n = n
+-- | Calculates the difference between two times, returning the result as a
+-- | duration.
+diff :: forall d. Duration d => Time -> Time -> d
+diff t1 t2 = toDuration (timeToMillis t1 - timeToMillis t2)
