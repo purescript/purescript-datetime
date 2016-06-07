@@ -19,13 +19,15 @@ module Data.Date
   , toISOString
   ) where
 
-import Prelude
+import Prelude (class Show, class Bounded, class Ord, class Eq, class Ring, class Semiring, compare, show, one, zero, eq, (<>), (==), (-), (*), (+), (>>=), (<<<))
 
-import Control.Monad.Eff
-import Data.Enum (Enum, Cardinality(..), fromEnum, defaultSucc, defaultPred)
-import Data.Function (on, Fn2(), runFn2, Fn3(), runFn3)
+import Global (isNaN)
+import Control.Monad.Eff (Eff)
+import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), defaultPred, defaultSucc, fromEnum)
+import Data.Function (on)
+import Data.Function.Uncurried (Fn3, Fn2, runFn2, runFn3)
 import Data.Maybe (Maybe(..))
-import Data.Time
+import Data.Time (Minutes, Milliseconds)
 
 -- | A native JavaScript `Date` object.
 foreign import data JSDate :: *
@@ -44,13 +46,13 @@ instance ordDate :: Ord Date where
   compare = compare `on` toEpochMilliseconds
 
 instance showDate :: Show Date where
-  show d = "(fromEpochMilliseconds " ++ show (toEpochMilliseconds d) ++ ")"
+  show d = "(fromEpochMilliseconds " <> show (toEpochMilliseconds d) <> ")"
 
 -- | Attempts to create a `Date` from a `JSDate`. If the `JSDate` is an invalid
 -- | date `Nothing` is returned.
 fromJSDate :: JSDate -> Maybe Date
 fromJSDate d =
-  if Global.isNaN (runFn2 jsDateMethod "getTime" d)
+  if isNaN (runFn2 jsDateMethod "getTime" d)
   then Nothing
   else Just (DateTime d)
 
@@ -122,7 +124,7 @@ instance ringYear :: Ring Year where
   sub (Year x) (Year y) = Year (x - y)
 
 instance showYear :: Show Year where
-  show (Year n) = "(Year " ++ show n ++ ")"
+  show (Year n) = "(Year " <> show n <> ")"
 
 -- | A month date component value.
 data Month
@@ -161,7 +163,7 @@ instance boundedMonth :: Bounded Month where
   bottom = January
   top = December
 
-instance boundedOrdMonth :: BoundedOrd Month
+--instance boundedOrdMonth :: BoundedOrd Month
 
 instance showMonth :: Show Month where
   show January   = "January"
@@ -178,9 +180,11 @@ instance showMonth :: Show Month where
   show December  = "December"
 
 instance enumMonth :: Enum Month where
-  cardinality = Cardinality 12
   succ = defaultSucc monthToEnum monthFromEnum
   pred = defaultPred monthToEnum monthFromEnum
+
+instance boundedEnumMonth :: BoundedEnum Month where
+  cardinality = Cardinality 12
   toEnum = monthToEnum
   fromEnum = monthFromEnum
 
@@ -223,7 +227,7 @@ instance ordDayOfMonth :: Ord DayOfMonth where
   compare (DayOfMonth x) (DayOfMonth y) = compare x y
 
 instance showDayOfMonth :: Show DayOfMonth where
-  show (DayOfMonth day) = "(DayOfMonth " ++ show day ++ ")"
+  show (DayOfMonth day) = "(DayOfMonth " <> show day <> ")"
 
 -- | A day-of-week date component value.
 data DayOfWeek
@@ -252,7 +256,7 @@ instance boundedDayOfWeek :: Bounded DayOfWeek where
   bottom = Sunday
   top = Saturday
 
-instance boundedOrdDayOfWeek :: BoundedOrd DayOfWeek
+--instance boundedOrdDayOfWeek :: BoundedOrd DayOfWeek
 
 instance showDayOfWeek :: Show DayOfWeek where
   show Sunday    = "Sunday"
@@ -264,9 +268,11 @@ instance showDayOfWeek :: Show DayOfWeek where
   show Saturday  = "Saturday"
 
 instance enumDayOfWeek :: Enum DayOfWeek where
-  cardinality = Cardinality 7
   succ = defaultSucc dayOfWeekToEnum dayOfWeekFromEnum
   pred = defaultPred dayOfWeekToEnum dayOfWeekFromEnum
+
+instance boundedEnumDayOfWeek :: BoundedEnum DayOfWeek where
+  cardinality = Cardinality 7
   toEnum = dayOfWeekToEnum
   fromEnum = dayOfWeekFromEnum
 

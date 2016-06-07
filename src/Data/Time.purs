@@ -3,20 +3,19 @@ module Data.Time where
 import Prelude
   ( (*)
   , (+)
-  , (++)
   , (-)
-  , (/)
   , (==)
-  , DivisionRing
-  , Eq
-  , ModuloSemiring
-  , Num
-  , Ord
-  , Ring
-  , Semiring
-  , Show
+  , class Show
   , compare
   , show )
+
+import Data.Eq (class Eq)
+import Data.Ord (class Ord)
+import Data.Semiring (class Semiring)
+import Data.Semigroup (append, (<>))
+import Data.Ring (class Ring)
+import Data.CommutativeRing (class CommutativeRing)
+import Data.EuclideanRing (class EuclideanRing, (/))
 
 -- | An hour component from a time value. Should fall between 0 and 23
 -- | inclusive.
@@ -46,16 +45,15 @@ instance semiringHours :: Semiring Hours where
 instance ringHours :: Ring Hours where
   sub (Hours x) (Hours y) = Hours (x - y)
 
-instance moduloSemiringHours :: ModuloSemiring Hours where
+instance euclideanRingHours :: EuclideanRing Hours where
   div (Hours x) (Hours y) = Hours (x / y)
   mod _ _ = Hours 0.0
+  degree _ = 1
 
-instance divisionRingHours :: DivisionRing Hours
-
-instance numHours :: Num Hours
+instance commutativeRingHours :: CommutativeRing Hours
 
 instance showHours :: Show Hours where
-  show (Hours n) = "(Hours " ++ show n ++ ")"
+  show (Hours n) = "(Hours " <> show n <> ")"
 
 -- | A minute component from a time value. Should fall between 0 and 59
 -- | inclusive.
@@ -85,16 +83,15 @@ instance semiringMinutes :: Semiring Minutes where
 instance ringMinutes :: Ring Minutes where
   sub (Minutes x) (Minutes y) = Minutes (x - y)
 
-instance moduloSemiringMinutes :: ModuloSemiring Minutes where
+instance euclideanRingMinutes :: EuclideanRing Minutes where
   div (Minutes x) (Minutes y) = Minutes (x / y)
   mod _ _ = Minutes 0.0
+  degree _ = 1
 
-instance divisionRingMinutes :: DivisionRing Minutes
-
-instance numMinutes :: Num Minutes
+instance commutativeRingMinutes :: CommutativeRing Minutes
 
 instance showMinutes :: Show Minutes where
-  show (Minutes n) = "(Minutes " ++ show n ++ ")"
+  show (Minutes n) = "(Minutes " <> show n <> ")"
 
 -- | A second component from a time value. Should fall between 0 and 59
 -- | inclusive.
@@ -124,16 +121,15 @@ instance semiringSeconds :: Semiring Seconds where
 instance ringSeconds :: Ring Seconds where
   sub (Seconds x) (Seconds y) = Seconds (x - y)
 
-instance moduloSemiringSeconds :: ModuloSemiring Seconds where
+instance euclideanRingSeconds :: EuclideanRing Seconds where
   div (Seconds x) (Seconds y) = Seconds (x / y)
   mod _ _ = Seconds 0.0
+  degree _ = 1
 
-instance divisionRingSeconds :: DivisionRing Seconds
-
-instance numSeconds :: Num Seconds
+instance commutativeRingSeconds :: CommutativeRing Seconds
 
 instance showSeconds :: Show Seconds where
-  show (Seconds n) = "(Seconds " ++ show n ++ ")"
+  show (Seconds n) = "(Seconds " <> show n <> ")"
 
 -- | A millisecond component from a time value. Should fall between 0 and 999
 -- | inclusive.
@@ -163,16 +159,15 @@ instance semiringMilliseconds :: Semiring Milliseconds where
 instance ringMilliseconds :: Ring Milliseconds where
   sub (Milliseconds x) (Milliseconds y) = Milliseconds (x - y)
 
-instance moduloSemiringMilliseconds :: ModuloSemiring Milliseconds where
+instance euclideanRingMilliseconds :: EuclideanRing Milliseconds where
   div (Milliseconds x) (Milliseconds y) = Milliseconds (x / y)
   mod _ _ = Milliseconds 0.0
+  degree _ = 1
 
-instance divisionRingMilliseconds :: DivisionRing Milliseconds
-
-instance numMilliseconds :: Num Milliseconds
+instance commutativeRingMilliseconds :: CommutativeRing Milliseconds
 
 instance showMilliseconds :: Show Milliseconds where
-  show (Milliseconds n) = "(Milliseconds " ++ show n ++ ")"
+  show (Milliseconds n) = "(Milliseconds " <> show n <> ")"
 
 class TimeValue a where
   toHours :: a -> Hours
