@@ -12,11 +12,10 @@ module Data.Date.UTC
   ) where
 
 import Data.Date
-import Data.Enum (fromEnum, toEnum)
-import Data.Function (Fn2(), runFn2, Fn7(), runFn7)
-import Data.Maybe (Maybe())
-import Data.Maybe.Unsafe (fromJust)
-import Data.Time
+import Data.Enum (toEnum, fromEnum)
+import Data.Function.Uncurried (Fn7, Fn2, runFn2, runFn7)
+import Data.Maybe (Maybe, fromJust)
+import Data.Time (HourOfDay(..), MillisecondOfSecond(..), MinuteOfHour(..), SecondOfMinute(..))
 
 import Prelude
   ( zero )
@@ -39,7 +38,7 @@ year :: Date -> Year
 year d = runFn2 dateMethod "getUTCFullYear" d
 
 -- | Gets the UTC month component for a date.
-month :: Date -> Month
+month :: Partial => Date -> Month
 month d = fromJust (toEnum (runFn2 dateMethod "getUTCMonth" d))
 
 -- | Gets the UTC day-of-month value for a date.
@@ -47,7 +46,7 @@ dayOfMonth :: Date -> DayOfMonth
 dayOfMonth d = runFn2 dateMethod "getUTCDate" d
 
 -- | Gets the UTC day-of-week value for a date.
-dayOfWeek :: Date -> DayOfWeek
+dayOfWeek :: Partial => Date -> DayOfWeek
 dayOfWeek d = fromJust (toEnum (runFn2 dateMethod "getUTCDay" d))
 
 -- | Gets the UTC hour-of-day value for a date.

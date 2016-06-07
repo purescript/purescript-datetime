@@ -15,13 +15,12 @@ module Data.Date.Locale
   , toLocaleDateString
   ) where
 
-import Control.Monad.Eff (Eff())
-import Data.Date
-import Data.Enum (fromEnum, toEnum)
-import Data.Function (Fn2(), runFn2, Fn7(), runFn7)
-import Data.Maybe (Maybe())
-import Data.Maybe.Unsafe (fromJust)
-import Data.Time
+import Control.Monad.Eff (Eff)
+import Data.Date (JSDate, DayOfMonth, Year, Date, DayOfWeek, Month, fromJSDate)
+import Data.Enum (toEnum, fromEnum)
+import Data.Function.Uncurried (Fn7, Fn2, runFn2, runFn7)
+import Data.Maybe (Maybe, fromJust)
+import Data.Time (HourOfDay(..), MillisecondOfSecond(..), MinuteOfHour(..), SecondOfMinute(..))
 
 import Prelude
   ( (<$>)
@@ -50,7 +49,7 @@ year :: forall e. Date -> Eff (locale :: Locale | e) Year
 year d = runFn2 dateMethod "getFullYear" d
 
 -- | Gets the month component for a date based on the current machine’s locale.
-month :: forall e. Date -> Eff (locale :: Locale | e) Month
+month :: forall e. Partial => Date -> Eff (locale :: Locale | e) Month
 month d = fromJust <<< toEnum <$> runFn2 dateMethod "getMonth" d
 
 -- | Gets the day-of-month value for a date based on the current machine’s
@@ -60,7 +59,7 @@ dayOfMonth d = runFn2 dateMethod "getDate" d
 
 -- | Gets the day-of-week value for a date based on the current machine’s
 -- | locale.
-dayOfWeek :: forall e. Date -> Eff (locale :: Locale | e) DayOfWeek
+dayOfWeek :: forall e. Partial => Date -> Eff (locale :: Locale | e) DayOfWeek
 dayOfWeek d = fromJust <<< toEnum <$> runFn2 dateMethod "getDay" d
 
 -- | Gets the hour-of-day value for a date based on the current machine’s
