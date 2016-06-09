@@ -1,298 +1,82 @@
 module Data.Date
-  ( JSDate()
-  , Date()
-  , fromJSDate
-  , toJSDate
-  , fromEpochMilliseconds
-  , toEpochMilliseconds
-  , fromString
-  , fromStringStrict
-  , Now()
-  , now
-  , nowEpochMilliseconds
-  , LocaleOffset(..)
-  , timezoneOffset
-  , Year(..)
-  , Month(..)
-  , DayOfMonth(..)
-  , DayOfWeek(..)
-  , toISOString
+  ( Date
+  , canonicalDate
+  , exactDate
+  , year
+  , month
+  , day
+  , weekday
+  , diff
+  , module Data.Date.Component
   ) where
 
 import Prelude
 
-import Control.Monad.Eff
-import Data.Enum (Enum, Cardinality(..), fromEnum, defaultSucc, defaultPred)
-import Data.Function (on, Fn2(), runFn2, Fn3(), runFn3)
-import Data.Maybe (Maybe(..))
-import Data.Time
+import Data.Date.Component (Day, Month(..), Weekday(..), Year)
+import Data.Enum (toEnum, fromEnum)
+import Data.Function.Uncurried (Fn3, runFn3, Fn4, runFn4, Fn6, runFn6)
+import Data.Generic (class Generic)
+import Data.Maybe (Maybe(..), fromJust)
+import Data.Time.Duration (class Duration, toDuration, Milliseconds)
 
--- | A native JavaScript `Date` object.
-foreign import data JSDate :: *
+import Partial.Unsafe (unsafePartial)
 
--- | A combined date/time value. `Date`s cannot be constructed directly to
--- | ensure they are not the `Invalid Date` value, and instead must be created
--- | via `fromJSDate`, `fromEpochMilliseconds`, `fromString`, etc. or the `date`
--- | and `dateTime` functions in the `Data.Date.Locale` and `Data.Date.UTC`
--- | modules.
-newtype Date = DateTime JSDate
+-- | A date value in the Gregorian calendar.
+data Date = Date Year Month Day
 
-instance eqDate :: Eq Date where
-  eq = eq `on` toEpochMilliseconds
+-- | Constructs a date from year, month, and day components. The resulting date
+-- | components may not be identical to the input values, as the date will be
+-- | canonicalised according to the Gregorian calendar. For example, date
+-- | values for the invalid date 2016-02-31 will be corrected to 2016-03-02.
+canonicalDate :: Year -> Month -> Day -> Date
+canonicalDate y m d = runFn4 canonicalDateImpl mkDate y (fromEnum m) d
+  where
+  mkDate :: Year -> Int -> Day -> Date
+  mkDate = unsafePartial \y' m' d' -> Date y' (fromJust (toEnum m')) d'
 
-instance ordDate :: Ord Date where
-  compare = compare `on` toEpochMilliseconds
+-- | Constructs a date from year, month, and day components. The result will be
+-- | `Nothing` if the provided values result in an invalid date.
+exactDate :: Year -> Month -> Day -> Maybe Date
+exactDate y m d =
+  let dt = Date y m d
+  in if canonicalDate y m d == dt then Just dt else Nothing
+
+derive instance eqDate :: Eq Date
+derive instance ordDate :: Ord Date
+derive instance genericDate :: Generic Date
+
+instance boundedDate :: Bounded Date where
+  bottom = Date bottom bottom bottom
+  top = Date top top top
 
 instance showDate :: Show Date where
-  show d = "(fromEpochMilliseconds " ++ show (toEpochMilliseconds d) ++ ")"
+  show (Date y m d) = "(Date " <> show y <> " " <> show m <> " " <> show d <> ")"
 
--- | Attempts to create a `Date` from a `JSDate`. If the `JSDate` is an invalid
--- | date `Nothing` is returned.
-fromJSDate :: JSDate -> Maybe Date
-fromJSDate d =
-  if Global.isNaN (runFn2 jsDateMethod "getTime" d)
-  then Nothing
-  else Just (DateTime d)
+-- | The year component of a date value.
+year :: Date -> Year
+year (Date y _ _) = y
 
--- | Extracts a `JSDate` from a `Date`.
-toJSDate :: Date -> JSDate
-toJSDate (DateTime d) = d
+-- | The month component of a date value.
+month :: Date -> Month
+month (Date _ m _) = m
 
--- | Creates a `Date` value from a number of milliseconds elapsed since 1st
--- | January 1970 00:00:00 UTC.
-fromEpochMilliseconds :: Milliseconds -> Maybe Date
-fromEpochMilliseconds = fromJSDate <<< jsDateConstructor
+-- | The day component of a date value.
+day :: Date -> Day
+day (Date _ _ d) = d
 
--- | Gets the number of milliseconds elapsed since 1st January 1970 00:00:00
--- | UTC for a `Date`.
-toEpochMilliseconds :: Date -> Milliseconds
-toEpochMilliseconds (DateTime d) = runFn2 jsDateMethod "getTime" d
+-- | The weekday for a date value.
+weekday :: Date -> Weekday
+weekday = unsafePartial \(Date y m d) ->
+  let n = runFn3 calcWeekday y (fromEnum m) d
+  in if n == 0 then fromJust (toEnum 7) else fromJust (toEnum n)
 
--- | Attempts to construct a date from a string value using JavaScript’s
--- | [Date.parse() method](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/parse).
--- | `Nothing` is returned if the parse fails or the resulting date is invalid.
-fromString :: String -> Maybe Date
-fromString = fromJSDate <<< jsDateConstructor
+-- | Calculates the difference between two dates, returning the result as a
+-- | duration.
+diff :: forall d. Duration d => Date -> Date -> d
+diff (Date y1 m1 d1) (Date y2 m2 d2) =
+  toDuration $ runFn6 calcDiff y1 (fromEnum m1) d1 y2 (fromEnum m2) d2
 
--- | Attempts to construct a date from a simplified extended ISO 8601 format
--- | (`YYYY-MM-DDTHH:mm:ss.sssZ`). `Nothing` is returned if the format is not
--- | an exact match or the resulting date is invalid.
-fromStringStrict :: String -> Maybe Date
-fromStringStrict s = runFn3 strictJsDate Just Nothing s >>= fromJSDate
-
--- | Effect type for when accessing the current date/time.
-foreign import data Now :: !
-
--- | Gets a `Date` value for the current date/time according to the current
--- | machine’s local time.
-now :: forall e. Eff (now :: Now | e) Date
-now = nowImpl DateTime
-
--- | Gets the number of milliseconds elapsed milliseconds since 1st January
--- | 1970 00:00:00 UTC according to the current machine’s local time
-foreign import nowEpochMilliseconds :: forall e. Eff (now :: Now | e) Milliseconds
-
--- | A timezone locale offset, measured in minutes.
-newtype LocaleOffset = LocaleOffset Minutes
-
--- | Get the locale time offset for a `Date`.
-timezoneOffset :: Date -> LocaleOffset
-timezoneOffset (DateTime d) = runFn2 jsDateMethod "getTimezoneOffset" d
-
--- | Renders a Date as an ISO 8601 string.
-toISOString :: Date -> String
-toISOString (DateTime d) = runFn2 jsDateMethod "toISOString" d
-
--- | A year date component value.
-newtype Year = Year Int
-
-instance eqYear :: Eq Year where
-  eq (Year x) (Year y) = x == y
-
-instance ordYear :: Ord Year where
-  compare (Year x) (Year y) = compare x y
-
-instance semiringYear :: Semiring Year where
-  add (Year x) (Year y) = Year (x + y)
-  mul (Year x) (Year y) = Year (x * y)
-  zero = Year zero
-  one = Year one
-
-instance ringYear :: Ring Year where
-  sub (Year x) (Year y) = Year (x - y)
-
-instance showYear :: Show Year where
-  show (Year n) = "(Year " ++ show n ++ ")"
-
--- | A month date component value.
-data Month
-  = January
-  | February
-  | March
-  | April
-  | May
-  | June
-  | July
-  | August
-  | September
-  | October
-  | November
-  | December
-
-instance eqMonth :: Eq Month where
-  eq January   January   = true
-  eq February  February  = true
-  eq March     March     = true
-  eq April     April     = true
-  eq May       May       = true
-  eq June      June      = true
-  eq July      July      = true
-  eq August    August    = true
-  eq September September = true
-  eq October   October   = true
-  eq November  November  = true
-  eq December  December  = true
-  eq _         _         = false
-
-instance ordMonth :: Ord Month where
-  compare = compare `on` fromEnum
-
-instance boundedMonth :: Bounded Month where
-  bottom = January
-  top = December
-
-instance boundedOrdMonth :: BoundedOrd Month
-
-instance showMonth :: Show Month where
-  show January   = "January"
-  show February  = "February"
-  show March     = "March"
-  show April     = "April"
-  show May       = "May"
-  show June      = "June"
-  show July      = "July"
-  show August    = "August"
-  show September = "September"
-  show October   = "October"
-  show November  = "November"
-  show December  = "December"
-
-instance enumMonth :: Enum Month where
-  cardinality = Cardinality 12
-  succ = defaultSucc monthToEnum monthFromEnum
-  pred = defaultPred monthToEnum monthFromEnum
-  toEnum = monthToEnum
-  fromEnum = monthFromEnum
-
-monthToEnum :: Int -> Maybe Month
-monthToEnum 0  = Just January
-monthToEnum 1  = Just February
-monthToEnum 2  = Just March
-monthToEnum 3  = Just April
-monthToEnum 4  = Just May
-monthToEnum 5  = Just June
-monthToEnum 6  = Just July
-monthToEnum 7  = Just August
-monthToEnum 8  = Just September
-monthToEnum 9  = Just October
-monthToEnum 10 = Just November
-monthToEnum 11 = Just December
-monthToEnum _  = Nothing
-
-monthFromEnum :: Month -> Int
-monthFromEnum January   = 0
-monthFromEnum February  = 1
-monthFromEnum March     = 2
-monthFromEnum April     = 3
-monthFromEnum May       = 4
-monthFromEnum June      = 5
-monthFromEnum July      = 6
-monthFromEnum August    = 7
-monthFromEnum September = 8
-monthFromEnum October   = 9
-monthFromEnum November  = 10
-monthFromEnum December  = 11
-
--- | A day-of-month date component value.
-newtype DayOfMonth = DayOfMonth Int
-
-instance eqDayOfMonth :: Eq DayOfMonth where
-  eq (DayOfMonth x) (DayOfMonth y) = x == y
-
-instance ordDayOfMonth :: Ord DayOfMonth where
-  compare (DayOfMonth x) (DayOfMonth y) = compare x y
-
-instance showDayOfMonth :: Show DayOfMonth where
-  show (DayOfMonth day) = "(DayOfMonth " ++ show day ++ ")"
-
--- | A day-of-week date component value.
-data DayOfWeek
-  = Sunday
-  | Monday
-  | Tuesday
-  | Wednesday
-  | Thursday
-  | Friday
-  | Saturday
-
-instance eqDayOfWeek :: Eq DayOfWeek where
-  eq Sunday    Sunday    = true
-  eq Monday    Monday    = true
-  eq Tuesday   Tuesday   = true
-  eq Wednesday Wednesday = true
-  eq Thursday  Thursday  = true
-  eq Friday    Friday    = true
-  eq Saturday  Saturday  = true
-  eq _         _         = false
-
-instance ordDayOfWeek :: Ord DayOfWeek where
-  compare = compare `on` fromEnum
-
-instance boundedDayOfWeek :: Bounded DayOfWeek where
-  bottom = Sunday
-  top = Saturday
-
-instance boundedOrdDayOfWeek :: BoundedOrd DayOfWeek
-
-instance showDayOfWeek :: Show DayOfWeek where
-  show Sunday    = "Sunday"
-  show Monday    = "Monday"
-  show Tuesday   = "Tuesday"
-  show Wednesday = "Wednesday"
-  show Thursday  = "Thursday"
-  show Friday    = "Friday"
-  show Saturday  = "Saturday"
-
-instance enumDayOfWeek :: Enum DayOfWeek where
-  cardinality = Cardinality 7
-  succ = defaultSucc dayOfWeekToEnum dayOfWeekFromEnum
-  pred = defaultPred dayOfWeekToEnum dayOfWeekFromEnum
-  toEnum = dayOfWeekToEnum
-  fromEnum = dayOfWeekFromEnum
-
-dayOfWeekToEnum :: Int -> Maybe DayOfWeek
-dayOfWeekToEnum 0 = Just Sunday
-dayOfWeekToEnum 1 = Just Monday
-dayOfWeekToEnum 2 = Just Tuesday
-dayOfWeekToEnum 3 = Just Wednesday
-dayOfWeekToEnum 4 = Just Thursday
-dayOfWeekToEnum 5 = Just Friday
-dayOfWeekToEnum 6 = Just Saturday
-dayOfWeekToEnum _ = Nothing
-
-dayOfWeekFromEnum :: DayOfWeek -> Int
-dayOfWeekFromEnum Sunday    = 0
-dayOfWeekFromEnum Monday    = 1
-dayOfWeekFromEnum Tuesday   = 2
-dayOfWeekFromEnum Wednesday = 3
-dayOfWeekFromEnum Thursday  = 4
-dayOfWeekFromEnum Friday    = 5
-dayOfWeekFromEnum Saturday  = 6
-
-foreign import nowImpl :: forall e. (JSDate -> Date) -> Eff (now :: Now | e) Date
-
-foreign import jsDateConstructor :: forall a. a -> JSDate
-
-foreign import jsDateMethod :: forall a. Fn2 String JSDate a
-
-foreign import strictJsDate :: Fn3 (forall a. a -> Maybe a) (forall a. Maybe a) String (Maybe JSDate)
+-- TODO: these could (and probably should) be implemented in PS
+foreign import canonicalDateImpl :: Fn4 (Year -> Int -> Day -> Date) Year Int Day Date
+foreign import calcWeekday :: Fn3 Year Int Day Int
+foreign import calcDiff :: Fn6 Year Int Day Year Int Day Milliseconds

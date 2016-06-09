@@ -4,7 +4,7 @@
 [![Build Status](https://travis-ci.org/purescript/purescript-datetime.svg?branch=master)](https://travis-ci.org/purescript/purescript-datetime)
 [![Dependency Status](https://www.versioneye.com/user/projects/55848c1636386100150003d4/badge.svg?style=flat)](https://www.versioneye.com/user/projects/55848c1636386100150003d4)
 
-Date and time functions and values.
+Date and time types and functions.
 
 ## Installation
 
@@ -12,9 +12,6 @@ Date and time functions and values.
 bower install purescript-datetime
 ```
 
-## Module documentation
+## Documentation
 
-- [Data.Date](docs/Data/Date.md)
-- [Data.Date.Locale](docs/Data/Date/Locale.md)
-- [Data.Date.UTC](docs/Data/Date/UTC.md)
-- [Data.Time](docs/Data/Time.md)
+Module documentation is [published on Pursuit](http://pursuit.purescript.org/packages/purescript-datetime).
