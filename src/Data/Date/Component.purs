@@ -26,6 +26,10 @@ derive instance eqYear :: Eq Year
 derive instance ordYear :: Ord Year
 derive instance genericYear :: Generic Year
 
+-- Note: these seemingly arbitrary bounds come from relying on JS for date
+-- manipulations, as it only supports date ±100,000,000 days of the Unix epoch.
+-- Using these year values means `Date bottom bottom bottom` is a valid date,
+-- likewise for `top`.
 instance boundedYear :: Bounded Year where
   bottom = Year (-271820)
   top = Year 275759
