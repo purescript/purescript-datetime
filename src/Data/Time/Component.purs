@@ -104,7 +104,7 @@ instance showSecond :: Show Second where
 -- | An millisecond component for a time value.
 -- |
 -- | The constructor is private as values for the type are restricted to the
--- | range 0 to 59, inclusive. The `toEnum` function can be used to safely
+-- | range 0 to 999, inclusive. The `toEnum` function can be used to safely
 -- | acquire an `Millisecond` value from an integer. Correspondingly, a
 -- | `Millisecond` can be lowered to a plain integer with the `fromEnum`
 -- | function.
