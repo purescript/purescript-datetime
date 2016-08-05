@@ -18,10 +18,6 @@ import Data.Maybe (Maybe(..))
 -- | acquire a year value from an integer.
 newtype Year = Year Int
 
--- | Lowers a year value to a plain number.
-unYear :: Year -> Int
-unYear (Year y) = y
-
 derive instance eqYear :: Eq Year
 derive instance ordYear :: Ord Year
 derive instance genericYear :: Generic Year
