@@ -18,8 +18,8 @@ import Data.Maybe (Maybe(..))
 -- | acquire a year value from an integer.
 newtype Year = Year Int
 
-derive instance eqYear :: Eq Year
-derive instance ordYear :: Ord Year
+derive newtype instance eqYear :: Eq Year
+derive newtype instance ordYear :: Ord Year
 derive instance genericYear :: Generic Year
 
 -- Note: these seemingly arbitrary bounds come from relying on JS for date
@@ -122,8 +122,8 @@ instance showMonth :: Show Month where
 -- | acquire a day value from an integer.
 newtype Day = Day Int
 
-derive instance eqDay :: Eq Day
-derive instance ordDay :: Ord Day
+derive newtype instance eqDay :: Eq Day
+derive newtype instance ordDay :: Ord Day
 derive instance genericDay :: Generic Day
 
 instance boundedDay :: Bounded Day where

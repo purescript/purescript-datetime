@@ -7,6 +7,7 @@ import Control.Comonad (class Comonad, class Extend)
 import Data.DateTime (Date, Time, DateTime)
 import Data.Generic (class Generic)
 import Data.Maybe (Maybe)
+import Data.Newtype (class Newtype)
 import Data.Time.Duration (Minutes)
 
 -- | A date/time locale specifying an offset in minutes and an optional name for
@@ -23,8 +24,9 @@ instance showLocale :: Show Locale where
 -- | The name of a date/time locale. For example: "GMT", "MDT", "CET", etc.
 newtype LocaleName = LocaleName String
 
-derive instance eqLocaleName :: Eq LocaleName
-derive instance ordLocaleName :: Ord LocaleName
+derive instance newtypeLocaleName :: Newtype LocaleName _
+derive newtype instance eqLocaleName :: Eq LocaleName
+derive newtype instance ordLocaleName :: Ord LocaleName
 derive instance genericLocaleName :: Generic LocaleName
 
 instance showLocaleName :: Show LocaleName where

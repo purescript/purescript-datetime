@@ -15,8 +15,9 @@ import Data.Enum (fromEnum, toEnum)
 import Data.Generic (class Generic)
 import Data.Int as Int
 import Data.Maybe (fromJust)
+import Data.Newtype (unwrap)
 import Data.Time.Component (Hour, Millisecond, Minute, Second)
-import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), unMilliseconds, fromDuration, toDuration)
+import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), fromDuration, toDuration)
 import Data.Tuple (Tuple(..))
 
 import Math as Math
@@ -80,7 +81,7 @@ adjust d t =
     d' = fromDuration d
     tLength = timeToMillis t
     dayLength = 86400000.0
-    wholeDays = Days $ Math.floor (unMilliseconds d' / dayLength)
+    wholeDays = Days $ Math.floor (unwrap d' / dayLength)
     msAdjust = d' - fromDuration wholeDays
     msAdjusted = tLength + msAdjust
     wrap = if msAdjusted > maxTime then 1.0 else if msAdjusted < -maxTime then -1.0 else 0.0
@@ -100,9 +101,8 @@ timeToMillis t = Milliseconds
   + Int.toNumber (fromEnum (millisecond t))
 
 millisToTime :: Milliseconds -> Time
-millisToTime ms =
+millisToTime ms@(Milliseconds ms') =
   let
-    ms' = unMilliseconds ms
     hourLength = 3600000.0
     minuteLength = 60000.0
     secondLength = 1000.0

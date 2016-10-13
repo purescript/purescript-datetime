@@ -19,8 +19,8 @@ import Data.Maybe (Maybe(..))
 -- | lowered to a plain integer with the `fromEnum` function.
 newtype Hour = Hour Int
 
-derive instance eqHour :: Eq Hour
-derive instance ordHour :: Ord Hour
+derive newtype instance eqHour :: Eq Hour
+derive newtype instance ordHour :: Ord Hour
 derive instance genericHour :: Generic Hour
 
 instance boundedHour :: Bounded Hour where
@@ -49,8 +49,8 @@ instance showHour :: Show Hour where
 -- | be lowered to a plain integer with the `fromEnum` function.
 newtype Minute = Minute Int
 
-derive instance eqMinute :: Eq Minute
-derive instance ordMinute :: Ord Minute
+derive newtype instance eqMinute :: Eq Minute
+derive newtype instance ordMinute :: Ord Minute
 derive instance genericMinute :: Generic Minute
 
 instance boundedMinute :: Bounded Minute where
@@ -79,8 +79,8 @@ instance showMinute :: Show Minute where
 -- | be lowered to a plain integer with the `fromEnum` function.
 newtype Second = Second Int
 
-derive instance eqSecond :: Eq Second
-derive instance ordSecond :: Ord Second
+derive newtype instance eqSecond :: Eq Second
+derive newtype instance ordSecond :: Ord Second
 derive instance genericSecond :: Generic Second
 
 instance boundedSecond :: Bounded Second where
@@ -110,8 +110,8 @@ instance showSecond :: Show Second where
 -- | function.
 newtype Millisecond = Millisecond Int
 
-derive instance eqMillisecond :: Eq Millisecond
-derive instance ordMillisecond :: Ord Millisecond
+derive newtype instance eqMillisecond :: Eq Millisecond
+derive newtype instance ordMillisecond :: Ord Millisecond
 derive instance genericMillisecond :: Generic Millisecond
 
 instance boundedMillisecond :: Bounded Millisecond where
