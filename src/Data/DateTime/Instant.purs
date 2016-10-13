@@ -24,8 +24,8 @@ import Partial.Unsafe (unsafePartial)
 -- | `DateTime` type.
 newtype Instant = Instant Milliseconds
 
-derive instance eqDateTime :: Eq Instant
-derive instance ordDateTime :: Ord Instant
+derive newtype instance eqDateTime :: Eq Instant
+derive newtype instance ordDateTime :: Ord Instant
 derive instance genericDateTime :: Generic Instant
 
 instance boundedInstant :: Bounded Instant where

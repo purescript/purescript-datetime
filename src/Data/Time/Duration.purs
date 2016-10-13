@@ -3,25 +3,17 @@ module Data.Time.Duration where
 import Prelude
 
 import Data.Generic (class Generic)
+import Data.Newtype (class Newtype, over)
 
 -- | A duration measured in milliseconds.
 newtype Milliseconds = Milliseconds Number
 
-unMilliseconds :: Milliseconds -> Number
-unMilliseconds (Milliseconds ms) = ms
-
-derive instance eqMilliseconds :: Eq Milliseconds
-derive instance ordMilliseconds :: Ord Milliseconds
+derive instance newtypeMilliseconds :: Newtype Milliseconds _
 derive instance genericMilliseconds :: Generic Milliseconds
-
-instance semiringMilliseconds :: Semiring Milliseconds where
-  add (Milliseconds x) (Milliseconds y) = Milliseconds (x + y)
-  mul (Milliseconds x) (Milliseconds y) = Milliseconds (x * y)
-  zero = Milliseconds 0.0
-  one = Milliseconds 1.0
-
-instance ringMilliseconds :: Ring Milliseconds where
-  sub (Milliseconds x) (Milliseconds y) = Milliseconds (x - y)
+derive newtype instance eqMilliseconds :: Eq Milliseconds
+derive newtype instance ordMilliseconds :: Ord Milliseconds
+derive newtype instance semiringMilliseconds :: Semiring Milliseconds
+derive newtype instance ringMilliseconds :: Ring Milliseconds
 
 instance showMilliseconds :: Show Milliseconds where
   show (Milliseconds n) = "(Milliseconds " <> show n <> ")"
@@ -29,21 +21,12 @@ instance showMilliseconds :: Show Milliseconds where
 -- | A duration measured in seconds.
 newtype Seconds = Seconds Number
 
-unSeconds :: Seconds -> Number
-unSeconds (Seconds s) = s
-
-derive instance eqSeconds :: Eq Seconds
-derive instance ordSeconds :: Ord Seconds
+derive instance newtypeSeconds :: Newtype Seconds _
 derive instance genericSeconds :: Generic Seconds
-
-instance semiringSeconds :: Semiring Seconds where
-  add (Seconds x) (Seconds y) = Seconds (x + y)
-  mul (Seconds x) (Seconds y) = Seconds (x * y)
-  zero = Seconds 0.0
-  one = Seconds 1.0
-
-instance ringSeconds :: Ring Seconds where
-  sub (Seconds x) (Seconds y) = Seconds (x - y)
+derive newtype instance eqSeconds :: Eq Seconds
+derive newtype instance ordSeconds :: Ord Seconds
+derive newtype instance semiringSeconds :: Semiring Seconds
+derive newtype instance ringSeconds :: Ring Seconds
 
 instance showSeconds :: Show Seconds where
   show (Seconds n) = "(Seconds " <> show n <> ")"
@@ -51,21 +34,12 @@ instance showSeconds :: Show Seconds where
 -- | A duration measured in minutes.
 newtype Minutes = Minutes Number
 
-unMinutes :: Minutes -> Number
-unMinutes (Minutes m) = m
-
-derive instance eqMinutes :: Eq Minutes
-derive instance ordMinutes :: Ord Minutes
+derive instance newtypeMinutes :: Newtype Minutes _
 derive instance genericMinutes :: Generic Minutes
-
-instance semiringMinutes :: Semiring Minutes where
-  add (Minutes x) (Minutes y) = Minutes (x + y)
-  mul (Minutes x) (Minutes y) = Minutes (x * y)
-  zero = Minutes 0.0
-  one = Minutes 1.0
-
-instance ringMinutes :: Ring Minutes where
-  sub (Minutes x) (Minutes y) = Minutes (x - y)
+derive newtype instance eqMinutes :: Eq Minutes
+derive newtype instance ordMinutes :: Ord Minutes
+derive newtype instance semiringMinutes :: Semiring Minutes
+derive newtype instance ringMinutes :: Ring Minutes
 
 instance showMinutes :: Show Minutes where
   show (Minutes n) = "(Minutes " <> show n <> ")"
@@ -73,21 +47,12 @@ instance showMinutes :: Show Minutes where
 -- | A duration measured in hours.
 newtype Hours = Hours Number
 
-unHours :: Hours -> Number
-unHours (Hours m) = m
-
-derive instance eqHours :: Eq Hours
-derive instance ordHours :: Ord Hours
+derive instance newtypeHours :: Newtype Hours _
 derive instance genericHours :: Generic Hours
-
-instance semiringHours :: Semiring Hours where
-  add (Hours x) (Hours y) = Hours (x + y)
-  mul (Hours x) (Hours y) = Hours (x * y)
-  zero = Hours 0.0
-  one = Hours 1.0
-
-instance ringHours :: Ring Hours where
-  sub (Hours x) (Hours y) = Hours (x - y)
+derive newtype instance eqHours :: Eq Hours
+derive newtype instance ordHours :: Ord Hours
+derive newtype instance semiringHours :: Semiring Hours
+derive newtype instance ringHours :: Ring Hours
 
 instance showHours :: Show Hours where
   show (Hours n) = "(Hours " <> show n <> ")"
@@ -95,21 +60,12 @@ instance showHours :: Show Hours where
 -- | A duration measured in days, where a day is assumed to be exactly 24 hours.
 newtype Days = Days Number
 
-unDays :: Days -> Number
-unDays (Days m) = m
-
-derive instance eqDays :: Eq Days
-derive instance ordDays :: Ord Days
+derive instance newtypeDays :: Newtype Days _
 derive instance genericDays :: Generic Days
-
-instance semiringDays :: Semiring Days where
-  add (Days x) (Days y) = Days (x + y)
-  mul (Days x) (Days y) = Days (x * y)
-  zero = Days 0.0
-  one = Days 1.0
-
-instance ringDays :: Ring Days where
-  sub (Days x) (Days y) = Days (x - y)
+derive newtype instance eqDays :: Eq Days
+derive newtype instance ordDays :: Ord Days
+derive newtype instance semiringDays :: Semiring Days
+derive newtype instance ringDays :: Ring Days
 
 instance showDays :: Show Days where
   show (Days n) = "(Days " <> show n <> ")"
@@ -128,17 +84,17 @@ instance durationMilliseconds :: Duration Milliseconds where
   toDuration = id
 
 instance durationSeconds :: Duration Seconds where
-  fromDuration = Milliseconds <<< (_ * 1000.0) <<< unSeconds
-  toDuration (Milliseconds ms) = Seconds (ms / 1000.0)
+  fromDuration = over Seconds (_ * 1000.0)
+  toDuration = over Milliseconds (_ / 1000.0)
 
 instance durationMinutes :: Duration Minutes where
-  fromDuration = Milliseconds <<< (_ * 60000.0) <<< unMinutes
-  toDuration (Milliseconds ms) = Minutes (ms / 60000.0)
+  fromDuration = over Minutes (_ * 60000.0)
+  toDuration = over Milliseconds (_ / 60000.0)
 
 instance durationHours :: Duration Hours where
-  fromDuration = Milliseconds <<< (_ * 3600000.0) <<< unHours
-  toDuration (Milliseconds ms) = Hours (ms / 3600000.0)
+  fromDuration = over Hours (_ * 3600000.0)
+  toDuration = over Milliseconds (_ / 3600000.0)
 
 instance durationDays :: Duration Days where
-  fromDuration = Milliseconds <<< (_ * 86400000.0) <<< unDays
-  toDuration (Milliseconds ms) = Days (ms / 86400000.0)
+  fromDuration = over Days (_ * 86400000.0)
+  toDuration = over Milliseconds (_ / 86400000.0)

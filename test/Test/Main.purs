@@ -5,7 +5,7 @@ import Prelude
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 
-import Data.Enum (class BoundedEnum, Cardinality, toEnum, enumFromTo, cardinality, runCardinality, succ, fromEnum, pred)
+import Data.Enum (class BoundedEnum, Cardinality, toEnum, enumFromTo, cardinality, succ, fromEnum, pred)
 import Data.Date as Date
 import Data.Time as Time
 import Data.Time.Duration as Duration
@@ -14,6 +14,7 @@ import Data.DateTime as DateTime
 import Data.DateTime.Instant as Instant
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Tuple (Tuple(..), snd)
+import Data.Newtype (unwrap)
 
 import Type.Proxy (Proxy(..))
 import Test.Assert (ASSERT, assert)
@@ -144,5 +145,5 @@ checkBounded _ = do
 checkBoundedEnum :: forall e. BoundedEnum e => Proxy e -> Tests
 checkBoundedEnum p = do
   checkBounded p
-  let card = runCardinality (cardinality :: Cardinality e)
+  let card = unwrap (cardinality :: Cardinality e)
   assert $ Array.length (enumFromTo bottom (top :: e)) == card
