@@ -1,22 +1,24 @@
 module Test.Main where
 
 import Prelude
-import Data.Array as Array
-import Data.Date as Date
-import Data.DateTime as DateTime
-import Data.DateTime.Instant as Instant
-import Data.Time as Time
-import Data.Time.Duration as Duration
+
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
-import Data.Date (isLeapYear)
+
 import Data.Enum (class BoundedEnum, Cardinality, toEnum, enumFromTo, cardinality, succ, fromEnum, pred)
+import Data.Date as Date
+import Data.Time as Time
+import Data.Time.Duration as Duration
+import Data.Array as Array
+import Data.DateTime as DateTime
+import Data.DateTime.Instant as Instant
 import Data.Maybe (Maybe(..), fromJust)
-import Data.Newtype (unwrap)
 import Data.Tuple (Tuple(..), snd)
-import Partial.Unsafe (unsafePartial)
-import Test.Assert (ASSERT, assert)
+import Data.Newtype (unwrap)
+
 import Type.Proxy (Proxy(..))
+import Test.Assert (ASSERT, assert)
+import Partial.Unsafe (unsafePartial)
 
 type Tests = Eff (console :: CONSOLE, assert :: ASSERT) Unit
 
@@ -98,8 +100,8 @@ main = do
 
   let unsafeYear = unsafePartial fromJust <<< toEnum
   log "Check that isLeapYear behaves as expected"
-  assert $ not $ isLeapYear (unsafeYear 2017)
-  assert $ isLeapYear (unsafeYear 2016)
+  assert $ not $ Date.isLeapYear (unsafeYear 2017)
+  assert $ Date.isLeapYear (unsafeYear 2016)
 
 
   -- datetime ----------------------------------------------------------------
