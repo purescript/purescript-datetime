@@ -98,6 +98,12 @@ main = do
   log "Check that diff behaves as expected"
   assert $ Date.diff d2 d1 == Duration.Days 29.0
 
+  let unsafeYear = unsafePartial fromJust <<< toEnum
+  log "Check that isLeapYear behaves as expected"
+  assert $ not $ Date.isLeapYear (unsafeYear 2017)
+  assert $ Date.isLeapYear (unsafeYear 2016)
+
+
   -- datetime ----------------------------------------------------------------
 
   let dt1 = DateTime.DateTime d1 t1
