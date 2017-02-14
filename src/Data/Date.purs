@@ -7,6 +7,7 @@ module Data.Date
   , day
   , weekday
   , diff
+  , isLeapYear
   , module Data.Date.Component
   ) where
 
@@ -75,6 +76,12 @@ weekday = unsafePartial \(Date y m d) ->
 diff :: forall d. Duration d => Date -> Date -> d
 diff (Date y1 m1 d1) (Date y2 m2 d2) =
   toDuration $ runFn6 calcDiff y1 (fromEnum m1) d1 y2 (fromEnum m2) d2
+
+-- | Is this year a leap year according to the proleptic Gregorian calendar?
+isLeapYear :: Year -> Boolean
+isLeapYear y = (mod y' 4 == 0) && ((mod y' 400 == 0) || not (mod y' 100 == 0))
+  where
+  y' = fromEnum y
 
 -- TODO: these could (and probably should) be implemented in PS
 foreign import canonicalDateImpl :: Fn4 (Year -> Int -> Day -> Date) Year Int Day Date

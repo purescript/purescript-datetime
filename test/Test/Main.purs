@@ -1,24 +1,22 @@
 module Test.Main where
 
 import Prelude
-
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
-
-import Data.Enum (class BoundedEnum, Cardinality, toEnum, enumFromTo, cardinality, succ, fromEnum, pred)
-import Data.Date as Date
-import Data.Time as Time
-import Data.Time.Duration as Duration
 import Data.Array as Array
+import Data.Date as Date
 import Data.DateTime as DateTime
 import Data.DateTime.Instant as Instant
+import Data.Time as Time
+import Data.Time.Duration as Duration
+import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Console (CONSOLE, log)
+import Data.Date (isLeapYear)
+import Data.Enum (class BoundedEnum, Cardinality, toEnum, enumFromTo, cardinality, succ, fromEnum, pred)
 import Data.Maybe (Maybe(..), fromJust)
-import Data.Tuple (Tuple(..), snd)
 import Data.Newtype (unwrap)
-
-import Type.Proxy (Proxy(..))
-import Test.Assert (ASSERT, assert)
+import Data.Tuple (Tuple(..), snd)
 import Partial.Unsafe (unsafePartial)
+import Test.Assert (ASSERT, assert)
+import Type.Proxy (Proxy(..))
 
 type Tests = Eff (console :: CONSOLE, assert :: ASSERT) Unit
 
@@ -97,6 +95,12 @@ main = do
 
   log "Check that diff behaves as expected"
   assert $ Date.diff d2 d1 == Duration.Days 29.0
+
+  let unsafeYear = unsafePartial fromJust <<< toEnum
+  log "Check that isLeapYear behaves as expected"
+  assert $ not $ isLeapYear (unsafeYear 2017)
+  assert $ isLeapYear (unsafeYear 2016)
+
 
   -- datetime ----------------------------------------------------------------
 
