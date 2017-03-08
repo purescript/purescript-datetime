@@ -92,17 +92,18 @@ main = do
   assert $ Date.weekday (unsafePartial fromJust $ Date.canonicalDate <$> toEnum 2016 <*> pure Date.June <*> toEnum 11) == Date.Saturday
   assert $ Date.weekday (unsafePartial fromJust $ Date.canonicalDate <$> toEnum 2016 <*> pure Date.June <*> toEnum 12) == Date.Sunday
 
-  let d1 = unsafePartial fromJust $ Date.canonicalDate <$> toEnum 2016 <*> pure Date.June <*> toEnum 1
-  let d2 = unsafePartial fromJust $ Date.canonicalDate <$> toEnum 2016 <*> pure Date.June <*> toEnum 30
+  let d1 = unsafePartial fromJust $ Date.canonicalDate <$> toEnum 2016 <*> pure Date.January <*> toEnum 1
+  let d2 = unsafePartial fromJust $ Date.canonicalDate <$> toEnum 2016 <*> pure Date.February <*> toEnum 1
+  let d3 = unsafePartial fromJust $ Date.canonicalDate <$> toEnum 2016 <*> pure Date.March <*> toEnum 1
 
   log "Check that diff behaves as expected"
-  assert $ Date.diff d2 d1 == Duration.Days 29.0
+  assert $ Date.diff d2 d1 == Duration.Days 31.0
+  assert $ Date.diff d3 d2 == Duration.Days 29.0
 
   let unsafeYear = unsafePartial fromJust <<< toEnum
   log "Check that isLeapYear behaves as expected"
   assert $ not $ Date.isLeapYear (unsafeYear 2017)
   assert $ Date.isLeapYear (unsafeYear 2016)
-
 
   -- datetime ----------------------------------------------------------------
 
@@ -110,16 +111,18 @@ main = do
   let dt2 = DateTime.DateTime d1 t2
   let dt3 = DateTime.DateTime d2 t1
   let dt4 = DateTime.DateTime d2 t2
+  let dt5 = DateTime.DateTime d3 t1
 
   log "Check that adjust behaves as expected"
-  assert $ DateTime.adjust (Duration.fromDuration (Duration.Days 29.0) + Duration.fromDuration (Duration.Minutes 40.0)) dt1 == Just dt4
+  assert $ DateTime.adjust (Duration.fromDuration (Duration.Days 31.0) + Duration.fromDuration (Duration.Minutes 40.0)) dt1 == Just dt4
 
   log "Check that diff behaves as expected"
   assert $ DateTime.diff dt2 dt1 == Duration.Minutes 40.0
   assert $ DateTime.diff dt1 dt2 == Duration.Minutes (-40.0)
-  assert $ DateTime.diff dt3 dt1 == Duration.Days 29.0
-  assert $ DateTime.diff dt1 dt3 == Duration.Days (-29.0)
-  assert $ DateTime.diff dt4 dt1 == Duration.fromDuration (Duration.Days 29.0) + Duration.fromDuration (Duration.Minutes 40.0)
+  assert $ DateTime.diff dt3 dt1 == Duration.Days 31.0
+  assert $ DateTime.diff dt5 dt3 == Duration.Days 29.0
+  assert $ DateTime.diff dt1 dt3 == Duration.Days (-31.0)
+  assert $ DateTime.diff dt4 dt1 == Duration.fromDuration (Duration.Days 31.0) + Duration.fromDuration (Duration.Minutes 40.0)
 
   -- instant -----------------------------------------------------------------
 
