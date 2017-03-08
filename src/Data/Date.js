@@ -10,7 +10,7 @@ exports.calcWeekday = function (y, m, d) {
 };
 
 exports.calcDiff = function (y1, m1, d1, y2, m2, d2) {
-  var dt1 = new Date(Date.UTC(y1, m1, d1));
-  var dt2 = new Date(Date.UTC(y2, m2, d2));
+  var dt1 = new Date(Date.UTC(y1, m1 - 1, d1));
+  var dt2 = new Date(Date.UTC(y2, m2 - 1, d2));
   return dt1.getTime() - dt2.getTime();
 };
