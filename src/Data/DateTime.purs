@@ -1,7 +1,11 @@
 module Data.DateTime
   ( DateTime(..)
   , date
+  , modifyDate
+  , modifyDateF
   , time
+  , modifyTime
+  , modifyTimeF
   , adjust
   , diff
   , module Data.Date
@@ -35,8 +39,20 @@ instance showDateTime :: Show DateTime where
 date :: DateTime -> Date
 date (DateTime d _) = d
 
+modifyDate :: (Date -> Date) -> DateTime -> DateTime
+modifyDate f (DateTime d t) = DateTime (f d) t
+
+modifyDateF :: forall f. Functor f => (Date -> f Date) -> DateTime -> f DateTime
+modifyDateF f (DateTime d t) = flip DateTime t <$> f d
+
 time :: DateTime -> Time
 time (DateTime _ t) = t
+
+modifyTime :: (Time -> Time) -> DateTime -> DateTime
+modifyTime f (DateTime d t) = DateTime d (f t)
+
+modifyTimeF :: forall f. Functor f => (Time -> f Time) -> DateTime -> f DateTime
+modifyTimeF f (DateTime d t) = DateTime d <$> f t
 
 -- | Adjusts a date/time value with a duration offset. `Nothing` is returned
 -- | if the resulting date would be outside of the range of valid dates.
