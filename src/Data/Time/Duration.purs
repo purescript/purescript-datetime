@@ -76,7 +76,7 @@ class Duration a where
   toDuration :: Milliseconds -> a
 
 -- | Converts directly between durations of differing types.
-convertDuration :: forall a b. (Duration a, Duration b) => a -> b
+convertDuration :: forall a b. Duration a => Duration b => a -> b
 convertDuration = toDuration <<< fromDuration
 
 instance durationMilliseconds :: Duration Milliseconds where

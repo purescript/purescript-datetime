@@ -7,9 +7,6 @@ exports.fromDateTimeImpl = function (y, mo, d, h, mi, s, ms) {
 exports.toDateTimeImpl = function (ctor) {
   return function (instant) {
     var dt = new Date(instant);
-    return ctor
-      (dt.getUTCFullYear())(dt.getUTCMonth() + 1)(dt.getUTCDate())
-      (dt.getUTCHours())(dt.getUTCMinutes())(dt.getUTCSeconds())
-      (dt.getUTCMilliseconds());
+    return ctor (dt.getUTCFullYear())(dt.getUTCMonth() + 1)(dt.getUTCDate())(dt.getUTCHours())(dt.getUTCMinutes())(dt.getUTCSeconds())(dt.getUTCMilliseconds());
   };
 };
