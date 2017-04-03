@@ -19,8 +19,6 @@ data Duration
     { year :: Year
     , month :: Month
     , day :: Day
-    , week :: Week
-    , day :: Day
     , hours :: Hours
     , minutes :: Minutes
     , seconds :: Seconds
@@ -31,7 +29,6 @@ data Year = Int
 data Month = Int
 data Day = Int
 data Week = Int
-data Day = Int
 data Hours = Int
 data Minutes = Int
 data Seconds = Int
