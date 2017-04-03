@@ -6,10 +6,6 @@ module Data.Interval
 
 import Prelude
 
-import Data.Date as Date
-import Data.Inteval.Duration as Duration
-import Data.Time as Time
-
 data Interval a
   = StartEnd      a a
   | StartDuration Duration a
