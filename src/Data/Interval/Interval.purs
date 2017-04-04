@@ -1,7 +1,9 @@
 module Data.Interval
   ( Duration
-  , Interval
-  , RecurringInterval
+  , Interval(..)
+  , RecurringInterval(..)
+  , DurationView
+  , mkDuration
   , year
   , month
   , week
@@ -10,12 +12,14 @@ module Data.Interval
   , minutes
   , seconds
   , milliseconds
-  , mkDuration
-  , DurationView
   ) where
 
 import Prelude
+
+import Data.Foldable (class Foldable, foldrDefault, foldMapDefaultL)
+import Data.Traversable (class Traversable, sequenceDefault)
 import Data.Monoid (class Monoid, mempty)
+import Control.Extend (class Extend)
 
 import Data.Maybe (Maybe)
 import Data.List (List(..), (:), filter)
@@ -26,9 +30,42 @@ data RecurringInterval a = RecurringInterval (Maybe Int) (Interval a)
 
 data Interval a
   = StartEnd      a a
-  | StartDuration Duration a
-  | DurationEnd   a Duration
+  | DurationEnd   Duration a
+  | StartDuration a Duration
   | JustDuration  Duration
+
+instance showInterval ∷ (Show a) => Show (Interval a) where
+  show (StartEnd x y) = "(StartEnd " <> show x <> " " <> show y <> ")"
+  show (DurationEnd d x) = "(DurationEnd " <> show d <> " " <> show x <> ")"
+  show (StartDuration x d) = "(StartDuration " <> show x <> " " <> show d <> ")"
+  show (JustDuration d) = "(JustDuration " <> show d <> ")"
+
+instance functorInterval ∷ Functor Interval where
+  map f (StartEnd x y) = StartEnd (f x) (f y )
+  map f (DurationEnd d x) = DurationEnd d (f x )
+  map f (StartDuration x d) = StartDuration (f x) d
+  map _ (JustDuration d) = JustDuration d
+
+instance foldableInterval ∷ Foldable Interval where
+  foldl f z (StartEnd x y) = (z `f` x) `f` y
+  foldl f z (DurationEnd d x) = z `f` x
+  foldl f z (StartDuration x d) = z `f` x
+  foldl _ z _  = z
+  foldr x = foldrDefault x
+  foldMap = foldMapDefaultL
+
+instance traversableInterval ∷ Traversable Interval where
+  traverse f (StartEnd x y) = StartEnd <$> f x  <*> f y
+  traverse f (DurationEnd d x) = f x <#> DurationEnd d
+  traverse f (StartDuration x d) = f x <#> (_ `StartDuration` d)
+  traverse _ (JustDuration d)  = pure (JustDuration d)
+  sequence = sequenceDefault
+
+instance extendInterval ∷ Extend Interval where
+  extend f a@(StartEnd x y) = StartEnd (f a) (f a )
+  extend f a@(DurationEnd d x) = DurationEnd d (f a )
+  extend f a@(StartDuration x d) = StartDuration (f a) d
+  extend f (JustDuration d) = JustDuration d
 
 type DurationView =
   { year ∷ Number
@@ -55,25 +92,33 @@ mkDuration d = Duration $
 data Duration = Duration DurationIn
 type DurationIn = List (Tuple DurationComponent Number)
 
--- TODO maybe we should implement custom Eq and Ord
 derive instance eqDuration ∷ Eq Duration
+instance showDuration ∷ Show Duration where
+  show (Duration d)= "(Duration " <> show d <> ")"
+
 
 data DurationComponent = Year | Month | Day | Hours | Minutes | Seconds | Milliseconds
+
+instance showDurationComponent ∷ Show DurationComponent where
+  show Year = "Year"
+  show Month = "Month"
+  show Day = "Day"
+  show Hours = "Hours"
+  show Minutes = "Minutes"
+  show Seconds = "Seconds"
+  show Milliseconds= "Millisecond"
+
 derive instance eqDurationComponent ∷ Eq DurationComponent
 derive instance ordDurationComponent ∷ Ord DurationComponent
 
 appendComponents ∷ DurationIn → DurationIn → DurationIn
 appendComponents Nil x = x
 appendComponents x Nil = x
-appendComponents ass@(a@(Tuple aC aV) : as) bss@(b@(Tuple bC bV) : bs) =
-  if aC == bC then Tuple aC (aV + bV) : appendComponents as bs
-  else if aC >  bC then a : appendComponents as bss
-  else b : appendComponents ass bs
-
--- appendComponents ass@(a:as) bss@(b:bs) = case a, b of
---   Tuple xC xV, Tuple yC yV | xC == yC → Tuple xC (xV + yV) : appendComponents as bs
---   Tuple xC xV, Tuple yC yV | xC >  yC → a : appendComponents as bss
---   Tuple xC xV, Tuple yC yV | xC <  yC → b : appendComponents ass bs
+appendComponents ass@(a:as) bss@(b:bs) = case a, b of
+  Tuple aC aV, Tuple bC bV
+    | aC >  bC → a : appendComponents as bss
+    | aC <  bC → b : appendComponents ass bs
+    | otherwise → Tuple aC (aV + bV) : appendComponents as bs
 
 instance semigroupDuration ∷ Semigroup Duration where
   append (Duration a) (Duration b) = Duration (appendComponents a b)
