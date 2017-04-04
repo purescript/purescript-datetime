@@ -9,11 +9,13 @@ import Data.Enum (class BoundedEnum, Cardinality, toEnum, enumFromTo, cardinalit
 import Data.Date as Date
 import Data.Time as Time
 import Data.Time.Duration as Duration
+import Data.Interval as Interval
 import Data.Array as Array
 import Data.DateTime as DateTime
 import Data.DateTime.Instant as Instant
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Tuple (Tuple(..), snd)
+import Data.Monoid (mempty)
 import Data.Newtype (unwrap)
 
 import Type.Proxy (Proxy(..))
@@ -24,7 +26,17 @@ type Tests = Eff (console :: CONSOLE, assert :: ASSERT) Unit
 
 main :: Tests
 main = do
-
+  log "check Duration monoid"
+  let id1 = Interval.mkDuration $
+      { year: 1.0
+      , month: 0.0
+      , day: 0.0
+      , hours: 0.0
+      , minutes: 0.0
+      , seconds: 0.0
+      , milliseconds: 0.0
+      }
+  assert $ id1 == (mempty <> Interval.year 2.0 <> Interval.year 1.0 <> Interval.year (-2.0))
   -- time --------------------------------------------------------------------
 
   log "Check that Hour is a good BoundedEnum"
