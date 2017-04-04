@@ -67,6 +67,30 @@ instance extendInterval ∷ Extend Interval where
   extend f a@(StartDuration x d) = StartDuration (f a) d
   extend f (JustDuration d) = JustDuration d
 
+data Duration = Duration DurationIn
+type DurationIn = List (Tuple DurationComponent Number)
+
+-- TODO `day 1 == hours 24`
+derive instance eqDuration ∷ Eq Duration
+instance showDuration ∷ Show Duration where
+  show (Duration d)= "(Duration " <> show d <> ")"
+
+instance semigroupDuration ∷ Semigroup Duration where
+  append (Duration a) (Duration b) = Duration (appendComponents a b)
+
+instance monoidDuration ∷ Monoid Duration where
+  mempty = Duration mempty
+
+appendComponents ∷ DurationIn → DurationIn → DurationIn
+appendComponents Nil x = x
+appendComponents x Nil = x
+appendComponents ass@(a:as) bss@(b:bs) = case a, b of
+  Tuple aC aV, Tuple bC bV
+    | aC >  bC → a : appendComponents as bss
+    | aC <  bC → b : appendComponents ass bs
+    | otherwise → Tuple aC (aV + bV) : appendComponents as bs
+
+
 type DurationView =
   { year ∷ Number
   , month ∷ Number
@@ -89,14 +113,6 @@ mkDuration d = Duration $
   : Nil
   ) # filter (\(Tuple _ v) → v /= 0.0)
 
-data Duration = Duration DurationIn
-type DurationIn = List (Tuple DurationComponent Number)
-
-derive instance eqDuration ∷ Eq Duration
-instance showDuration ∷ Show Duration where
-  show (Duration d)= "(Duration " <> show d <> ")"
-
-
 data DurationComponent = Year | Month | Day | Hours | Minutes | Seconds | Milliseconds
 
 instance showDurationComponent ∷ Show DurationComponent where
@@ -110,22 +126,6 @@ instance showDurationComponent ∷ Show DurationComponent where
 
 derive instance eqDurationComponent ∷ Eq DurationComponent
 derive instance ordDurationComponent ∷ Ord DurationComponent
-
-appendComponents ∷ DurationIn → DurationIn → DurationIn
-appendComponents Nil x = x
-appendComponents x Nil = x
-appendComponents ass@(a:as) bss@(b:bs) = case a, b of
-  Tuple aC aV, Tuple bC bV
-    | aC >  bC → a : appendComponents as bss
-    | aC <  bC → b : appendComponents ass bs
-    | otherwise → Tuple aC (aV + bV) : appendComponents as bs
-
-instance semigroupDuration ∷ Semigroup Duration where
-  append (Duration a) (Duration b) = Duration (appendComponents a b)
-
-instance monoidDuration ∷ Monoid Duration where
-  mempty = Duration mempty
-
 
 week ∷ Number → Duration
 week = Duration <<< pure <<< Tuple Day <<< (_ * 7.0)
