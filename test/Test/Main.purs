@@ -25,6 +25,12 @@ type Tests = Eff (console :: CONSOLE, assert :: ASSERT) Unit
 main :: Tests
 main = do
 
+  let epochDate = unsafePartial fromJust $ Date.canonicalDate
+                  <$> toEnum 1
+                  <*> pure bottom
+                  <*> pure bottom
+  let epochDateTime = DateTime.DateTime epochDate bottom
+  let epochMillis = -62135596800000.0
   -- time --------------------------------------------------------------------
 
   log "Check that Hour is a good BoundedEnum"
@@ -105,6 +111,11 @@ main = do
   assert $ not $ Date.isLeapYear (unsafeYear 2017)
   assert $ Date.isLeapYear (unsafeYear 2016)
 
+  log "Check that epoch is correctly constructed"
+  assert $ Just (Date.year epochDate) == toEnum 1
+  assert $ Date.month epochDate == bottom
+  assert $ Date.day epochDate == bottom
+
   -- datetime ----------------------------------------------------------------
 
   let dt1 = DateTime.DateTime d1 t1
@@ -133,6 +144,9 @@ main = do
   log "Check that the latest date is a valid Instant"
   let topInstant = Instant.fromDateTime top
   assert $ Just topInstant == Instant.instant (Instant.unInstant topInstant)
+
+  log "Check that an Instant can be constructed from epoch"
+  assert $ (Instant.unInstant $ Instant.fromDateTime epochDateTime) == Duration.Milliseconds epochMillis
 
   log "Check that instant/datetime conversion is bijective"
   assert $ Instant.toDateTime (Instant.fromDateTime bottom) == bottom

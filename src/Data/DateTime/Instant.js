@@ -1,7 +1,15 @@
 "use strict";
 
+var createDateTime = function (y, m, d, h, mi, s, ms) {
+  var dateTime = new Date(Date.UTC(y, m, d, h, mi, s, ms));
+  if (y >= 0 && y < 100) {
+    dateTime.setUTCFullYear(y);
+  }
+  return dateTime;
+};
+
 exports.fromDateTimeImpl = function (y, mo, d, h, mi, s, ms) {
-  return new Date(Date.UTC(y, mo - 1, d, h, mi, s, ms)).getTime();
+  return createDateTime(y, mo - 1, d, h, mi, s, ms).getTime();
 };
 
 exports.toDateTimeImpl = function (ctor) {
