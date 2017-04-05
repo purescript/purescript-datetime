@@ -11,8 +11,12 @@ import Data.Time as Time
 import Data.Time.Duration as Duration
 import Data.Array as Array
 import Data.DateTime as DateTime
+import Data.DateTime.Locale as Locale
 import Data.DateTime.Instant as Instant
+import Data.Foldable (foldl, foldr, foldMap)
 import Data.Maybe (Maybe(..), fromJust)
+import Data.String (length)
+import Data.Traversable (sequence, traverse)
 import Data.Tuple (Tuple(..), snd)
 import Data.Newtype (unwrap)
 
@@ -141,6 +145,31 @@ main = do
   assert $ Instant.toDateTime (Instant.fromDateTime dt2) == dt2
   assert $ Instant.toDateTime (Instant.fromDateTime dt3) == dt3
   assert $ Instant.toDateTime (Instant.fromDateTime dt4) == dt4
+
+  -- locale ------------------------------------------------------------------
+
+  let locale = Locale.Locale (Just $ Locale.LocaleName "UTC")
+               $ Duration.Minutes 0.0
+  let crLocalVal = Locale.LocalValue locale
+
+  log "Check that LocalValue folds left"
+  assert $ foldl (<>) "prepend " (crLocalVal "foo") == "prepend foo"
+
+  log "Check that LocalValue folds right"
+  assert $ foldr (<>) " append" (crLocalVal "foo") == "foo append"
+
+  log "Check that LocalValue fold-maps"
+  assert $ foldMap ((<>) "prepend ") (crLocalVal "foo") == "prepend foo"
+
+  log "Check that LocalValue sequences"
+  assert $ sequence (Locale.LocalValue locale $ Just "foo")
+           == (Just $ Locale.LocalValue locale "foo")
+  assert $ sequence (Locale.LocalValue locale (Nothing :: Maybe Int))
+           == Nothing
+
+  log "Check that LocalValue traverses"
+  assert $ traverse (Just <<< length) (crLocalVal "foo")
+           == (Just $ Locale.LocalValue locale 3)
 
   log "All tests done"
 

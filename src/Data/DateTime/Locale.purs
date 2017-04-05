@@ -1,14 +1,14 @@
 module Data.DateTime.Locale where
 
 import Prelude
-
 import Control.Comonad (class Comonad, class Extend)
-
 import Data.DateTime (Date, Time, DateTime)
+import Data.Foldable (class Foldable)
 import Data.Generic (class Generic)
 import Data.Maybe (Maybe)
 import Data.Newtype (class Newtype)
 import Data.Time.Duration (Minutes)
+import Data.Traversable (class Traversable, traverse)
 
 -- | A date/time locale specifying an offset in minutes and an optional name for
 -- | the locale.
@@ -54,6 +54,15 @@ instance extendLocalValue :: Extend LocalValue where
 
 instance comonadLocalValue :: Comonad LocalValue where
   extract (LocalValue _ a) = a
+
+instance foldableLocalValue :: Foldable LocalValue where
+  foldl f b (LocalValue _ a) = f b a
+  foldr f b (LocalValue _ a) = f a b
+  foldMap f (LocalValue _ a) = f a
+
+instance traversableLocalValue :: Traversable LocalValue where
+  traverse f (LocalValue n a) = LocalValue <$> pure n <*> f a
+  sequence = traverse id
 
 -- | A date value with a locale.
 type LocalDate = LocalValue Date
