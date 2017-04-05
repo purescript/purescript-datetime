@@ -89,7 +89,7 @@ appendComponents ass@(a:as) bss@(b:bs) = case a, b of
     | aC <  bC → b : appendComponents ass bs
     | otherwise → Tuple aC (aV + bV) : appendComponents as bs
 
-data DurationComponent = Year | Month | Day | Hours | Minutes | Seconds
+data DurationComponent =  Seconds | Minutes | Hours | Day | Month | Year
 
 instance showDurationComponent ∷ Show DurationComponent where
   show Year = "Year"
