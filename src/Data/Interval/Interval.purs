@@ -2,8 +2,6 @@ module Data.Interval
   ( Duration
   , Interval(..)
   , RecurringInterval(..)
-  , DurationView
-  , mkDuration
   , year
   , month
   , week
@@ -22,7 +20,7 @@ import Data.Monoid (class Monoid, mempty)
 import Control.Extend (class Extend)
 
 import Data.Maybe (Maybe)
-import Data.List (List(..), (:), filter)
+import Data.List (List(..), (:))
 import Data.Tuple (Tuple(..))
 
 
@@ -67,6 +65,7 @@ instance extendInterval ∷ Extend Interval where
   extend f a@(StartDuration x d) = StartDuration (f a) d
   extend f (JustDuration d) = JustDuration d
 
+
 data Duration = Duration DurationIn
 type DurationIn = List (Tuple DurationComponent Number)
 
@@ -90,30 +89,7 @@ appendComponents ass@(a:as) bss@(b:bs) = case a, b of
     | aC <  bC → b : appendComponents ass bs
     | otherwise → Tuple aC (aV + bV) : appendComponents as bs
 
-
-type DurationView =
-  { year ∷ Number
-  , month ∷ Number
-  , day ∷ Number
-  , hours ∷ Number
-  , minutes ∷ Number
-  , seconds ∷ Number
-  , milliseconds ∷ Number
-  }
-
-mkDuration ∷ DurationView → Duration
-mkDuration d = Duration $
-  ( Tuple Year d.year
-  : Tuple Month d.month
-  : Tuple Day d.day
-  : Tuple Hours d.hours
-  : Tuple Minutes d.minutes
-  : Tuple Seconds d.seconds
-  : Tuple Milliseconds d.milliseconds
-  : Nil
-  ) # filter (\(Tuple _ v) → v /= 0.0)
-
-data DurationComponent = Year | Month | Day | Hours | Minutes | Seconds | Milliseconds
+data DurationComponent = Year | Month | Day | Hours | Minutes | Seconds
 
 instance showDurationComponent ∷ Show DurationComponent where
   show Year = "Year"
@@ -122,31 +98,35 @@ instance showDurationComponent ∷ Show DurationComponent where
   show Hours = "Hours"
   show Minutes = "Minutes"
   show Seconds = "Seconds"
-  show Milliseconds= "Millisecond"
 
 derive instance eqDurationComponent ∷ Eq DurationComponent
 derive instance ordDurationComponent ∷ Ord DurationComponent
 
+
 week ∷ Number → Duration
-week = Duration <<< pure <<< Tuple Day <<< (_ * 7.0)
+week = durationFromComponent Day <<< (_ * 7.0)
 
 year ∷ Number → Duration
-year = Duration <<< pure <<< Tuple Year
+year = durationFromComponent Year
 
 month ∷ Number → Duration
-month = Duration <<< pure <<< Tuple Month
+month = durationFromComponent Month
 
 day ∷ Number → Duration
-day = Duration <<< pure <<< Tuple Day
+day = durationFromComponent Day
 
 hours ∷ Number → Duration
-hours = Duration <<< pure <<< Tuple Hours
+hours = durationFromComponent Hours
 
 minutes ∷ Number → Duration
-minutes = Duration <<< pure <<< Tuple Minutes
+minutes = durationFromComponent Minutes
 
 seconds ∷ Number → Duration
-seconds = Duration <<< pure <<< Tuple Seconds
+seconds = durationFromComponent Seconds
 
 milliseconds ∷ Number → Duration
-milliseconds = Duration <<< pure <<< Tuple Milliseconds
+milliseconds = durationFromComponent Seconds <<< (_ / 1000.0)
+
+durationFromComponent ∷ DurationComponent → Number →  Duration
+durationFromComponent c 0.0 = mempty
+durationFromComponent c n = Duration $ pure $ Tuple c n

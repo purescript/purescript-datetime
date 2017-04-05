@@ -27,16 +27,9 @@ type Tests = Eff (console :: CONSOLE, assert :: ASSERT) Unit
 main :: Tests
 main = do
   log "check Duration monoid"
-  let id1 = Interval.mkDuration $
-      { year: 1.0
-      , month: 0.0
-      , day: 0.0
-      , hours: 0.0
-      , minutes: 0.0
-      , seconds: 0.0
-      , milliseconds: 0.0
-      }
-  assert $ id1 == (mempty <> Interval.year 2.0 <> Interval.year 1.0 <> Interval.year (-2.0))
+  assert $ Interval.year 1.0 == mempty <> Interval.year 2.0 <> Interval.year 1.0 <> Interval.year (-2.0)
+  assert $ Interval.seconds 0.5 == Interval.milliseconds 500.0
+  assert $ Interval.week 1.0 == Interval.day 7.0
   -- time --------------------------------------------------------------------
 
   log "Check that Hour is a good BoundedEnum"
