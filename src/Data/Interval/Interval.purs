@@ -18,6 +18,7 @@ import Prelude
 import Control.Extend (class Extend)
 import Data.Bifunctor (class Bifunctor, bimap)
 import Data.Foldable (class Foldable, foldrDefault, foldMapDefaultL)
+import Data.Bifoldable (class Bifoldable, bifoldrDefault, bifoldMapDefaultL)
 import Data.List (List(..), (:))
 import Data.Maybe (Maybe)
 import Data.Monoid (class Monoid, mempty)
@@ -55,6 +56,14 @@ instance foldableInterval ∷ Foldable (Interval d) where
   foldl _ z _  = z
   foldr x = foldrDefault x
   foldMap = foldMapDefaultL
+
+instance bifoldableInterval ∷ Bifoldable Interval where
+  bifoldl _ f z (StartEnd x y) = (z `f` x) `f` y
+  bifoldl g f z (DurationEnd d x) = (z `g` d) `f` x
+  bifoldl g f z (StartDuration x d) = (z `g` d) `f` x
+  bifoldl g _ z (JustDuration d)  = z `g` d
+  bifoldr x = bifoldrDefault x
+  bifoldMap = bifoldMapDefaultL
 
 instance traversableInterval ∷ Traversable (Interval d) where
   traverse f (StartEnd x y) = StartEnd <$> f x  <*> f y
