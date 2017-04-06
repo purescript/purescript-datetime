@@ -1,3 +1,5 @@
+-- TODO commiting this temporarly as depending on my fork of datetime is
+-- not possibel as this module is not updated to ps@0.11
 module Data.Interval
   ( Duration
   , Interval(..)
@@ -13,38 +15,40 @@ module Data.Interval
   ) where
 
 import Prelude
-
-import Data.Foldable (class Foldable, foldrDefault, foldMapDefaultL)
-import Data.Traversable (class Traversable, sequenceDefault)
-import Data.Monoid (class Monoid, mempty)
 import Control.Extend (class Extend)
-
-import Data.Maybe (Maybe)
+import Data.Bifunctor (class Bifunctor, bimap)
+import Data.Foldable (class Foldable, foldrDefault, foldMapDefaultL)
 import Data.List (List(..), (:))
+import Data.Maybe (Maybe)
+import Data.Monoid (class Monoid, mempty)
+import Data.Traversable (class Traversable, sequenceDefault)
 import Data.Tuple (Tuple(..))
 
 
-data RecurringInterval a = RecurringInterval (Maybe Int) (Interval a)
+data RecurringInterval d a = RecurringInterval (Maybe Int) (Interval d a)
 
-data Interval a
+data Interval d a
   = StartEnd      a a
-  | DurationEnd   Duration a
-  | StartDuration a Duration
-  | JustDuration  Duration
+  | DurationEnd   d a
+  | StartDuration a d
+  | JustDuration  d
 
-instance showInterval ∷ (Show a) => Show (Interval a) where
+instance showInterval ∷ (Show d, Show a) => Show (Interval d a) where
   show (StartEnd x y) = "(StartEnd " <> show x <> " " <> show y <> ")"
   show (DurationEnd d x) = "(DurationEnd " <> show d <> " " <> show x <> ")"
   show (StartDuration x d) = "(StartDuration " <> show x <> " " <> show d <> ")"
   show (JustDuration d) = "(JustDuration " <> show d <> ")"
 
-instance functorInterval ∷ Functor Interval where
-  map f (StartEnd x y) = StartEnd (f x) (f y )
-  map f (DurationEnd d x) = DurationEnd d (f x )
-  map f (StartDuration x d) = StartDuration (f x) d
-  map _ (JustDuration d) = JustDuration d
+instance functorInterval ∷ Functor (Interval d) where
+  map = bimap id
 
-instance foldableInterval ∷ Foldable Interval where
+instance bifunctorInterval ∷ Bifunctor Interval where
+  bimap _ f (StartEnd x y) = StartEnd (f x) (f y )
+  bimap g f (DurationEnd d x) = DurationEnd (g d) (f x )
+  bimap g f (StartDuration x d) = StartDuration (f x) (g d)
+  bimap g _ (JustDuration d) = JustDuration (g d)
+
+instance foldableInterval ∷ Foldable (Interval d) where
   foldl f z (StartEnd x y) = (z `f` x) `f` y
   foldl f z (DurationEnd d x) = z `f` x
   foldl f z (StartDuration x d) = z `f` x
@@ -52,14 +56,14 @@ instance foldableInterval ∷ Foldable Interval where
   foldr x = foldrDefault x
   foldMap = foldMapDefaultL
 
-instance traversableInterval ∷ Traversable Interval where
+instance traversableInterval ∷ Traversable (Interval d) where
   traverse f (StartEnd x y) = StartEnd <$> f x  <*> f y
   traverse f (DurationEnd d x) = f x <#> DurationEnd d
   traverse f (StartDuration x d) = f x <#> (_ `StartDuration` d)
   traverse _ (JustDuration d)  = pure (JustDuration d)
   sequence = sequenceDefault
 
-instance extendInterval ∷ Extend Interval where
+instance extendInterval ∷ Extend (Interval d) where
   extend f a@(StartEnd x y) = StartEnd (f a) (f a )
   extend f a@(DurationEnd d x) = DurationEnd d (f a )
   extend f a@(StartDuration x d) = StartDuration (f a) d
