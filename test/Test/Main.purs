@@ -30,6 +30,10 @@ main = do
   assert $ Interval.year 1.0 == mempty <> Interval.year 2.0 <> Interval.year 1.0 <> Interval.year (-2.0)
   assert $ Interval.seconds 0.5 == Interval.milliseconds 500.0
   assert $ Interval.week 1.0 == Interval.day 7.0
+  assert $ Interval.mkIsoDuration (Interval.week 1.2 <> mempty) /= Nothing
+  assert $ Interval.mkIsoDuration (Interval.week 1.2 <> Interval.seconds 0.0) /= Nothing
+  assert $ Interval.mkIsoDuration (Interval.year 2.0 <> Interval.week 1.0) /= Nothing
+  assert $ Interval.mkIsoDuration (Interval.year 2.5 <> Interval.week 1.0) == Nothing
   -- time --------------------------------------------------------------------
 
   log "Check that Hour is a good BoundedEnum"

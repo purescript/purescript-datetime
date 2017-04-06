@@ -1,9 +1,11 @@
--- TODO commiting this temporarly as depending on my fork of datetime is
--- not possibel as this module is not updated to ps@0.11
 module Data.Interval
-  ( Duration
-  , Interval(..)
+  ( Interval(..)
   , RecurringInterval(..)
+  , IsoDuration
+  , unIsoDuration
+  , mkIsoDuration
+  , isValidIsoDuration
+  , Duration
   , year
   , month
   , week
@@ -15,15 +17,19 @@ module Data.Interval
   ) where
 
 import Prelude
-import Control.Extend (class Extend)
-import Data.Bifunctor (class Bifunctor, bimap)
-import Data.Foldable (class Foldable, foldrDefault, foldMapDefaultL)
+import Control.Extend (class Extend, (=>>))
+import Data.Foldable (class Foldable, fold, foldMap, foldrDefault, foldMapDefaultL)
 import Data.Bifoldable (class Bifoldable, bifoldrDefault, bifoldMapDefaultL)
-import Data.List (List(..), (:))
-import Data.Maybe (Maybe)
+import Data.Bifunctor (class Bifunctor, bimap)
+import Data.List ((:), reverse)
+import Data.Maybe (Maybe(..))
+import Data.Map as Map
 import Data.Monoid (class Monoid, mempty)
+import Data.Monoid.Conj (Conj(..))
+import Data.Monoid.Additive (Additive(..))
 import Data.Traversable (class Traversable, sequenceDefault)
-import Data.Tuple (Tuple(..))
+import Data.Tuple (Tuple(..), snd)
+import Math as Math
 
 
 data RecurringInterval d a = RecurringInterval (Maybe Int) (Interval d a)
@@ -79,30 +85,51 @@ instance extendInterval ∷ Extend (Interval d) where
   extend f (JustDuration d) = JustDuration d
 
 
-data Duration = Duration DurationIn
-type DurationIn = List (Tuple DurationComponent Number)
+mkIsoDuration ∷ Duration → Maybe IsoDuration
+mkIsoDuration d | isValidIsoDuration d = Just $ IsoDuration d
+mkIsoDuration _ = Nothing
 
+isFractional ∷ Number → Boolean
+isFractional a = Math.floor a /= a
+
+-- allow only last number to be fractional
+isValidIsoDuration ∷ Duration → Boolean
+isValidIsoDuration (Duration m) = Map.toAscUnfoldable m
+  # reverse
+  =>> (validateFractionalUse >>> Conj)
+  # fold
+  # unConj
+  where
+    unConj (Conj a) = a
+    validateFractionalUse = case _ of
+      (Tuple _ n):as | isFractional n → foldMap (snd >>> Additive) as == mempty
+      _ → true
+
+unIsoDuration ∷ IsoDuration → Duration
+unIsoDuration (IsoDuration a) = a
+
+data IsoDuration = IsoDuration Duration
+derive instance eqIsoDuration ∷ Eq IsoDuration
+instance showIsoDuration ∷ Show IsoDuration where
+  show (IsoDuration d)= "(IsoDuration " <> show d <> ")"
+
+
+data Duration = Duration (Map.Map DurationComponent Number)
 -- TODO `day 1 == hours 24`
 derive instance eqDuration ∷ Eq Duration
+
 instance showDuration ∷ Show Duration where
   show (Duration d)= "(Duration " <> show d <> ")"
 
 instance semigroupDuration ∷ Semigroup Duration where
-  append (Duration a) (Duration b) = Duration (appendComponents a b)
+  append (Duration a) (Duration b) = Duration $ Map.unionWith (+) a b
 
 instance monoidDuration ∷ Monoid Duration where
   mempty = Duration mempty
 
-appendComponents ∷ DurationIn → DurationIn → DurationIn
-appendComponents Nil x = x
-appendComponents x Nil = x
-appendComponents ass@(a:as) bss@(b:bs) = case a, b of
-  Tuple aC aV, Tuple bC bV
-    | aC >  bC → a : appendComponents as bss
-    | aC <  bC → b : appendComponents ass bs
-    | otherwise → Tuple aC (aV + bV) : appendComponents as bs
-
 data DurationComponent =  Seconds | Minutes | Hours | Day | Month | Year
+derive instance eqDurationComponent ∷ Eq DurationComponent
+derive instance ordDurationComponent ∷ Ord DurationComponent
 
 instance showDurationComponent ∷ Show DurationComponent where
   show Year = "Year"
@@ -111,9 +138,6 @@ instance showDurationComponent ∷ Show DurationComponent where
   show Hours = "Hours"
   show Minutes = "Minutes"
   show Seconds = "Seconds"
-
-derive instance eqDurationComponent ∷ Eq DurationComponent
-derive instance ordDurationComponent ∷ Ord DurationComponent
 
 
 week ∷ Number → Duration
@@ -140,6 +164,6 @@ seconds = durationFromComponent Seconds
 milliseconds ∷ Number → Duration
 milliseconds = durationFromComponent Seconds <<< (_ / 1000.0)
 
-durationFromComponent ∷ DurationComponent → Number →  Duration
-durationFromComponent c 0.0 = mempty
-durationFromComponent c n = Duration $ pure $ Tuple c n
+durationFromComponent ∷ DurationComponent → Number → Duration
+-- durationFromComponent _ 0.0 = mempty
+durationFromComponent k v= Duration $ Map.singleton k v
