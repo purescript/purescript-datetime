@@ -18,7 +18,9 @@ import Data.Maybe (Maybe(..), fromJust)
 import Data.String (length)
 import Data.Traversable (sequence, traverse)
 import Data.Tuple (Tuple(..), snd)
-import Data.Newtype (unwrap)
+import Data.Newtype (over, unwrap)
+
+import Math (floor)
 
 import Type.Proxy (Proxy(..))
 import Test.Assert (ASSERT, assert)
@@ -130,6 +132,9 @@ main = do
 
   log "Check that adjust behaves as expected"
   assert $ DateTime.adjust (Duration.fromDuration (Duration.Days 31.0) + Duration.fromDuration (Duration.Minutes 40.0)) dt1 == Just dt4
+  assert $ (Date.year <<< DateTime.date <$>
+           (DateTime.adjust (Duration.Days 735963.0) epochDateTime))
+           == toEnum 2016
 
   log "Check that diff behaves as expected"
   assert $ DateTime.diff dt2 dt1 == Duration.Minutes 40.0
@@ -138,6 +143,8 @@ main = do
   assert $ DateTime.diff dt5 dt3 == Duration.Days 29.0
   assert $ DateTime.diff dt1 dt3 == Duration.Days (-31.0)
   assert $ DateTime.diff dt4 dt1 == Duration.fromDuration (Duration.Days 31.0) + Duration.fromDuration (Duration.Minutes 40.0)
+  assert $ over Duration.Days floor (DateTime.diff dt1 epochDateTime)
+           == Duration.Days 735963.0
 
   -- instant -----------------------------------------------------------------
 
