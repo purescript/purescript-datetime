@@ -15,12 +15,14 @@ module Data.DateTime
 import Prelude
 
 import Data.Date (Date, Day, Month(..), Weekday(..), Year, canonicalDate, day, exactDate, month, weekday, year)
+import Data.DateTime.Internal as Internal
 import Data.Enum (toEnum, fromEnum)
-import Data.Function.Uncurried (Fn2, runFn2)
 import Data.Generic (class Generic)
 import Data.Time (Hour, Millisecond, Minute, Second, Time(..), hour, setHour, millisecond, setMillisecond, minute, setMinute, second, setSecond)
-import Data.Time.Duration (class Duration, fromDuration, toDuration, Milliseconds)
-import Data.Maybe (Maybe(..))
+import Data.Time.Duration (class Duration, fromDuration, toDuration)
+import Data.Maybe (Maybe, fromJust)
+
+import Partial.Unsafe (unsafePartial)
 
 -- | A date/time value in the Gregorian calendar/UTC time zone.
 data DateTime = DateTime Date Time
@@ -57,28 +59,31 @@ modifyTimeF f (DateTime d t) = DateTime d <$> f t
 -- | Adjusts a date/time value with a duration offset. `Nothing` is returned
 -- | if the resulting date would be outside of the range of valid dates.
 adjust :: forall d. Duration d => d -> DateTime -> Maybe DateTime
-adjust d dt =
-  adjustImpl Just Nothing (fromDuration d) (toRecord dt) >>= \rec ->
-    DateTime
-      <$> join (exactDate <$> toEnum rec.year <*> toEnum rec.month <*> toEnum rec.day)
-      <*> (Time <$> toEnum rec.hour <*> toEnum rec.minute <*> toEnum rec.second <*> toEnum rec.millisecond)
+adjust d dt = unsafeFromRecord
+              <$> Internal.adjust (fromDuration d) (toRecord dt)
 
 -- | Calculates the difference between two date/time values, returning the
 -- | result as a duration.
 diff :: forall d. Duration d => DateTime -> DateTime -> d
-diff dt1 dt2 = toDuration $ runFn2 calcDiff (toRecord dt1) (toRecord dt2)
+diff dt1 dt2 = toDuration $ Internal.diff (toRecord dt1) (toRecord dt2)
 
-type DateRec =
-  { year :: Int
-  , month :: Int
-  , day :: Int
-  , hour :: Int
-  , minute :: Int
-  , second :: Int
-  , millisecond :: Int
-  }
+fromRecord :: Internal.DateTimeRec -> Maybe DateTime
+fromRecord
+  { year: y
+  , month: mo
+  , day: d
+  , hour: h
+  , minute: m
+  , second: s
+  , millisecond: ms
+  } = DateTime
+      <$> (join $ exactDate <$> toEnum y <*> toEnum mo <*> toEnum d)
+      <*> (Time <$> toEnum h <*> toEnum m <*> toEnum s <*> toEnum ms)
 
-toRecord :: DateTime -> DateRec
+unsafeFromRecord :: Internal.DateTimeRec -> DateTime
+unsafeFromRecord = unsafePartial fromJust <<< fromRecord
+
+toRecord :: DateTime -> Internal.DateTimeRec
 toRecord (DateTime d t) =
   { year: fromEnum (year d)
   , month: fromEnum (month d)
@@ -88,14 +93,3 @@ toRecord (DateTime d t) =
   , second: fromEnum (second t)
   , millisecond: fromEnum (millisecond t)
   }
-
--- TODO: these could (and probably should) be implemented in PS
-
-foreign import calcDiff :: Fn2 DateRec DateRec Milliseconds
-
-foreign import adjustImpl
-  :: (forall a. a -> Maybe a)
-  -> (forall a. Maybe a)
-  -> Milliseconds
-  -> DateRec
-  -> Maybe DateRec

@@ -9,7 +9,7 @@ module Data.DateTime.Instant
 
 import Prelude
 
-import Data.DateTime (Millisecond, Second, Minute, Hour, Day, Year, DateTime(..), Date, Time(..), canonicalDate, millisecond, second, minute, hour, day, month, year)
+import Data.DateTime (Millisecond, Second, Minute, Hour, Day, Year, DateTime(..), Date, Time(..), canonicalDate, date, millisecond, second, minute, hour, day, month, year)
 import Data.Enum (fromEnum, toEnum)
 import Data.Function.Uncurried (Fn7, runFn7)
 import Data.Generic (class Generic)
@@ -66,12 +66,17 @@ fromDate d =
     (year d) (fromEnum (month d)) (day d)
     bottom bottom bottom bottom
 
+
 -- | Creates a `DateTime` value from an `Instant`.
 toDateTime :: Instant -> DateTime
 toDateTime = toDateTimeImpl mkDateTime
   where
   mkDateTime = unsafePartial \y mo d h mi s ms ->
     DateTime (canonicalDate y (fromJust (toEnum mo)) d) (Time h mi s ms)
+
+-- | Creates a `Date` value from an `Instant`.
+toDate :: Instant -> Date
+toDate = date <<< toDateTime
 
 -- TODO: these could (and probably should) be implemented in PS
 foreign import fromDateTimeImpl :: Fn7 Year Int Day Hour Minute Second Millisecond Instant
