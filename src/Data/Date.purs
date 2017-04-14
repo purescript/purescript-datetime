@@ -1,5 +1,6 @@
 module Data.Date
   ( Date
+  , adjust
   , canonicalDate
   , exactDate
   , year
@@ -14,11 +15,11 @@ module Data.Date
 import Prelude
 
 import Data.Date.Component (Day, Month(..), Weekday(..), Year)
+import Data.DateTime.Internal as Internal
 import Data.Enum (toEnum, fromEnum)
-import Data.Function.Uncurried (Fn3, runFn3, Fn4, runFn4, Fn6, runFn6)
 import Data.Generic (class Generic)
 import Data.Maybe (Maybe(..), fromJust)
-import Data.Time.Duration (class Duration, toDuration, Milliseconds)
+import Data.Time.Duration (class Duration, fromDuration, toDuration)
 
 import Partial.Unsafe (unsafePartial)
 
@@ -30,10 +31,7 @@ data Date = Date Year Month Day
 -- | canonicalised according to the Gregorian calendar. For example, date
 -- | values for the invalid date 2016-02-31 will be corrected to 2016-03-02.
 canonicalDate :: Year -> Month -> Day -> Date
-canonicalDate y m d = runFn4 canonicalDateImpl mkDate y (fromEnum m) d
-  where
-  mkDate :: Year -> Int -> Day -> Date
-  mkDate = unsafePartial \y' m' d' -> Date y' (fromJust (toEnum m')) d'
+canonicalDate y m = unsafeFromRecord <<< Internal.normalize <<< ymdToRecord y m
 
 -- | Constructs a date from year, month, and day components. The result will be
 -- | `Nothing` if the provided values result in an invalid date.
@@ -67,15 +65,20 @@ day (Date _ _ d) = d
 
 -- | The weekday for a date value.
 weekday :: Date -> Weekday
-weekday = unsafePartial \(Date y m d) ->
-  let n = runFn3 calcWeekday y (fromEnum m) d
+weekday = unsafePartial \d ->
+  let n = Internal.weekday $ toRecord d
   in if n == 0 then fromJust (toEnum 7) else fromJust (toEnum n)
+
+-- | Adjusts a date value with a duration offset. `Nothing` is returned
+-- | if the resulting date would be outside of the range of valid dates.
+adjust :: forall d. Duration d => d -> Date -> Maybe Date
+adjust du d = join $
+    fromRecord <$> Internal.adjust (fromDuration du) (toRecord d)
 
 -- | Calculates the difference between two dates, returning the result as a
 -- | duration.
 diff :: forall d. Duration d => Date -> Date -> d
-diff (Date y1 m1 d1) (Date y2 m2 d2) =
-  toDuration $ runFn6 calcDiff y1 (fromEnum m1) d1 y2 (fromEnum m2) d2
+diff d1 d2 = toDuration $ Internal.diff (toRecord d1) (toRecord d2)
 
 -- | Is this year a leap year according to the proleptic Gregorian calendar?
 isLeapYear :: Year -> Boolean
@@ -83,7 +86,22 @@ isLeapYear y = (mod y' 4 == 0) && ((mod y' 400 == 0) || not (mod y' 100 == 0))
   where
   y' = fromEnum y
 
--- TODO: these could (and probably should) be implemented in PS
-foreign import canonicalDateImpl :: Fn4 (Year -> Int -> Day -> Date) Year Int Day Date
-foreign import calcWeekday :: Fn3 Year Int Day Int
-foreign import calcDiff :: Fn6 Year Int Day Year Int Day Milliseconds
+fromRecord :: Internal.DateTimeRec -> Maybe Date
+fromRecord {year: y, month: m, day: d} = Date <$> toEnum y <*> toEnum m <*> toEnum d
+
+unsafeFromRecord :: Internal.DateTimeRec -> Date
+unsafeFromRecord = unsafePartial fromJust <<< fromRecord
+
+toRecord :: Date -> Internal.DateTimeRec
+toRecord (Date y m d) = ymdToRecord y m d
+
+ymdToRecord :: Year -> Month -> Day -> Internal.DateTimeRec
+ymdToRecord y m d =
+  { year: fromEnum y
+  , month: fromEnum m
+  , day: fromEnum d
+  , hour: 0
+  , minute: 0
+  , second: 0
+  , millisecond: 0
+  }

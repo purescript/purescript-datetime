@@ -108,6 +108,11 @@ main = do
   let d2 = unsafePartial fromJust $ Date.canonicalDate <$> toEnum 2016 <*> pure Date.February <*> toEnum 1
   let d3 = unsafePartial fromJust $ Date.canonicalDate <$> toEnum 2016 <*> pure Date.March <*> toEnum 1
 
+  log "Check that adjust behaves as expected"
+  assert $ Date.adjust (Duration.fromDuration (Duration.Days 31.0) + Duration.fromDuration (Duration.Minutes 40.0)) d1 == Just d2
+  assert $ (Date.year <$> (Date.adjust (Duration.Days 735963.0) epochDate))
+           == toEnum 2016
+
   log "Check that diff behaves as expected"
   assert $ Date.diff d2 d1 == Duration.Days 31.0
   assert $ Date.diff d3 d2 == Duration.Days 29.0
