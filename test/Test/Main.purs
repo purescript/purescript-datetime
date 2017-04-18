@@ -12,11 +12,17 @@ import Data.Time.Duration as Duration
 import Data.Interval as Interval
 import Data.Array as Array
 import Data.DateTime as DateTime
+import Data.DateTime.Locale as Locale
 import Data.DateTime.Instant as Instant
+import Data.Foldable (foldl, foldr, foldMap)
 import Data.Maybe (Maybe(..), fromJust)
+import Data.String (length)
+import Data.Traversable (sequence, traverse)
 import Data.Tuple (Tuple(..), snd)
 import Data.Monoid (mempty)
-import Data.Newtype (unwrap)
+import Data.Newtype (over, unwrap)
+
+import Math (floor)
 
 import Type.Proxy (Proxy(..))
 import Test.Assert (ASSERT, assert)
@@ -34,6 +40,13 @@ main = do
   assert $ Interval.mkIsoDuration (Interval.week 1.2 <> Interval.seconds 0.0) /= Nothing
   assert $ Interval.mkIsoDuration (Interval.year 2.0 <> Interval.week 1.0) /= Nothing
   assert $ Interval.mkIsoDuration (Interval.year 2.5 <> Interval.week 1.0) == Nothing
+
+  let epochDate = unsafePartial fromJust $ Date.canonicalDate
+                  <$> toEnum 1
+                  <*> pure bottom
+                  <*> pure bottom
+  let epochDateTime = DateTime.DateTime epochDate bottom
+  let epochMillis = -62135596800000.0
   -- time --------------------------------------------------------------------
 
   log "Check that Hour is a good BoundedEnum"
@@ -114,6 +127,11 @@ main = do
   assert $ not $ Date.isLeapYear (unsafeYear 2017)
   assert $ Date.isLeapYear (unsafeYear 2016)
 
+  log "Check that epoch is correctly constructed"
+  assert $ Just (Date.year epochDate) == toEnum 1
+  assert $ Date.month epochDate == bottom
+  assert $ Date.day epochDate == bottom
+
   -- datetime ----------------------------------------------------------------
 
   let dt1 = DateTime.DateTime d1 t1
@@ -124,6 +142,9 @@ main = do
 
   log "Check that adjust behaves as expected"
   assert $ DateTime.adjust (Duration.fromDuration (Duration.Days 31.0) + Duration.fromDuration (Duration.Minutes 40.0)) dt1 == Just dt4
+  assert $ (Date.year <<< DateTime.date <$>
+           (DateTime.adjust (Duration.Days 735963.0) epochDateTime))
+           == toEnum 2016
 
   log "Check that diff behaves as expected"
   assert $ DateTime.diff dt2 dt1 == Duration.Minutes 40.0
@@ -132,6 +153,8 @@ main = do
   assert $ DateTime.diff dt5 dt3 == Duration.Days 29.0
   assert $ DateTime.diff dt1 dt3 == Duration.Days (-31.0)
   assert $ DateTime.diff dt4 dt1 == Duration.fromDuration (Duration.Days 31.0) + Duration.fromDuration (Duration.Minutes 40.0)
+  assert $ over Duration.Days floor (DateTime.diff dt1 epochDateTime)
+           == Duration.Days 735963.0
 
   -- instant -----------------------------------------------------------------
 
@@ -143,6 +166,9 @@ main = do
   let topInstant = Instant.fromDateTime top
   assert $ Just topInstant == Instant.instant (Instant.unInstant topInstant)
 
+  log "Check that an Instant can be constructed from epoch"
+  assert $ (Instant.unInstant $ Instant.fromDateTime epochDateTime) == Duration.Milliseconds epochMillis
+
   log "Check that instant/datetime conversion is bijective"
   assert $ Instant.toDateTime (Instant.fromDateTime bottom) == bottom
   assert $ Instant.toDateTime (Instant.fromDateTime top) == top
@@ -150,6 +176,31 @@ main = do
   assert $ Instant.toDateTime (Instant.fromDateTime dt2) == dt2
   assert $ Instant.toDateTime (Instant.fromDateTime dt3) == dt3
   assert $ Instant.toDateTime (Instant.fromDateTime dt4) == dt4
+
+  -- locale ------------------------------------------------------------------
+
+  let locale = Locale.Locale (Just $ Locale.LocaleName "UTC")
+               $ Duration.Minutes 0.0
+  let crLocalVal = Locale.LocalValue locale
+
+  log "Check that LocalValue folds left"
+  assert $ foldl (<>) "prepend " (crLocalVal "foo") == "prepend foo"
+
+  log "Check that LocalValue folds right"
+  assert $ foldr (<>) " append" (crLocalVal "foo") == "foo append"
+
+  log "Check that LocalValue fold-maps"
+  assert $ foldMap ((<>) "prepend ") (crLocalVal "foo") == "prepend foo"
+
+  log "Check that LocalValue sequences"
+  assert $ sequence (Locale.LocalValue locale $ Just "foo")
+           == (Just $ Locale.LocalValue locale "foo")
+  assert $ sequence (Locale.LocalValue locale (Nothing :: Maybe Int))
+           == Nothing
+
+  log "Check that LocalValue traverses"
+  assert $ traverse (Just <<< length) (crLocalVal "foo")
+           == (Just $ Locale.LocalValue locale 3)
 
   log "All tests done"
 
