@@ -34,6 +34,35 @@ import Math as Math
 
 data RecurringInterval d a = RecurringInterval (Maybe Int) (Interval d a)
 
+instance showRecurringInterval ∷ (Show d, Show a) => Show (RecurringInterval d a) where
+  show (RecurringInterval x y) = "(RecurringInterval " <> show x <> " " <> show y <> ")"
+
+over :: ∀ d a d' a'. (Interval d a -> Interval d' a') -> RecurringInterval d a -> RecurringInterval d' a'
+over f (RecurringInterval n i) = RecurringInterval n (f i)
+
+instance functorRecurringInterval ∷ Functor (RecurringInterval d) where
+  map = over $ bimap id
+
+instance bifunctorRecurringInterval ∷ Bifunctor RecurringInterval where
+  bimap = over $ bimap
+
+instance foldableInterval ∷ Foldable (Interval d) where
+  foldl = over $ foldl
+  foldr = over $ foldr
+  foldMap = foldMapDefaultL
+
+instance bifoldableInterval ∷ Bifoldable Interval where
+  bifoldl = over $ bifoldl
+  bifoldr = over $ bifoldr
+  bifoldMap = bifoldMapDefaultL
+
+instance traversableInterval ∷ Traversable (Interval d) where
+  traverse = over $ traverse
+  sequence = sequenceDefault
+
+instance extendInterval ∷ Extend (Interval d) where
+  extend = over $ extend
+
 data Interval d a
   = StartEnd      a a
   | DurationEnd   d a
