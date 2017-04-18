@@ -17,9 +17,9 @@ module Data.Interval
   ) where
 
 import Prelude
-import Control.Extend (class Extend, (=>>))
-import Data.Foldable (class Foldable, fold, foldMap, foldrDefault, foldMapDefaultL)
-import Data.Bifoldable (class Bifoldable, bifoldrDefault, bifoldMapDefaultL)
+import Control.Extend (class Extend, (=>>), extend)
+import Data.Foldable (class Foldable, foldl, foldr, fold, foldMap, foldrDefault, foldMapDefaultL)
+import Data.Bifoldable (class Bifoldable, bifoldl, bifoldr, bifoldrDefault, bifoldMapDefaultL)
 import Data.Bifunctor (class Bifunctor, bimap)
 import Data.List ((:), reverse)
 import Data.Maybe (Maybe(..))
@@ -27,7 +27,7 @@ import Data.Map as Map
 import Data.Monoid (class Monoid, mempty)
 import Data.Monoid.Conj (Conj(..))
 import Data.Monoid.Additive (Additive(..))
-import Data.Traversable (class Traversable, sequenceDefault)
+import Data.Traversable (class Traversable, traverse, sequenceDefault)
 import Data.Tuple (Tuple(..), snd)
 import Math as Math
 
@@ -37,31 +37,31 @@ data RecurringInterval d a = RecurringInterval (Maybe Int) (Interval d a)
 instance showRecurringInterval ∷ (Show d, Show a) => Show (RecurringInterval d a) where
   show (RecurringInterval x y) = "(RecurringInterval " <> show x <> " " <> show y <> ")"
 
-over :: ∀ d a d' a'. (Interval d a -> Interval d' a') -> RecurringInterval d a -> RecurringInterval d' a'
-over f (RecurringInterval n i) = RecurringInterval n (f i)
+interval :: ∀ d a . RecurringInterval d a -> Interval d a
+interval (RecurringInterval _ i) = i
 
 instance functorRecurringInterval ∷ Functor (RecurringInterval d) where
-  map = over $ bimap id
+  map f (RecurringInterval n i) = (RecurringInterval n (map f i))
 
 instance bifunctorRecurringInterval ∷ Bifunctor RecurringInterval where
-  bimap = over $ bimap
+  bimap f g (RecurringInterval n i) = RecurringInterval n $ bimap f g i
 
-instance foldableInterval ∷ Foldable (Interval d) where
-  foldl = over $ foldl
-  foldr = over $ foldr
+instance foldableRecurringInterval ∷ Foldable (RecurringInterval d) where
+  foldl f i = foldl f i <<< interval
+  foldr f i = foldr f i <<< interval
   foldMap = foldMapDefaultL
 
-instance bifoldableInterval ∷ Bifoldable Interval where
-  bifoldl = over $ bifoldl
-  bifoldr = over $ bifoldr
+instance bifoldableRecurringInterval ∷ Bifoldable RecurringInterval where
+  bifoldl f g i = bifoldl f g i <<< interval
+  bifoldr f g i = bifoldr f g i <<< interval
   bifoldMap = bifoldMapDefaultL
 
-instance traversableInterval ∷ Traversable (Interval d) where
-  traverse = over $ traverse
+instance traversableRecurringInterval ∷ Traversable (RecurringInterval d) where
+  traverse f (RecurringInterval n i) = map (RecurringInterval n) $ traverse f i
   sequence = sequenceDefault
 
-instance extendInterval ∷ Extend (Interval d) where
-  extend = over $ extend
+instance extendRecurringInterval ∷ Extend (RecurringInterval d) where
+  extend f a@(RecurringInterval n i) = RecurringInterval n (extend (const $ f a) i )
 
 data Interval d a
   = StartEnd      a a
