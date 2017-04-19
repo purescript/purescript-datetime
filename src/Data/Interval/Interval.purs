@@ -21,6 +21,7 @@ import Control.Extend (class Extend, (=>>), extend)
 import Data.Foldable (class Foldable, foldl, foldr, fold, foldMap, foldrDefault, foldMapDefaultL)
 import Data.Bifoldable (class Bifoldable, bifoldl, bifoldr, bifoldrDefault, bifoldMapDefaultL)
 import Data.Bifunctor (class Bifunctor, bimap)
+import Data.Bitraversable (class Bitraversable, bitraverse, bisequenceDefault)
 import Data.List ((:), reverse)
 import Data.Maybe (Maybe(..))
 import Data.Map as Map
@@ -34,11 +35,15 @@ import Math as Math
 
 data RecurringInterval d a = RecurringInterval (Maybe Int) (Interval d a)
 
+derive instance eqRecurringInterval ∷ (Eq d, Eq a) => Eq (RecurringInterval d a)
 instance showRecurringInterval ∷ (Show d, Show a) => Show (RecurringInterval d a) where
   show (RecurringInterval x y) = "(RecurringInterval " <> show x <> " " <> show y <> ")"
 
 interval :: ∀ d a . RecurringInterval d a -> Interval d a
 interval (RecurringInterval _ i) = i
+
+over :: ∀ f d a d' a'. Functor f => (Interval d a -> f (Interval d' a')) -> RecurringInterval d a -> f (RecurringInterval d' a')
+over f (RecurringInterval n i) = map (RecurringInterval n) (f i)
 
 instance functorRecurringInterval ∷ Functor (RecurringInterval d) where
   map f (RecurringInterval n i) = (RecurringInterval n (map f i))
@@ -57,8 +62,12 @@ instance bifoldableRecurringInterval ∷ Bifoldable RecurringInterval where
   bifoldMap = bifoldMapDefaultL
 
 instance traversableRecurringInterval ∷ Traversable (RecurringInterval d) where
-  traverse f (RecurringInterval n i) = map (RecurringInterval n) $ traverse f i
+  traverse f i = (traverse f) `over` i
   sequence = sequenceDefault
+
+instance bitraversableRecurringInterval :: Bitraversable RecurringInterval where
+  bitraverse l r i = (bitraverse l r) `over` i
+  bisequence = bisequenceDefault
 
 instance extendRecurringInterval ∷ Extend (RecurringInterval d) where
   extend f a@(RecurringInterval n i) = RecurringInterval n (extend (const $ f a) i )
@@ -69,6 +78,7 @@ data Interval d a
   | StartDuration a d
   | JustDuration  d
 
+derive instance eqInterval ∷ (Eq d, Eq a) => Eq (Interval d a)
 instance showInterval ∷ (Show d, Show a) => Show (Interval d a) where
   show (StartEnd x y) = "(StartEnd " <> show x <> " " <> show y <> ")"
   show (DurationEnd d x) = "(DurationEnd " <> show d <> " " <> show x <> ")"
@@ -106,6 +116,13 @@ instance traversableInterval ∷ Traversable (Interval d) where
   traverse f (StartDuration x d) = f x <#> (_ `StartDuration` d)
   traverse _ (JustDuration d)  = pure (JustDuration d)
   sequence = sequenceDefault
+
+instance bitraversableInterval :: Bitraversable Interval where
+  bitraverse _ r (StartEnd x y) = StartEnd <$> r x <*> r y
+  bitraverse l r (DurationEnd d x) = DurationEnd <$> l d <*> r x
+  bitraverse l r (StartDuration x d) = StartDuration <$> r x <*> l d
+  bitraverse l _ (JustDuration d)  = JustDuration <$> l d
+  bisequence = bisequenceDefault
 
 instance extendInterval ∷ Extend (Interval d) where
   extend f a@(StartEnd x y) = StartEnd (f a) (f a )
