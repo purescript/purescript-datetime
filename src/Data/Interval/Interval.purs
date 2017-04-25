@@ -2,6 +2,8 @@ module Data.Interval
   ( Interval(..)
   , RecurringInterval(..)
   , IsoDuration
+  , Duration(..)
+  , DurationComponent(..)
   , unIsoDuration
   , mkIsoDuration
   , isValidIsoDuration
