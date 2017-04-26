@@ -40,6 +40,7 @@ main = do
   assert $ Interval.mkIsoDuration (Interval.week 1.2 <> Interval.seconds 0.0) /= Nothing
   assert $ Interval.mkIsoDuration (Interval.year 2.0 <> Interval.week 1.0) /= Nothing
   assert $ Interval.mkIsoDuration (Interval.year 2.5 <> Interval.week 1.0) == Nothing
+  assert $ Interval.mkIsoDuration (mempty) == Nothing
 
   let epochDate = unsafePartial fromJust $ Date.canonicalDate
                   <$> toEnum 1

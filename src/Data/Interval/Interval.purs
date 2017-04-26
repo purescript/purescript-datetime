@@ -7,7 +7,6 @@ module Data.Interval
   , unIsoDuration
   , mkIsoDuration
   , isValidIsoDuration
-  , Duration
   , year
   , month
   , week
@@ -32,9 +31,11 @@ import Data.Monoid.Conj (Conj(..))
 import Data.Monoid.Additive (Additive(..))
 import Data.Traversable (class Traversable, traverse, sequenceDefault)
 import Data.Tuple (Tuple(..), snd)
+import Control.Comonad (extract)
 import Math as Math
 
-
+-- TODO read this lib for some helper function inspiration around intervals/durations
+-- https://github.com/arnau/ISO8601/blob/master/spec/iso8601/duration_spec.rb
 data RecurringInterval d a = RecurringInterval (Maybe Int) (Interval d a)
 
 derive instance eqRecurringInterval ∷ (Eq d, Eq a) => Eq (RecurringInterval d a)
@@ -140,15 +141,15 @@ mkIsoDuration _ = Nothing
 isFractional ∷ Number → Boolean
 isFractional a = Math.floor a /= a
 
--- allow only last number to be fractional
 isValidIsoDuration ∷ Duration → Boolean
-isValidIsoDuration (Duration m) = Map.toAscUnfoldable m
-  # reverse
-  =>> (validateFractionalUse >>> Conj)
-  # fold
-  # unConj
+isValidIsoDuration (Duration m) = (not $ Map.isEmpty m) && (hasValidFractionalUse m)
   where
-    unConj (Conj a) = a
+    -- allow only last number to be fractional
+    hasValidFractionalUse = Map.toAscUnfoldable
+      >>> reverse
+      >>> (_ =>> (validateFractionalUse >>> Conj))
+      >>> fold
+      >>> extract
     validateFractionalUse = case _ of
       (Tuple _ n):as | isFractional n → foldMap (snd >>> Additive) as == mempty
       _ → true
