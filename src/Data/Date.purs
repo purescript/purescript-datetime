@@ -8,6 +8,7 @@ module Data.Date
   , weekday
   , diff
   , isLeapYear
+  , lastDayOfMonth
   , module Data.Date.Component
   ) where
 
@@ -82,6 +83,26 @@ isLeapYear :: Year -> Boolean
 isLeapYear y = (mod y' 4 == 0) && ((mod y' 400 == 0) || not (mod y' 100 == 0))
   where
   y' = fromEnum y
+
+-- | Get the final day of a month and year, accounting for leap years
+lastDayOfMonth :: Year -> Month -> Day
+lastDayOfMonth y m = case m of
+  January   -> unsafeDay 31
+  February
+    | isLeapYear y -> unsafeDay 29
+    | otherwise    -> unsafeDay 28
+  March     -> unsafeDay 31
+  April     -> unsafeDay 30
+  May       -> unsafeDay 31
+  June      -> unsafeDay 30
+  July      -> unsafeDay 31
+  August    -> unsafeDay 31
+  September -> unsafeDay 30
+  October   -> unsafeDay 31
+  November  -> unsafeDay 30
+  December  -> unsafeDay 31
+  where
+    unsafeDay = unsafePartial fromJust <<< toEnum
 
 -- TODO: these could (and probably should) be implemented in PS
 foreign import canonicalDateImpl :: Fn4 (Year -> Int -> Day -> Date) Year Int Day Date
