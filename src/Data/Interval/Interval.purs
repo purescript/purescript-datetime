@@ -23,7 +23,7 @@ import Data.Foldable (class Foldable, foldl, foldr, fold, foldMap, foldrDefault,
 import Data.Bifoldable (class Bifoldable, bifoldl, bifoldr, bifoldrDefault, bifoldMapDefaultL)
 import Data.Bifunctor (class Bifunctor, bimap)
 import Data.Bitraversable (class Bitraversable, bitraverse, bisequenceDefault)
-import Data.List ((:), reverse)
+import Data.List ((:))
 import Data.Maybe (Maybe(..))
 import Data.Map as Map
 import Data.Monoid (class Monoid, mempty)
@@ -147,7 +147,6 @@ isValidIsoDuration (Duration m) = (not $ Map.isEmpty m) && (hasValidFractionalUs
   where
     -- allow only last number to be fractional
     hasValidFractionalUse = Map.toAscUnfoldable
-      >>> reverse
       >>> (_ =>> (validateFractionalUse >>> Conj))
       >>> fold
       >>> extract
@@ -178,7 +177,7 @@ instance semigroupDuration ∷ Semigroup Duration where
 instance monoidDuration ∷ Monoid Duration where
   mempty = Duration mempty
 
-data DurationComponent = Second | Minute | Hour | Day | Month | Year
+data DurationComponent = Year | Month | Day | Hour | Minute | Second
 derive instance eqDurationComponent ∷ Eq DurationComponent
 derive instance ordDurationComponent ∷ Ord DurationComponent
 
