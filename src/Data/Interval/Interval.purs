@@ -31,6 +31,7 @@ import Data.Monoid.Conj (Conj(..))
 import Data.Monoid.Additive (Additive(..))
 import Data.Traversable (class Traversable, traverse, sequenceDefault)
 import Data.Tuple (Tuple(..), snd)
+import Data.Newtype (class Newtype)
 import Control.Comonad (extract)
 import Math as Math
 
@@ -42,10 +43,10 @@ derive instance eqRecurringInterval ∷ (Eq d, Eq a) => Eq (RecurringInterval d 
 instance showRecurringInterval ∷ (Show d, Show a) => Show (RecurringInterval d a) where
   show (RecurringInterval x y) = "(RecurringInterval " <> show x <> " " <> show y <> ")"
 
-interval :: ∀ d a . RecurringInterval d a -> Interval d a
+interval ∷ ∀ d a . RecurringInterval d a → Interval d a
 interval (RecurringInterval _ i) = i
 
-over :: ∀ f d a d' a'. Functor f => (Interval d a -> f (Interval d' a')) -> RecurringInterval d a -> f (RecurringInterval d' a')
+over ∷ ∀ f d a d' a'. Functor f => (Interval d a → f (Interval d' a')) → RecurringInterval d a → f (RecurringInterval d' a')
 over f (RecurringInterval n i) = map (RecurringInterval n) (f i)
 
 instance functorRecurringInterval ∷ Functor (RecurringInterval d) where
@@ -68,7 +69,7 @@ instance traversableRecurringInterval ∷ Traversable (RecurringInterval d) wher
   traverse f i = (traverse f) `over` i
   sequence = sequenceDefault
 
-instance bitraversableRecurringInterval :: Bitraversable RecurringInterval where
+instance bitraversableRecurringInterval ∷ Bitraversable RecurringInterval where
   bitraverse l r i = (bitraverse l r) `over` i
   bisequence = bisequenceDefault
 
@@ -120,7 +121,7 @@ instance traversableInterval ∷ Traversable (Interval d) where
   traverse _ (JustDuration d)  = pure (JustDuration d)
   sequence = sequenceDefault
 
-instance bitraversableInterval :: Bitraversable Interval where
+instance bitraversableInterval ∷ Bitraversable Interval where
   bitraverse _ r (StartEnd x y) = StartEnd <$> r x <*> r y
   bitraverse l r (DurationEnd d x) = DurationEnd <$> l d <*> r x
   bitraverse l r (StartDuration x d) = StartDuration <$> r x <*> l d
@@ -163,9 +164,10 @@ instance showIsoDuration ∷ Show IsoDuration where
   show (IsoDuration d)= "(IsoDuration " <> show d <> ")"
 
 
-data Duration = Duration (Map.Map DurationComponent Number)
+newtype Duration = Duration (Map.Map DurationComponent Number)
 -- TODO `day 1 == hours 24`
 derive instance eqDuration ∷ Eq Duration
+derive instance newtypeDuration ∷ Newtype Duration _
 
 instance showDuration ∷ Show Duration where
   show (Duration d)= "(Duration " <> show d <> ")"
@@ -176,7 +178,7 @@ instance semigroupDuration ∷ Semigroup Duration where
 instance monoidDuration ∷ Monoid Duration where
   mempty = Duration mempty
 
-data DurationComponent =  Seconds | Minutes | Hours | Day | Month | Year
+data DurationComponent = Seconds | Minutes | Hours | Day | Month | Year
 derive instance eqDurationComponent ∷ Eq DurationComponent
 derive instance ordDurationComponent ∷ Ord DurationComponent
 
