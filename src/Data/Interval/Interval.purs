@@ -11,10 +11,10 @@ module Data.Interval
   , month
   , week
   , day
-  , hours
-  , minutes
-  , seconds
-  , milliseconds
+  , hour
+  , minute
+  , second
+  , millisecond
   ) where
 
 import Prelude
@@ -165,7 +165,7 @@ instance showIsoDuration ∷ Show IsoDuration where
 
 
 newtype Duration = Duration (Map.Map DurationComponent Number)
--- TODO `day 1 == hours 24`
+-- TODO `day 1 == hour 24`
 derive instance eqDuration ∷ Eq Duration
 derive instance newtypeDuration ∷ Newtype Duration _
 
@@ -178,7 +178,7 @@ instance semigroupDuration ∷ Semigroup Duration where
 instance monoidDuration ∷ Monoid Duration where
   mempty = Duration mempty
 
-data DurationComponent = Seconds | Minutes | Hours | Day | Month | Year
+data DurationComponent = Second | Minute | Hour | Day | Month | Year
 derive instance eqDurationComponent ∷ Eq DurationComponent
 derive instance ordDurationComponent ∷ Ord DurationComponent
 
@@ -186,9 +186,9 @@ instance showDurationComponent ∷ Show DurationComponent where
   show Year = "Year"
   show Month = "Month"
   show Day = "Day"
-  show Hours = "Hours"
-  show Minutes = "Minutes"
-  show Seconds = "Seconds"
+  show Hour = "Hour"
+  show Minute = "Minute"
+  show Second = "Second"
 
 
 week ∷ Number → Duration
@@ -203,17 +203,17 @@ month = durationFromComponent Month
 day ∷ Number → Duration
 day = durationFromComponent Day
 
-hours ∷ Number → Duration
-hours = durationFromComponent Hours
+hour ∷ Number → Duration
+hour = durationFromComponent Hour
 
-minutes ∷ Number → Duration
-minutes = durationFromComponent Minutes
+minute ∷ Number → Duration
+minute = durationFromComponent Minute
 
-seconds ∷ Number → Duration
-seconds = durationFromComponent Seconds
+second ∷ Number → Duration
+second = durationFromComponent Second
 
-milliseconds ∷ Number → Duration
-milliseconds = durationFromComponent Seconds <<< (_ / 1000.0)
+millisecond ∷ Number → Duration
+millisecond = durationFromComponent Second <<< (_ / 1000.0)
 
 durationFromComponent ∷ DurationComponent → Number → Duration
 -- durationFromComponent _ 0.0 = mempty
