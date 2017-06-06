@@ -145,14 +145,17 @@ isFractional a = Math.floor a /= a
 isValidIsoDuration ∷ Duration → Boolean
 isValidIsoDuration (Duration m) = (not $ Map.isEmpty m) && (hasValidFractionalUse m)
   where
+    isAllPositive = Map.toAscUnfoldable
     -- allow only last number to be fractional
     hasValidFractionalUse = Map.toAscUnfoldable
-      >>> (_ =>> (validateFractionalUse >>> Conj))
-      >>> fold
+      >>> (\vals -> fold (vals =>> validateFractionalUse) <> positiveNums vals)
       >>> extract
-    validateFractionalUse = case _ of
+    validateFractionalUse vals = Conj $ case vals of
       (Tuple _ n):as | isFractional n → foldMap (snd >>> Additive) as == mempty
       _ → true
+    -- allow only positive values
+    positiveNums vals = foldMap (snd >>> (_ >= 0.0) >>> Conj) vals
+
 
 unIsoDuration ∷ IsoDuration → Duration
 unIsoDuration (IsoDuration a) = a
