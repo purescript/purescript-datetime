@@ -157,7 +157,7 @@ isValidIsoDuration (Duration m) = (not $ Map.isEmpty m) && (hasValidFractionalUs
 unIsoDuration ∷ IsoDuration → Duration
 unIsoDuration (IsoDuration a) = a
 
-data IsoDuration = IsoDuration Duration
+newtype IsoDuration = IsoDuration Duration
 derive instance eqIsoDuration ∷ Eq IsoDuration
 instance showIsoDuration ∷ Show IsoDuration where
   show (IsoDuration d)= "(IsoDuration " <> show d <> ")"
