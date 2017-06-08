@@ -16,7 +16,7 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-enums": "^3.0.0",
+    "purescript-enums": "^3.1.0",
     "purescript-functions": "^3.0.0",
     "purescript-generics": "^4.0.0",
     "purescript-integers": "^3.0.0",
