@@ -3,18 +3,20 @@ module Data.DateTime.Instant
   , instant
   , unInstant
   , fromDateTime
+  , fromLocalDateTime
   , toDateTime
+  , toLocalDateTime
   ) where
 
 import Prelude
 
 import Data.DateTime (Millisecond, Second, Minute, Hour, Day, Year, DateTime(..), Date, Time(..), canonicalDate, millisecond, second, minute, hour, day, month, year)
+import Data.DateTime.Locale (LocalDateTime, LocalValue(..), Locale(..))
 import Data.Enum (fromEnum, toEnum)
-import Data.Function.Uncurried (Fn7, runFn7)
+import Data.Function.Uncurried (Fn7, Fn8, runFn7, runFn8)
 import Data.Generic (class Generic)
 import Data.Maybe (Maybe(..), fromJust)
-import Data.Time.Duration (Milliseconds(..))
-
+import Data.Time.Duration (Milliseconds(Milliseconds), Minutes)
 import Partial.Unsafe (unsafePartial)
 
 -- | An instant is a duration in milliseconds relative to the Unix epoch
@@ -58,6 +60,13 @@ fromDateTime (DateTime d t) =
     (year d) (fromEnum (month d)) (day d)
     (hour t) (minute t) (second t) (millisecond t)
 
+-- | Creates an `Instant` from a `DateTime` value.
+fromLocalDateTime :: LocalDateTime -> Instant
+fromLocalDateTime (LocalValue (Locale _ o) (DateTime d t)) =
+  runFn8 fromLocalDateTimeImpl
+    (year d) (fromEnum (month d)) (day d)
+    (hour t) (minute t) (second t) (millisecond t) o
+
 -- | Creates an `Instant` from a `Date` value, using the assumed time 00:00:00.
 fromDate :: Date -> Instant
 fromDate d =
@@ -72,6 +81,15 @@ toDateTime = toDateTimeImpl mkDateTime
   mkDateTime = unsafePartial \y mo d h mi s ms ->
     DateTime (canonicalDate y (fromJust (toEnum mo)) d) (Time h mi s ms)
 
+-- | Create `LocalDateTime` value from an `Instant`.
+toLocalDateTime :: Instant -> LocalDateTime
+toLocalDateTime = toLocalDateTimeImpl mkLocalDateTime
+  where
+  mkLocalDateTime = unsafePartial \y mo d h mi s ms o ->
+    LocalValue (Locale Nothing o) (DateTime (canonicalDate y (fromJust (toEnum mo)) d) (Time h mi s ms))
+
 -- TODO: these could (and probably should) be implemented in PS
 foreign import fromDateTimeImpl :: Fn7 Year Int Day Hour Minute Second Millisecond Instant
+foreign import fromLocalDateTimeImpl :: Fn8 Year Int Day Hour Minute Second Millisecond Minutes Instant
 foreign import toDateTimeImpl :: (Year -> Int -> Day -> Hour -> Minute -> Second -> Millisecond -> DateTime) -> Instant -> DateTime
+foreign import toLocalDateTimeImpl :: (Year -> Int -> Day -> Hour -> Minute -> Second -> Millisecond -> Minutes -> LocalDateTime) -> Instant -> LocalDateTime
