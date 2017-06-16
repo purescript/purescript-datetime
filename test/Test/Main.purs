@@ -4,27 +4,24 @@ import Prelude
 
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
-
-import Data.Enum (class BoundedEnum, Cardinality, toEnum, enumFromTo, cardinality, succ, fromEnum, pred)
-import Data.Date as Date
-import Data.Time as Time
-import Data.Time.Duration as Duration
 import Data.Array as Array
+import Data.Date as Date
 import Data.DateTime as DateTime
-import Data.DateTime.Locale as Locale
 import Data.DateTime.Instant as Instant
+import Data.DateTime.Locale as Locale
+import Data.Enum (class BoundedEnum, Cardinality, toEnum, enumFromTo, cardinality, succ, fromEnum, pred)
 import Data.Foldable (foldl, foldr, foldMap)
 import Data.Maybe (Maybe(..), fromJust)
+import Data.Newtype (over, unwrap)
 import Data.String (length)
+import Data.Time as Time
+import Data.Time.Duration as Duration
 import Data.Traversable (sequence, traverse)
 import Data.Tuple (Tuple(..), snd)
-import Data.Newtype (over, unwrap)
-
 import Math (floor)
-
-import Type.Proxy (Proxy(..))
-import Test.Assert (ASSERT, assert)
 import Partial.Unsafe (unsafePartial)
+import Test.Assert (ASSERT, assert)
+import Type.Proxy (Proxy(..))
 
 type Tests = Eff (console :: CONSOLE, assert :: ASSERT) Unit
 
@@ -166,6 +163,18 @@ main = do
   assert $ Instant.toDateTime (Instant.fromDateTime dt2) == dt2
   assert $ Instant.toDateTime (Instant.fromDateTime dt3) == dt3
   assert $ Instant.toDateTime (Instant.fromDateTime dt4) == dt4
+
+  log "Check that instant/lodaldatetime conversion is split epi"
+  let i1 = Instant.fromDateTime dt1
+      i2 = Instant.fromDateTime dt2
+      i3 = Instant.fromDateTime dt3
+      i4 = Instant.fromDateTime dt4
+  assert $ Instant.fromLocalDateTime (Instant.toLocalDateTime bottomInstant) == bottomInstant
+  assert $ Instant.fromLocalDateTime (Instant.toLocalDateTime topInstant) == topInstant
+  assert $ Instant.fromLocalDateTime (Instant.toLocalDateTime i1) == i1
+  assert $ Instant.fromLocalDateTime (Instant.toLocalDateTime i2) == i2
+  assert $ Instant.fromLocalDateTime (Instant.toLocalDateTime i3) == i3
+  assert $ Instant.fromLocalDateTime (Instant.toLocalDateTime i4) == i4
 
   -- locale ------------------------------------------------------------------
 
