@@ -2,21 +2,23 @@ module Data.Interval.Duration.Iso
   ( IsoDuration
   , unIsoDuration
   , mkIsoDuration
-  , isValidIsoDuration
+  , Error(..)
+  , Errors
   ) where
 
 import Prelude
-import Control.Extend ((=>>))
+
+import Data.Array (uncons)
+import Data.Either (Either(..))
 import Data.Foldable (fold, foldMap)
-import Data.Interval.Duration (Duration(..))
-import Data.List (List, (:), reverse)
-import Data.Maybe (Maybe(..))
+import Data.Interval.Duration (Duration(..), DurationComponent(..))
+import Data.List (List(..), reverse, span, null)
 import Data.Map as Map
-import Data.Monoid (mempty)
-import Data.Monoid.Conj (Conj(..))
+import Data.Maybe (Maybe(..), isJust)
 import Data.Monoid.Additive (Additive(..))
+import Data.Newtype (unwrap)
+import Data.NonEmpty (NonEmpty(..))
 import Data.Tuple (Tuple(..), snd)
-import Control.Comonad (extract)
 import Math as Math
 
 newtype IsoDuration = IsoDuration Duration
@@ -26,32 +28,60 @@ derive instance ordIsoDuration :: Ord IsoDuration
 instance showIsoDuration :: Show IsoDuration where
   show (IsoDuration d) = "(IsoDuration " <> show d <> ")"
 
+type Errors = NonEmpty Array Error
+
+data Error
+  = IsEmpty
+  | InvalidWeekComponentUsage
+  | ContainsNegativeValue DurationComponent
+  | InvalidFractionalUse DurationComponent
+
+derive instance eqError :: Eq Error
+derive instance ordError :: Ord Error
+instance showError :: Show Error where
+  show (IsEmpty) = "(IsEmpty)"
+  show (InvalidWeekComponentUsage) = "(InvalidWeekComponentUsage)"
+  show (ContainsNegativeValue c) = "(ContainsNegativeValue " <> show c <> ")"
+  show (InvalidFractionalUse c) = "(InvalidFractionalUse " <> show c <> ")"
 
 unIsoDuration :: IsoDuration -> Duration
 unIsoDuration (IsoDuration a) = a
 
-mkIsoDuration :: Duration -> Maybe IsoDuration
-mkIsoDuration d | isValidIsoDuration d = Just (IsoDuration d)
-mkIsoDuration _ = Nothing
+mkIsoDuration :: Duration -> Either Errors IsoDuration
+mkIsoDuration d = case uncons (checkValidIsoDuration d) of
+  Just {head, tail} -> Left (NonEmpty head tail)
+  Nothing -> Right (IsoDuration d)
 
--- allow only positive numbers
--- allow only last number to be fractional
-isValidIsoDuration :: Duration -> Boolean
-isValidIsoDuration (Duration m) = not Map.isEmpty m && validNumberUsage m
+checkValidIsoDuration :: Duration -> Array Error
+checkValidIsoDuration (Duration asMap) = check {asList, asMap}
   where
-  isFractional :: Number -> Boolean
+  asList = reverse (Map.toAscUnfoldable asMap)
+  check = fold
+    [ checkEmptiness
+    , checkFractionalUse
+    , checkNegativeValues
+    , checkWeekUsage]
+
+
+type CheckEnv =
+  { asList :: List (Tuple DurationComponent Number)
+  , asMap :: Map.Map DurationComponent Number}
+
+checkWeekUsage :: CheckEnv -> Array Error
+checkWeekUsage {asMap} = if isJust (Map.lookup Week asMap) && Map.size asMap > 1
+  then [InvalidWeekComponentUsage] else []
+
+checkEmptiness :: CheckEnv -> Array Error
+checkEmptiness {asList} = if null asList then [IsEmpty] else []
+
+checkFractionalUse :: CheckEnv -> Array Error
+checkFractionalUse {asList} = case _.rest (span (snd >>> not isFractional) asList) of
+  Cons (Tuple c _) rest | checkRest rest -> [InvalidFractionalUse c]
+  _ -> []
+  where
   isFractional a = Math.floor a /= a
+  checkRest rest = unwrap (foldMap (snd >>> Math.abs >>> Additive) rest) > 0.0
 
-  validNumberUsage :: forall a. Map.Map a Number -> Boolean
-  validNumberUsage = Map.toAscUnfoldable
-    >>> reverse
-    >>> (\vals -> fold (vals =>> hasValidFractionalUse) <> hasOnlyPositiveNums vals)
-    >>> extract
-
-  hasValidFractionalUse :: forall a. List (Tuple a Number) -> Conj Boolean
-  hasValidFractionalUse vals = Conj case vals of
-    (Tuple _ n):as | isFractional n -> foldMap (snd >>> Additive) as == mempty
-    _ -> true
-
-  hasOnlyPositiveNums :: forall a. List (Tuple a Number) -> Conj Boolean
-  hasOnlyPositiveNums vals = foldMap (snd >>> (_ >= 0.0) >>> Conj) vals
+checkNegativeValues :: CheckEnv -> Array Error
+checkNegativeValues {asList} = flip foldMap asList \(Tuple c num) ->
+  if num >= 0.0 then [] else [ContainsNegativeValue c]

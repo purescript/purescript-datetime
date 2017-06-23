@@ -5,12 +5,13 @@ module Data.Interval
   ) where
 
 import Prelude
-import Data.Interval.Duration as DurationExports
+
 import Control.Extend (class Extend, extend)
-import Data.Foldable (class Foldable, foldl, foldr, foldrDefault, foldMapDefaultL)
 import Data.Bifoldable (class Bifoldable, bifoldl, bifoldr, bifoldrDefault, bifoldMapDefaultL)
 import Data.Bifunctor (class Bifunctor, bimap)
 import Data.Bitraversable (class Bitraversable, bitraverse, bisequenceDefault)
+import Data.Foldable (class Foldable, foldl, foldr, foldrDefault, foldMapDefaultL)
+import Data.Interval.Duration as DurationExports
 import Data.Maybe (Maybe)
 import Data.Traversable (class Traversable, traverse, sequenceDefault)
 

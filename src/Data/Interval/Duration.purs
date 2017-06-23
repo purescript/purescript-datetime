@@ -12,6 +12,7 @@ module Data.Interval.Duration
   ) where
 
 import Prelude
+
 import Data.Map as Map
 import Data.Monoid (class Monoid, mempty)
 import Data.Newtype (class Newtype)
@@ -31,21 +32,22 @@ instance semigroupDuration :: Semigroup Duration where
 instance monoidDuration :: Monoid Duration where
   mempty = Duration mempty
 
-data DurationComponent = Second | Minute | Hour | Day | Month | Year
+data DurationComponent = Second | Minute | Hour | Day | Week | Month | Year
 derive instance eqDurationComponent :: Eq DurationComponent
 derive instance ordDurationComponent :: Ord DurationComponent
 
 instance showDurationComponent :: Show DurationComponent where
-  show Year = "Year"
-  show Month = "Month"
-  show Day = "Day"
-  show Hour = "Hour"
   show Minute = "Minute"
   show Second = "Second"
+  show Hour = "Hour"
+  show Day = "Day"
+  show Week = "Week"
+  show Month = "Month"
+  show Year = "Year"
 
 
 week :: Number -> Duration
-week = durationFromComponent Day <<< (_ * 7.0)
+week = durationFromComponent Week
 
 year :: Number -> Duration
 year = durationFromComponent Year
