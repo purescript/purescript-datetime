@@ -17,16 +17,15 @@ import Data.Interval.Duration.Iso as IsoDuration
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Monoid (mempty)
 import Data.Newtype (over, unwrap)
-import Data.NonEmpty (NonEmpty(..))
 import Data.String (length)
 import Data.Time as Time
 import Data.Time.Duration as Duration
 import Data.Traversable (sequence, traverse)
 import Data.Tuple (Tuple(..), snd)
 import Math (floor)
+import Partial.Unsafe (unsafePartial)
 import Test.Assert (ASSERT, assert)
 import Type.Proxy (Proxy(..))
-import Partial.Unsafe (unsafePartial)
 
 type Tests = Eff (console :: CONSOLE, assert :: ASSERT) Unit
 
@@ -41,13 +40,13 @@ main = do
   assert $ isRight $ IsoDuration.mkIsoDuration (Interval.day 1.2 <> Interval.second 0.0)
   assert $ isRight $ IsoDuration.mkIsoDuration (Interval.year 2.0 <> Interval.day 1.0)
   assert $ IsoDuration.mkIsoDuration (Interval.year 2.5 <> Interval.day 1.0)
-    == Left (NonEmpty (IsoDuration.InvalidFractionalUse Interval.Year) [])
+    == Left (pure (IsoDuration.InvalidFractionalUse Interval.Year))
   log $ show $ IsoDuration.mkIsoDuration (Interval.year 2.5 <> Interval.week 1.0)
-    == Left (NonEmpty IsoDuration.InvalidWeekComponentUsage [IsoDuration.InvalidFractionalUse Interval.Year])
+    == Left (pure IsoDuration.InvalidWeekComponentUsage <> pure (IsoDuration.InvalidFractionalUse Interval.Year))
   assert $ IsoDuration.mkIsoDuration (Interval.year 2.0 <> Interval.day (-1.0))
-    == Left (NonEmpty (IsoDuration.ContainsNegativeValue Interval.Day) [])
+    == Left (pure (IsoDuration.ContainsNegativeValue Interval.Day))
   assert $ IsoDuration.mkIsoDuration (mempty)
-    == Left (NonEmpty IsoDuration.IsEmpty [])
+    == Left (pure IsoDuration.IsEmpty)
 
   let epochDate = unsafePartial fromJust $ Date.canonicalDate
                   <$> toEnum 1
