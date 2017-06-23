@@ -1,39 +1,18 @@
 module Data.Interval
   ( Interval(..)
   , RecurringInterval(..)
-  , IsoDuration
-  , Duration(..)
-  , DurationComponent(..)
-  , unIsoDuration
-  , mkIsoDuration
-  , isValidIsoDuration
-  , year
-  , month
-  , week
-  , day
-  , hour
-  , minute
-  , second
-  , millisecond
+  , module DurationExports
   ) where
 
 import Prelude
-import Control.Extend (class Extend, (=>>), extend)
-import Data.Foldable (class Foldable, foldl, foldr, fold, foldMap, foldrDefault, foldMapDefaultL)
+import Data.Interval.Duration as DurationExports
+import Control.Extend (class Extend, extend)
+import Data.Foldable (class Foldable, foldl, foldr, foldrDefault, foldMapDefaultL)
 import Data.Bifoldable (class Bifoldable, bifoldl, bifoldr, bifoldrDefault, bifoldMapDefaultL)
 import Data.Bifunctor (class Bifunctor, bimap)
 import Data.Bitraversable (class Bitraversable, bitraverse, bisequenceDefault)
-import Data.List ((:))
-import Data.Maybe (Maybe(..))
-import Data.Map as Map
-import Data.Monoid (class Monoid, mempty)
-import Data.Monoid.Conj (Conj(..))
-import Data.Monoid.Additive (Additive(..))
+import Data.Maybe (Maybe)
 import Data.Traversable (class Traversable, traverse, sequenceDefault)
-import Data.Tuple (Tuple(..), snd)
-import Data.Newtype (class Newtype, unwrap)
-import Control.Comonad (extract)
-import Math as Math
 
 data RecurringInterval d a = RecurringInterval (Maybe Int) (Interval d a)
 
@@ -133,90 +112,3 @@ instance extendInterval :: Extend (Interval d) where
   extend f a@(DurationEnd d x) = DurationEnd d (f a)
   extend f a@(StartDuration x d) = StartDuration (f a) d
   extend f (DurationOnly d) = DurationOnly d
-
-
-mkIsoDuration :: Duration -> Maybe IsoDuration
-mkIsoDuration d | isValidIsoDuration d = Just (IsoDuration d)
-mkIsoDuration _ = Nothing
-
-isFractional :: Number -> Boolean
-isFractional a = Math.floor a /= a
-
-isValidIsoDuration :: Duration -> Boolean
-isValidIsoDuration (Duration m) = not Map.isEmpty m && hasValidFractionalUse m
-  where
-  -- allow only last number to be fractional
-  hasValidFractionalUse = Map.toAscUnfoldable
-    >>> (\vals -> fold (vals =>> validateFractionalUse) <> positiveNums vals)
-    >>> extract
-  validateFractionalUse vals = Conj case vals of
-    (Tuple _ n):as | isFractional n -> foldMap (snd >>> Additive) as == mempty
-    _ -> true
-  -- allow only positive values
-  positiveNums vals = foldMap (snd >>> (_ >= 0.0) >>> Conj) vals
-
-
-unIsoDuration :: IsoDuration -> Duration
-unIsoDuration (IsoDuration a) = a
-
-newtype IsoDuration = IsoDuration Duration
-derive instance eqIsoDuration :: Eq IsoDuration
-derive instance ordIsoDuration :: Ord IsoDuration
-instance showIsoDuration :: Show IsoDuration where
-  show (IsoDuration d) = "(IsoDuration " <> show d <> ")"
-
-
-newtype Duration = Duration (Map.Map DurationComponent Number)
-
-derive instance eqDuration :: Eq Duration
-derive instance ordDuration :: Ord Duration
-derive instance newtypeDuration :: Newtype Duration _
-
-instance showDuration :: Show Duration where
-  show (Duration d) = "(Duration " <> show d <> ")"
-
-instance semigroupDuration :: Semigroup Duration where
-  append (Duration a) (Duration b) = Duration (Map.unionWith (+) a b)
-
-instance monoidDuration :: Monoid Duration where
-  mempty = Duration mempty
-
-data DurationComponent = Year | Month | Day | Hour | Minute | Second
-derive instance eqDurationComponent :: Eq DurationComponent
-derive instance ordDurationComponent :: Ord DurationComponent
-
-instance showDurationComponent :: Show DurationComponent where
-  show Year = "Year"
-  show Month = "Month"
-  show Day = "Day"
-  show Hour = "Hour"
-  show Minute = "Minute"
-  show Second = "Second"
-
-
-week :: Number -> Duration
-week = durationFromComponent Day <<< (_ * 7.0)
-
-year :: Number -> Duration
-year = durationFromComponent Year
-
-month :: Number -> Duration
-month = durationFromComponent Month
-
-day :: Number -> Duration
-day = durationFromComponent Day
-
-hour :: Number -> Duration
-hour = durationFromComponent Hour
-
-minute :: Number -> Duration
-minute = durationFromComponent Minute
-
-second :: Number -> Duration
-second = durationFromComponent Second
-
-millisecond :: Number -> Duration
-millisecond = durationFromComponent Second <<< (_ / 1000.0)
-
-durationFromComponent :: DurationComponent -> Number -> Duration
-durationFromComponent k v = Duration (Map.singleton k v)

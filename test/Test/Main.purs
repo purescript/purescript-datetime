@@ -10,6 +10,7 @@ import Data.Date as Date
 import Data.Time as Time
 import Data.Time.Duration as Duration
 import Data.Interval as Interval
+import Data.Interval.Duration.Iso (mkIsoDuration)
 import Data.Array as Array
 import Data.DateTime as DateTime
 import Data.DateTime.Locale as Locale
@@ -36,11 +37,11 @@ main = do
   assert $ Interval.year 1.0 == mempty <> Interval.year 2.0 <> Interval.year 1.0 <> Interval.year (-2.0)
   assert $ Interval.second 0.5 == Interval.millisecond 500.0
   assert $ Interval.week 1.0 == Interval.day 7.0
-  assert $ Interval.mkIsoDuration (Interval.week 1.2 <> mempty) /= Nothing
-  assert $ Interval.mkIsoDuration (Interval.week 1.2 <> Interval.second 0.0) /= Nothing
-  assert $ Interval.mkIsoDuration (Interval.year 2.0 <> Interval.week 1.0) /= Nothing
-  assert $ Interval.mkIsoDuration (Interval.year 2.5 <> Interval.week 1.0) == Nothing
-  assert $ Interval.mkIsoDuration (mempty) == Nothing
+  assert $ mkIsoDuration (Interval.week 1.2 <> mempty) /= Nothing
+  assert $ mkIsoDuration (Interval.week 1.2 <> Interval.second 0.0) /= Nothing
+  assert $ mkIsoDuration (Interval.year 2.0 <> Interval.week 1.0) /= Nothing
+  assert $ mkIsoDuration (Interval.year 2.5 <> Interval.week 1.0) == Nothing
+  assert $ mkIsoDuration (mempty) == Nothing
 
   let epochDate = unsafePartial fromJust $ Date.canonicalDate
                   <$> toEnum 1
