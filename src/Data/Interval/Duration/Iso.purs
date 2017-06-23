@@ -57,10 +57,11 @@ checkValidIsoDuration (Duration asMap) = check {asList, asMap}
   where
   asList = reverse (Map.toAscUnfoldable asMap)
   check = fold
-    [ checkEmptiness
+    [ checkWeekUsage
+    , checkEmptiness
     , checkFractionalUse
     , checkNegativeValues
-    , checkWeekUsage]
+    ]
 
 
 type CheckEnv =

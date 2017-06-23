@@ -42,6 +42,8 @@ main = do
   assert $ isRight $ IsoDuration.mkIsoDuration (Interval.year 2.0 <> Interval.day 1.0)
   assert $ IsoDuration.mkIsoDuration (Interval.year 2.5 <> Interval.day 1.0)
     == Left (NonEmpty (IsoDuration.InvalidFractionalUse Interval.Year) [])
+  log $ show $ IsoDuration.mkIsoDuration (Interval.year 2.5 <> Interval.week 1.0)
+    == Left (NonEmpty IsoDuration.InvalidWeekComponentUsage [IsoDuration.InvalidFractionalUse Interval.Year])
   assert $ IsoDuration.mkIsoDuration (Interval.year 2.0 <> Interval.day (-1.0))
     == Left (NonEmpty (IsoDuration.ContainsNegativeValue Interval.Day) [])
   assert $ IsoDuration.mkIsoDuration (mempty)
