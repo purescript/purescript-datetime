@@ -37,42 +37,42 @@ import Math as Math
 
 data RecurringInterval d a = RecurringInterval (Maybe Int) (Interval d a)
 
-derive instance eqRecurringInterval ∷ (Eq d, Eq a) => Eq (RecurringInterval d a)
-instance showRecurringInterval ∷ (Show d, Show a) => Show (RecurringInterval d a) where
+derive instance eqRecurringInterval :: (Eq d, Eq a) => Eq (RecurringInterval d a)
+instance showRecurringInterval :: (Show d, Show a) => Show (RecurringInterval d a) where
   show (RecurringInterval x y) = "(RecurringInterval " <> show x <> " " <> show y <> ")"
 
-interval ∷ ∀ d a . RecurringInterval d a → Interval d a
+interval :: ∀ d a. RecurringInterval d a -> Interval d a
 interval (RecurringInterval _ i) = i
 
-over ∷ ∀ f d a d' a'. Functor f => (Interval d a → f (Interval d' a')) → RecurringInterval d a → f (RecurringInterval d' a')
+over :: ∀ f d a d' a'. Functor f => (Interval d a -> f (Interval d' a')) -> RecurringInterval d a -> f (RecurringInterval d' a')
 over f (RecurringInterval n i) = map (RecurringInterval n) (f i)
 
-instance functorRecurringInterval ∷ Functor (RecurringInterval d) where
+instance functorRecurringInterval :: Functor (RecurringInterval d) where
   map f (RecurringInterval n i) = (RecurringInterval n (map f i))
 
-instance bifunctorRecurringInterval ∷ Bifunctor RecurringInterval where
+instance bifunctorRecurringInterval :: Bifunctor RecurringInterval where
   bimap f g (RecurringInterval n i) = RecurringInterval n $ bimap f g i
 
-instance foldableRecurringInterval ∷ Foldable (RecurringInterval d) where
+instance foldableRecurringInterval :: Foldable (RecurringInterval d) where
   foldl f i = foldl f i <<< interval
   foldr f i = foldr f i <<< interval
   foldMap = foldMapDefaultL
 
-instance bifoldableRecurringInterval ∷ Bifoldable RecurringInterval where
+instance bifoldableRecurringInterval :: Bifoldable RecurringInterval where
   bifoldl f g i = bifoldl f g i <<< interval
   bifoldr f g i = bifoldr f g i <<< interval
   bifoldMap = bifoldMapDefaultL
 
-instance traversableRecurringInterval ∷ Traversable (RecurringInterval d) where
+instance traversableRecurringInterval :: Traversable (RecurringInterval d) where
   traverse f i = (traverse f) `over` i
   sequence = sequenceDefault
 
-instance bitraversableRecurringInterval ∷ Bitraversable RecurringInterval where
+instance bitraversableRecurringInterval :: Bitraversable RecurringInterval where
   bitraverse l r i = (bitraverse l r) `over` i
   bisequence = bisequenceDefault
 
-instance extendRecurringInterval ∷ Extend (RecurringInterval d) where
-  extend f a@(RecurringInterval n i) = RecurringInterval n (extend (const $ f a) i )
+instance extendRecurringInterval :: Extend (RecurringInterval d) where
+  extend f a@(RecurringInterval n i) = RecurringInterval n (extend (const $ f a) i)
 
 data Interval d a
   = StartEnd      a a
@@ -80,67 +80,67 @@ data Interval d a
   | StartDuration a d
   | JustDuration  d
 
-derive instance eqInterval ∷ (Eq d, Eq a) => Eq (Interval d a)
-instance showInterval ∷ (Show d, Show a) => Show (Interval d a) where
+derive instance eqInterval :: (Eq d, Eq a) => Eq (Interval d a)
+instance showInterval :: (Show d, Show a) => Show (Interval d a) where
   show (StartEnd x y) = "(StartEnd " <> show x <> " " <> show y <> ")"
   show (DurationEnd d x) = "(DurationEnd " <> show d <> " " <> show x <> ")"
   show (StartDuration x d) = "(StartDuration " <> show x <> " " <> show d <> ")"
   show (JustDuration d) = "(JustDuration " <> show d <> ")"
 
-instance functorInterval ∷ Functor (Interval d) where
+instance functorInterval :: Functor (Interval d) where
   map = bimap id
 
-instance bifunctorInterval ∷ Bifunctor Interval where
-  bimap _ f (StartEnd x y) = StartEnd (f x) (f y )
-  bimap g f (DurationEnd d x) = DurationEnd (g d) (f x )
+instance bifunctorInterval :: Bifunctor Interval where
+  bimap _ f (StartEnd x y) = StartEnd (f x) (f y)
+  bimap g f (DurationEnd d x) = DurationEnd (g d) (f x)
   bimap g f (StartDuration x d) = StartDuration (f x) (g d)
   bimap g _ (JustDuration d) = JustDuration (g d)
 
-instance foldableInterval ∷ Foldable (Interval d) where
+instance foldableInterval :: Foldable (Interval d) where
   foldl f z (StartEnd x y) = (z `f` x) `f` y
   foldl f z (DurationEnd d x) = z `f` x
   foldl f z (StartDuration x d) = z `f` x
-  foldl _ z _  = z
+  foldl _ z _ = z
   foldr x = foldrDefault x
   foldMap = foldMapDefaultL
 
-instance bifoldableInterval ∷ Bifoldable Interval where
+instance bifoldableInterval :: Bifoldable Interval where
   bifoldl _ f z (StartEnd x y) = (z `f` x) `f` y
   bifoldl g f z (DurationEnd d x) = (z `g` d) `f` x
   bifoldl g f z (StartDuration x d) = (z `g` d) `f` x
-  bifoldl g _ z (JustDuration d)  = z `g` d
+  bifoldl g _ z (JustDuration d) = z `g` d
   bifoldr x = bifoldrDefault x
   bifoldMap = bifoldMapDefaultL
 
-instance traversableInterval ∷ Traversable (Interval d) where
+instance traversableInterval :: Traversable (Interval d) where
   traverse f (StartEnd x y) = StartEnd <$> f x  <*> f y
   traverse f (DurationEnd d x) = f x <#> DurationEnd d
   traverse f (StartDuration x d) = f x <#> (_ `StartDuration` d)
-  traverse _ (JustDuration d)  = pure (JustDuration d)
+  traverse _ (JustDuration d) = pure (JustDuration d)
   sequence = sequenceDefault
 
-instance bitraversableInterval ∷ Bitraversable Interval where
+instance bitraversableInterval :: Bitraversable Interval where
   bitraverse _ r (StartEnd x y) = StartEnd <$> r x <*> r y
   bitraverse l r (DurationEnd d x) = DurationEnd <$> l d <*> r x
   bitraverse l r (StartDuration x d) = StartDuration <$> r x <*> l d
-  bitraverse l _ (JustDuration d)  = JustDuration <$> l d
+  bitraverse l _ (JustDuration d) = JustDuration <$> l d
   bisequence = bisequenceDefault
 
-instance extendInterval ∷ Extend (Interval d) where
-  extend f a@(StartEnd x y) = StartEnd (f a) (f a )
-  extend f a@(DurationEnd d x) = DurationEnd d (f a )
+instance extendInterval :: Extend (Interval d) where
+  extend f a@(StartEnd x y) = StartEnd (f a) (f a)
+  extend f a@(DurationEnd d x) = DurationEnd d (f a)
   extend f a@(StartDuration x d) = StartDuration (f a) d
   extend f (JustDuration d) = JustDuration d
 
 
-mkIsoDuration ∷ Duration → Maybe IsoDuration
+mkIsoDuration :: Duration -> Maybe IsoDuration
 mkIsoDuration d | isValidIsoDuration d = Just $ IsoDuration d
 mkIsoDuration _ = Nothing
 
-isFractional ∷ Number → Boolean
+isFractional :: Number -> Boolean
 isFractional a = Math.floor a /= a
 
-isValidIsoDuration ∷ Duration → Boolean
+isValidIsoDuration :: Duration -> Boolean
 isValidIsoDuration (Duration m) = (not $ Map.isEmpty m) && (hasValidFractionalUse m)
   where
     isAllPositive = Map.toAscUnfoldable
@@ -149,40 +149,40 @@ isValidIsoDuration (Duration m) = (not $ Map.isEmpty m) && (hasValidFractionalUs
       >>> (\vals -> fold (vals =>> validateFractionalUse) <> positiveNums vals)
       >>> extract
     validateFractionalUse vals = Conj $ case vals of
-      (Tuple _ n):as | isFractional n → foldMap (snd >>> Additive) as == mempty
-      _ → true
+      (Tuple _ n):as | isFractional n -> foldMap (snd >>> Additive) as == mempty
+      _ -> true
     -- allow only positive values
     positiveNums vals = foldMap (snd >>> (_ >= 0.0) >>> Conj) vals
 
 
-unIsoDuration ∷ IsoDuration → Duration
+unIsoDuration :: IsoDuration -> Duration
 unIsoDuration (IsoDuration a) = a
 
 newtype IsoDuration = IsoDuration Duration
-derive instance eqIsoDuration ∷ Eq IsoDuration
-instance showIsoDuration ∷ Show IsoDuration where
-  show (IsoDuration d)= "(IsoDuration " <> show d <> ")"
+derive instance eqIsoDuration :: Eq IsoDuration
+instance showIsoDuration :: Show IsoDuration where
+  show (IsoDuration d) = "(IsoDuration " <> show d <> ")"
 
 
 newtype Duration = Duration (Map.Map DurationComponent Number)
 
-derive instance eqDuration ∷ Eq Duration
-derive instance newtypeDuration ∷ Newtype Duration _
+derive instance eqDuration :: Eq Duration
+derive instance newtypeDuration :: Newtype Duration _
 
-instance showDuration ∷ Show Duration where
-  show (Duration d)= "(Duration " <> show d <> ")"
+instance showDuration :: Show Duration where
+  show (Duration d) = "(Duration " <> show d <> ")"
 
-instance semigroupDuration ∷ Semigroup Duration where
+instance semigroupDuration :: Semigroup Duration where
   append (Duration a) (Duration b) = Duration $ Map.unionWith (+) a b
 
-instance monoidDuration ∷ Monoid Duration where
+instance monoidDuration :: Monoid Duration where
   mempty = Duration mempty
 
 data DurationComponent = Year | Month | Day | Hour | Minute | Second
-derive instance eqDurationComponent ∷ Eq DurationComponent
-derive instance ordDurationComponent ∷ Ord DurationComponent
+derive instance eqDurationComponent :: Eq DurationComponent
+derive instance ordDurationComponent :: Ord DurationComponent
 
-instance showDurationComponent ∷ Show DurationComponent where
+instance showDurationComponent :: Show DurationComponent where
   show Year = "Year"
   show Month = "Month"
   show Day = "Day"
@@ -191,30 +191,29 @@ instance showDurationComponent ∷ Show DurationComponent where
   show Second = "Second"
 
 
-week ∷ Number → Duration
+week :: Number -> Duration
 week = durationFromComponent Day <<< (_ * 7.0)
 
-year ∷ Number → Duration
+year :: Number -> Duration
 year = durationFromComponent Year
 
-month ∷ Number → Duration
+month :: Number -> Duration
 month = durationFromComponent Month
 
-day ∷ Number → Duration
+day :: Number -> Duration
 day = durationFromComponent Day
 
-hour ∷ Number → Duration
+hour :: Number -> Duration
 hour = durationFromComponent Hour
 
-minute ∷ Number → Duration
+minute :: Number -> Duration
 minute = durationFromComponent Minute
 
-second ∷ Number → Duration
+second :: Number -> Duration
 second = durationFromComponent Second
 
-millisecond ∷ Number → Duration
+millisecond :: Number -> Duration
 millisecond = durationFromComponent Second <<< (_ / 1000.0)
 
-durationFromComponent ∷ DurationComponent → Number → Duration
--- durationFromComponent _ 0.0 = mempty
-durationFromComponent k v= Duration $ Map.singleton k v
+durationFromComponent :: DurationComponent -> Number -> Duration
+durationFromComponent k v = Duration $ Map.singleton k v
