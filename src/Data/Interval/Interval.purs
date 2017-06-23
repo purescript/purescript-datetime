@@ -31,7 +31,7 @@ import Data.Monoid.Conj (Conj(..))
 import Data.Monoid.Additive (Additive(..))
 import Data.Traversable (class Traversable, traverse, sequenceDefault)
 import Data.Tuple (Tuple(..), snd)
-import Data.Newtype (class Newtype)
+import Data.Newtype (class Newtype, unwrap)
 import Control.Comonad (extract)
 import Math as Math
 
@@ -49,10 +49,10 @@ over :: ∀ f d a d' a'. Functor f => (Interval d a -> f (Interval d' a')) -> Re
 over f (RecurringInterval n i) = map (RecurringInterval n) (f i)
 
 instance functorRecurringInterval :: Functor (RecurringInterval d) where
-  map f (RecurringInterval n i) = (RecurringInterval n (map f i))
+  map f (RecurringInterval n i) = RecurringInterval n (map f i)
 
 instance bifunctorRecurringInterval :: Bifunctor RecurringInterval where
-  bimap f g (RecurringInterval n i) = RecurringInterval n $ bimap f g i
+  bimap f g (RecurringInterval n i) = RecurringInterval n (bimap f g i)
 
 instance foldableRecurringInterval :: Foldable (RecurringInterval d) where
   foldl f i = foldl f i <<< interval
@@ -65,15 +65,15 @@ instance bifoldableRecurringInterval :: Bifoldable RecurringInterval where
   bifoldMap = bifoldMapDefaultL
 
 instance traversableRecurringInterval :: Traversable (RecurringInterval d) where
-  traverse f i = (traverse f) `over` i
+  traverse f i = traverse f `over` i
   sequence = sequenceDefault
 
 instance bitraversableRecurringInterval :: Bitraversable RecurringInterval where
-  bitraverse l r i = (bitraverse l r) `over` i
+  bitraverse l r i = bitraverse l r `over` i
   bisequence = bisequenceDefault
 
 instance extendRecurringInterval :: Extend (RecurringInterval d) where
-  extend f a@(RecurringInterval n i) = RecurringInterval n (extend (const $ f a) i)
+  extend f a@(RecurringInterval n i) = RecurringInterval n (extend (const (f a)) i)
 
 data Interval d a
   = StartEnd      a a
@@ -136,25 +136,24 @@ instance extendInterval :: Extend (Interval d) where
 
 
 mkIsoDuration :: Duration -> Maybe IsoDuration
-mkIsoDuration d | isValidIsoDuration d = Just $ IsoDuration d
+mkIsoDuration d | isValidIsoDuration d = Just (IsoDuration d)
 mkIsoDuration _ = Nothing
 
 isFractional :: Number -> Boolean
 isFractional a = Math.floor a /= a
 
 isValidIsoDuration :: Duration -> Boolean
-isValidIsoDuration (Duration m) = (not $ Map.isEmpty m) && (hasValidFractionalUse m)
+isValidIsoDuration (Duration m) = not Map.isEmpty m && hasValidFractionalUse m
   where
-    isAllPositive = Map.toAscUnfoldable
-    -- allow only last number to be fractional
-    hasValidFractionalUse = Map.toAscUnfoldable
-      >>> (\vals -> fold (vals =>> validateFractionalUse) <> positiveNums vals)
-      >>> extract
-    validateFractionalUse vals = Conj $ case vals of
-      (Tuple _ n):as | isFractional n -> foldMap (snd >>> Additive) as == mempty
-      _ -> true
-    -- allow only positive values
-    positiveNums vals = foldMap (snd >>> (_ >= 0.0) >>> Conj) vals
+  -- allow only last number to be fractional
+  hasValidFractionalUse = Map.toAscUnfoldable
+    >>> (\vals -> fold (vals =>> validateFractionalUse) <> positiveNums vals)
+    >>> extract
+  validateFractionalUse vals = Conj case vals of
+    (Tuple _ n):as | isFractional n -> foldMap (snd >>> Additive) as == mempty
+    _ -> true
+  -- allow only positive values
+  positiveNums vals = foldMap (snd >>> (_ >= 0.0) >>> Conj) vals
 
 
 unIsoDuration :: IsoDuration -> Duration
@@ -177,7 +176,7 @@ instance showDuration :: Show Duration where
   show (Duration d) = "(Duration " <> show d <> ")"
 
 instance semigroupDuration :: Semigroup Duration where
-  append (Duration a) (Duration b) = Duration $ Map.unionWith (+) a b
+  append (Duration a) (Duration b) = Duration (Map.unionWith (+) a b)
 
 instance monoidDuration :: Monoid Duration where
   mempty = Duration mempty
@@ -220,4 +219,4 @@ millisecond :: Number -> Duration
 millisecond = durationFromComponent Second <<< (_ / 1000.0)
 
 durationFromComponent :: DurationComponent -> Number -> Duration
-durationFromComponent k v = Duration $ Map.singleton k v
+durationFromComponent k v = Duration (Map.singleton k v)
