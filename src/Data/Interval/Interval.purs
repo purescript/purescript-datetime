@@ -79,7 +79,7 @@ data Interval d a
   = StartEnd      a a
   | DurationEnd   d a
   | StartDuration a d
-  | JustDuration  d
+  | DurationOnly  d
 
 derive instance eqInterval :: (Eq d, Eq a) => Eq (Interval d a)
 derive instance ordInterval :: (Ord d, Ord a) => Ord (Interval d a)
@@ -87,7 +87,7 @@ instance showInterval :: (Show d, Show a) => Show (Interval d a) where
   show (StartEnd x y) = "(StartEnd " <> show x <> " " <> show y <> ")"
   show (DurationEnd d x) = "(DurationEnd " <> show d <> " " <> show x <> ")"
   show (StartDuration x d) = "(StartDuration " <> show x <> " " <> show d <> ")"
-  show (JustDuration d) = "(JustDuration " <> show d <> ")"
+  show (DurationOnly d) = "(DurationOnly " <> show d <> ")"
 
 instance functorInterval :: Functor (Interval d) where
   map = bimap id
@@ -96,7 +96,7 @@ instance bifunctorInterval :: Bifunctor Interval where
   bimap _ f (StartEnd x y) = StartEnd (f x) (f y)
   bimap g f (DurationEnd d x) = DurationEnd (g d) (f x)
   bimap g f (StartDuration x d) = StartDuration (f x) (g d)
-  bimap g _ (JustDuration d) = JustDuration (g d)
+  bimap g _ (DurationOnly d) = DurationOnly (g d)
 
 instance foldableInterval :: Foldable (Interval d) where
   foldl f z (StartEnd x y) = (z `f` x) `f` y
@@ -110,7 +110,7 @@ instance bifoldableInterval :: Bifoldable Interval where
   bifoldl _ f z (StartEnd x y) = (z `f` x) `f` y
   bifoldl g f z (DurationEnd d x) = (z `g` d) `f` x
   bifoldl g f z (StartDuration x d) = (z `g` d) `f` x
-  bifoldl g _ z (JustDuration d) = z `g` d
+  bifoldl g _ z (DurationOnly d) = z `g` d
   bifoldr x = bifoldrDefault x
   bifoldMap = bifoldMapDefaultL
 
@@ -118,21 +118,21 @@ instance traversableInterval :: Traversable (Interval d) where
   traverse f (StartEnd x y) = StartEnd <$> f x  <*> f y
   traverse f (DurationEnd d x) = f x <#> DurationEnd d
   traverse f (StartDuration x d) = f x <#> (_ `StartDuration` d)
-  traverse _ (JustDuration d) = pure (JustDuration d)
+  traverse _ (DurationOnly d) = pure (DurationOnly d)
   sequence = sequenceDefault
 
 instance bitraversableInterval :: Bitraversable Interval where
   bitraverse _ r (StartEnd x y) = StartEnd <$> r x <*> r y
   bitraverse l r (DurationEnd d x) = DurationEnd <$> l d <*> r x
   bitraverse l r (StartDuration x d) = StartDuration <$> r x <*> l d
-  bitraverse l _ (JustDuration d) = JustDuration <$> l d
+  bitraverse l _ (DurationOnly d) = DurationOnly <$> l d
   bisequence = bisequenceDefault
 
 instance extendInterval :: Extend (Interval d) where
   extend f a@(StartEnd x y) = StartEnd (f a) (f a)
   extend f a@(DurationEnd d x) = DurationEnd d (f a)
   extend f a@(StartDuration x d) = StartDuration (f a) d
-  extend f (JustDuration d) = JustDuration d
+  extend f (DurationOnly d) = DurationOnly d
 
 
 mkIsoDuration :: Duration -> Maybe IsoDuration
