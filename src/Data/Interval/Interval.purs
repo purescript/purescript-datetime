@@ -35,8 +35,6 @@ import Data.Newtype (class Newtype)
 import Control.Comonad (extract)
 import Math as Math
 
--- TODO read this lib for some helper function inspiration around intervals/durations
--- https://github.com/arnau/ISO8601/blob/master/spec/iso8601/duration_spec.rb
 data RecurringInterval d a = RecurringInterval (Maybe Int) (Interval d a)
 
 derive instance eqRecurringInterval ∷ (Eq d, Eq a) => Eq (RecurringInterval d a)
@@ -167,7 +165,7 @@ instance showIsoDuration ∷ Show IsoDuration where
 
 
 newtype Duration = Duration (Map.Map DurationComponent Number)
--- TODO `day 1 == hour 24`
+
 derive instance eqDuration ∷ Eq Duration
 derive instance newtypeDuration ∷ Newtype Duration _
 
