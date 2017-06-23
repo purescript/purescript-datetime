@@ -9,7 +9,7 @@ import Prelude
 import Control.Extend ((=>>))
 import Data.Foldable (fold, foldMap)
 import Data.Interval.Duration (Duration(..))
-import Data.List (List, (:))
+import Data.List (List, (:), reverse)
 import Data.Maybe (Maybe(..))
 import Data.Map as Map
 import Data.Monoid (mempty)
@@ -44,6 +44,7 @@ isValidIsoDuration (Duration m) = not Map.isEmpty m && validNumberUsage m
 
   validNumberUsage :: forall a. Map.Map a Number -> Boolean
   validNumberUsage = Map.toAscUnfoldable
+    >>> reverse
     >>> (\vals -> fold (vals =>> hasValidFractionalUse) <> hasOnlyPositiveNums vals)
     >>> extract
 

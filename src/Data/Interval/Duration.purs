@@ -31,7 +31,7 @@ instance semigroupDuration :: Semigroup Duration where
 instance monoidDuration :: Monoid Duration where
   mempty = Duration mempty
 
-data DurationComponent = Year | Month | Day | Hour | Minute | Second
+data DurationComponent = Second | Minute | Hour | Day | Month | Year
 derive instance eqDurationComponent :: Eq DurationComponent
 derive instance ordDurationComponent :: Ord DurationComponent
 
