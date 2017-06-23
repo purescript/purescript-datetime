@@ -38,6 +38,7 @@ import Math as Math
 data RecurringInterval d a = RecurringInterval (Maybe Int) (Interval d a)
 
 derive instance eqRecurringInterval :: (Eq d, Eq a) => Eq (RecurringInterval d a)
+derive instance ordRecurringInterval :: (Ord d, Ord a) => Ord (RecurringInterval d a)
 instance showRecurringInterval :: (Show d, Show a) => Show (RecurringInterval d a) where
   show (RecurringInterval x y) = "(RecurringInterval " <> show x <> " " <> show y <> ")"
 
@@ -81,6 +82,7 @@ data Interval d a
   | JustDuration  d
 
 derive instance eqInterval :: (Eq d, Eq a) => Eq (Interval d a)
+derive instance ordInterval :: (Ord d, Ord a) => Ord (Interval d a)
 instance showInterval :: (Show d, Show a) => Show (Interval d a) where
   show (StartEnd x y) = "(StartEnd " <> show x <> " " <> show y <> ")"
   show (DurationEnd d x) = "(DurationEnd " <> show d <> " " <> show x <> ")"
@@ -160,6 +162,7 @@ unIsoDuration (IsoDuration a) = a
 
 newtype IsoDuration = IsoDuration Duration
 derive instance eqIsoDuration :: Eq IsoDuration
+derive instance ordIsoDuration :: Ord IsoDuration
 instance showIsoDuration :: Show IsoDuration where
   show (IsoDuration d) = "(IsoDuration " <> show d <> ")"
 
@@ -167,6 +170,7 @@ instance showIsoDuration :: Show IsoDuration where
 newtype Duration = Duration (Map.Map DurationComponent Number)
 
 derive instance eqDuration :: Eq Duration
+derive instance ordDuration :: Ord Duration
 derive instance newtypeDuration :: Newtype Duration _
 
 instance showDuration :: Show Duration where
