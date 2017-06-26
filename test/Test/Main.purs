@@ -4,32 +4,49 @@ import Prelude
 
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
-
-import Data.Enum (class BoundedEnum, Cardinality, toEnum, enumFromTo, cardinality, succ, fromEnum, pred)
+import Data.Array as Array
 import Data.Date as Date
+import Data.DateTime as DateTime
+import Data.DateTime.Instant as Instant
+import Data.DateTime.Locale as Locale
+import Data.Either (Either(..), isRight)
+import Data.Enum (class BoundedEnum, Cardinality, toEnum, enumFromTo, cardinality, succ, fromEnum, pred)
+import Data.Foldable (foldl, foldr, foldMap)
+import Data.Interval as Interval
+import Data.Interval.Duration.Iso as IsoDuration
+import Data.Maybe (Maybe(..), fromJust)
+import Data.Monoid (mempty)
+import Data.Newtype (over, unwrap)
+import Data.String (length)
 import Data.Time as Time
 import Data.Time.Duration as Duration
-import Data.Array as Array
-import Data.DateTime as DateTime
-import Data.DateTime.Locale as Locale
-import Data.DateTime.Instant as Instant
-import Data.Foldable (foldl, foldr, foldMap)
-import Data.Maybe (Maybe(..), fromJust)
-import Data.String (length)
 import Data.Traversable (sequence, traverse)
 import Data.Tuple (Tuple(..), snd)
-import Data.Newtype (over, unwrap)
-
 import Math (floor)
-
-import Type.Proxy (Proxy(..))
-import Test.Assert (ASSERT, assert)
 import Partial.Unsafe (unsafePartial)
+import Test.Assert (ASSERT, assert)
+import Type.Proxy (Proxy(..))
 
 type Tests = Eff (console :: CONSOLE, assert :: ASSERT) Unit
 
 main :: Tests
 main = do
+  log "check Duration monoid"
+  assert $ Interval.year 1.0 == mempty <> Interval.year 2.0 <> Interval.year 1.0 <> Interval.year (-2.0)
+  assert $ Interval.second 0.5 == Interval.millisecond 500.0
+  assert $ IsoDuration.mkIsoDuration (Interval.week 1.2 <> Interval.week 1.2)
+    == IsoDuration.mkIsoDuration (Interval.week 2.4)
+  assert $ isRight $ IsoDuration.mkIsoDuration (Interval.day 1.2 <> mempty)
+  assert $ isRight $ IsoDuration.mkIsoDuration (Interval.day 1.2 <> Interval.second 0.0)
+  assert $ isRight $ IsoDuration.mkIsoDuration (Interval.year 2.0 <> Interval.day 1.0)
+  assert $ IsoDuration.mkIsoDuration (Interval.year 2.5 <> Interval.day 1.0)
+    == Left (pure (IsoDuration.InvalidFractionalUse Interval.Year))
+  log $ show $ IsoDuration.mkIsoDuration (Interval.year 2.5 <> Interval.week 1.0)
+    == Left (pure IsoDuration.InvalidWeekComponentUsage <> pure (IsoDuration.InvalidFractionalUse Interval.Year))
+  assert $ IsoDuration.mkIsoDuration (Interval.year 2.0 <> Interval.day (-1.0))
+    == Left (pure (IsoDuration.ContainsNegativeValue Interval.Day))
+  assert $ IsoDuration.mkIsoDuration (mempty)
+    == Left (pure IsoDuration.IsEmpty)
 
   let epochDate = unsafePartial fromJust $ Date.canonicalDate
                   <$> toEnum 1
