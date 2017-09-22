@@ -3,6 +3,7 @@ module Data.DateTime.Instant
   , instant
   , unInstant
   , fromDateTime
+  , fromDate
   , toDateTime
   ) where
 
