@@ -27,6 +27,7 @@
   "devDependencies": {
     "purescript-assert": "^3.0.0",
     "purescript-console": "^3.0.0",
-    "purescript-strings": "^3.0.0"
+    "purescript-strings": "^3.0.0",
+    "purescript-typelevel": "^3.0.0"
   }
 }
