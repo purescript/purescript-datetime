@@ -4,7 +4,7 @@ import Prelude
 import Control.Comonad (class Comonad, class Extend)
 import Data.DateTime (Date, Time, DateTime)
 import Data.Foldable (class Foldable)
-import Data.Generic (class Generic)
+import Data.Generic.Rep (class Generic)
 import Data.Maybe (Maybe)
 import Data.Newtype (class Newtype)
 import Data.Time.Duration (Minutes)
@@ -16,7 +16,7 @@ data Locale = Locale (Maybe LocaleName) Minutes
 
 derive instance eqLocale :: Eq Locale
 derive instance ordLocale :: Ord Locale
-derive instance genericLocale :: Generic Locale
+derive instance genericLocale :: Generic Locale _
 
 instance showLocale :: Show Locale where
   show (Locale name offset) = "(Locale " <> show name <> " " <> show offset <> ")"
@@ -27,7 +27,7 @@ newtype LocaleName = LocaleName String
 derive instance newtypeLocaleName :: Newtype LocaleName _
 derive newtype instance eqLocaleName :: Eq LocaleName
 derive newtype instance ordLocaleName :: Ord LocaleName
-derive instance genericLocaleName :: Generic LocaleName
+derive instance genericLocaleName :: Generic LocaleName _
 
 instance showLocaleName :: Show LocaleName where
   show (LocaleName name) = "(LocaleName " <> show name <> ")"
@@ -41,7 +41,7 @@ data LocalValue a = LocalValue Locale a
 
 derive instance eqLocalValue :: Eq a => Eq (LocalValue a)
 derive instance ordLocalValue :: Ord a => Ord (LocalValue a)
-derive instance genericLocalValue :: Generic a => Generic (LocalValue a)
+derive instance genericLocalValue :: Generic (LocalValue a) _
 
 instance showLocalValue :: Show a => Show (LocalValue a) where
   show (LocalValue n a) = "(LocalValue " <> show n <> " " <> show a <> ")"

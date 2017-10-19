@@ -2,14 +2,14 @@ module Data.Time.Duration where
 
 import Prelude
 
-import Data.Generic (class Generic)
+import Data.Generic.Rep (class Generic)
 import Data.Newtype (class Newtype, over)
 
 -- | A duration measured in milliseconds.
 newtype Milliseconds = Milliseconds Number
 
 derive instance newtypeMilliseconds :: Newtype Milliseconds _
-derive instance genericMilliseconds :: Generic Milliseconds
+derive instance genericMilliseconds :: Generic Milliseconds _
 derive newtype instance eqMilliseconds :: Eq Milliseconds
 derive newtype instance ordMilliseconds :: Ord Milliseconds
 derive newtype instance semiringMilliseconds :: Semiring Milliseconds
@@ -22,7 +22,7 @@ instance showMilliseconds :: Show Milliseconds where
 newtype Seconds = Seconds Number
 
 derive instance newtypeSeconds :: Newtype Seconds _
-derive instance genericSeconds :: Generic Seconds
+derive instance genericSeconds :: Generic Seconds _
 derive newtype instance eqSeconds :: Eq Seconds
 derive newtype instance ordSeconds :: Ord Seconds
 derive newtype instance semiringSeconds :: Semiring Seconds
@@ -35,7 +35,7 @@ instance showSeconds :: Show Seconds where
 newtype Minutes = Minutes Number
 
 derive instance newtypeMinutes :: Newtype Minutes _
-derive instance genericMinutes :: Generic Minutes
+derive instance genericMinutes :: Generic Minutes _
 derive newtype instance eqMinutes :: Eq Minutes
 derive newtype instance ordMinutes :: Ord Minutes
 derive newtype instance semiringMinutes :: Semiring Minutes
@@ -48,7 +48,7 @@ instance showMinutes :: Show Minutes where
 newtype Hours = Hours Number
 
 derive instance newtypeHours :: Newtype Hours _
-derive instance genericHours :: Generic Hours
+derive instance genericHours :: Generic Hours _
 derive newtype instance eqHours :: Eq Hours
 derive newtype instance ordHours :: Ord Hours
 derive newtype instance semiringHours :: Semiring Hours
@@ -61,7 +61,7 @@ instance showHours :: Show Hours where
 newtype Days = Days Number
 
 derive instance newtypeDays :: Newtype Days _
-derive instance genericDays :: Generic Days
+derive instance genericDays :: Generic Days _
 derive newtype instance eqDays :: Eq Days
 derive newtype instance ordDays :: Ord Days
 derive newtype instance semiringDays :: Semiring Days
