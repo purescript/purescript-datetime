@@ -20,7 +20,6 @@ newtype Year = Year Int
 
 derive newtype instance eqYear :: Eq Year
 derive newtype instance ordYear :: Ord Year
-derive instance genericYear :: Generic Year _
 
 -- Note: these seemingly arbitrary bounds come from relying on JS for date
 -- manipulations, as it only supports date ±100,000,000 days of the Unix epoch.
@@ -124,7 +123,6 @@ newtype Day = Day Int
 
 derive newtype instance eqDay :: Eq Day
 derive newtype instance ordDay :: Ord Day
-derive instance genericDay :: Generic Day _
 
 instance boundedDay :: Bounded Day where
   bottom = Day 1
