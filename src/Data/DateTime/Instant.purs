@@ -12,7 +12,7 @@ import Prelude
 import Data.DateTime (Millisecond, Second, Minute, Hour, Day, Year, DateTime(..), Date, Time(..), canonicalDate, millisecond, second, minute, hour, day, month, year)
 import Data.Enum (fromEnum, toEnum)
 import Data.Function.Uncurried (Fn7, runFn7)
-import Data.Generic (class Generic)
+import Data.Generic.Rep (class Generic)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Time.Duration (Milliseconds(..))
 
@@ -27,7 +27,7 @@ newtype Instant = Instant Milliseconds
 
 derive newtype instance eqDateTime :: Eq Instant
 derive newtype instance ordDateTime :: Ord Instant
-derive instance genericDateTime :: Generic Instant
+derive instance genericDateTime :: Generic Instant _
 
 instance boundedInstant :: Bounded Instant where
   bottom = Instant (Milliseconds (-8639977881600000.0))

@@ -16,17 +16,18 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-enums": "^3.1.0",
-    "purescript-functions": "^3.0.0",
-    "purescript-generics": "^4.0.0",
-    "purescript-integers": "^3.0.0",
-    "purescript-foldable-traversable": "^3.0.0",
-    "purescript-maps": "^3.0.0",
-    "purescript-math": "^2.0.0"
+    "purescript-enums": "#compiler/0.12",
+    "purescript-functions": "#compiler/0.12",
+    "purescript-generics-rep": "#compiler/0.12",
+    "purescript-integers": "#compiler/0.12",
+    "purescript-foldable-traversable": "#compiler/0.12",
+    "purescript-maps": "#compiler/0.12",
+    "purescript-math": "#compiler/0.12",
+    "purescript-proxy": "#compiler/0.12"
   },
   "devDependencies": {
-    "purescript-assert": "^3.0.0",
-    "purescript-console": "^3.0.0",
-    "purescript-strings": "^3.0.0"
+    "purescript-assert": "#compiler/0.12",
+    "purescript-console": "#compiler/0.12",
+    "purescript-strings": "#compiler/0.12"
   }
 }

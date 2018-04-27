@@ -12,7 +12,7 @@ module Data.Time
 import Prelude
 
 import Data.Enum (fromEnum, toEnum)
-import Data.Generic (class Generic)
+import Data.Generic.Rep (class Generic)
 import Data.Int as Int
 import Data.Maybe (fromJust)
 import Data.Newtype (unwrap)
@@ -28,7 +28,7 @@ data Time = Time Hour Minute Second Millisecond
 
 derive instance eqTime :: Eq Time
 derive instance ordTime :: Ord Time
-derive instance genericTime :: Generic Time
+derive instance genericTime :: Generic Time _
 
 instance boundedTime :: Bounded Time where
   bottom = Time bottom bottom bottom bottom

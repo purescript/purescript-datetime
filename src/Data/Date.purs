@@ -17,7 +17,7 @@ import Prelude
 import Data.Date.Component (Day, Month(..), Weekday(..), Year)
 import Data.Enum (toEnum, fromEnum)
 import Data.Function.Uncurried (Fn3, runFn3, Fn4, runFn4, Fn6, runFn6)
-import Data.Generic (class Generic)
+import Data.Generic.Rep (class Generic)
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Time.Duration (class Duration, toDuration, Milliseconds)
 
@@ -45,7 +45,7 @@ exactDate y m d =
 
 derive instance eqDate :: Eq Date
 derive instance ordDate :: Ord Date
-derive instance genericDate :: Generic Date
+derive instance genericDate :: Generic Date _
 
 instance boundedDate :: Bounded Date where
   bottom = Date bottom bottom bottom

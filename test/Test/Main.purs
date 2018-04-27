@@ -2,8 +2,8 @@ module Test.Main where
 
 import Prelude
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Effect (Effect)
+import Effect.Console (log)
 import Data.Array as Array
 import Data.Date as Date
 import Data.DateTime as DateTime
@@ -15,7 +15,6 @@ import Data.Foldable (foldl, foldr, foldMap)
 import Data.Interval as Interval
 import Data.Interval.Duration.Iso as IsoDuration
 import Data.Maybe (Maybe(..), fromJust)
-import Data.Monoid (mempty)
 import Data.Newtype (over, unwrap)
 import Data.String (length)
 import Data.Time as Time
@@ -24,12 +23,10 @@ import Data.Traversable (sequence, traverse)
 import Data.Tuple (Tuple(..), snd)
 import Math (floor)
 import Partial.Unsafe (unsafePartial)
-import Test.Assert (ASSERT, assert)
+import Test.Assert (assert)
 import Type.Proxy (Proxy(..))
 
-type Tests = Eff (console :: CONSOLE, assert :: ASSERT) Unit
-
-main :: Tests
+main :: Effect Unit
 main = do
   log "check Duration monoid"
   assert $ Interval.year 1.0 == mempty <> Interval.year 2.0 <> Interval.year 1.0 <> Interval.year (-2.0)
@@ -211,14 +208,14 @@ main = do
 
   log "All tests done"
 
-checkBounded :: forall e. Bounded e => Proxy e -> Tests
+checkBounded :: forall e. Bounded e => Proxy e -> Effect Unit
 checkBounded _ = do
   assert $ Just (bottom :: Time.Hour) == toEnum (fromEnum (bottom :: Time.Hour))
   assert $ pred (bottom :: Time.Hour) == Nothing
   assert $ Just (top :: Time.Hour) == toEnum (fromEnum (top :: Time.Hour))
   assert $ succ (top :: Time.Hour) == Nothing
 
-checkBoundedEnum :: forall e. BoundedEnum e => Proxy e -> Tests
+checkBoundedEnum :: forall e. BoundedEnum e => Proxy e -> Effect Unit
 checkBoundedEnum p = do
   checkBounded p
   let card = unwrap (cardinality :: Cardinality e)

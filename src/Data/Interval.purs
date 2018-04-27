@@ -70,7 +70,7 @@ instance showInterval :: (Show d, Show a) => Show (Interval d a) where
   show (DurationOnly d) = "(DurationOnly " <> show d <> ")"
 
 instance functorInterval :: Functor (Interval d) where
-  map = bimap id
+  map = bimap identity
 
 instance bifunctorInterval :: Bifunctor Interval where
   bimap _ f (StartEnd x y) = StartEnd (f x) (f y)
