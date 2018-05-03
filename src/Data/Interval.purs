@@ -1,7 +1,7 @@
 module Data.Interval
   ( Interval(..)
   , RecurringInterval(..)
-  , module DurationExports
+  , module Exports
   ) where
 
 import Prelude
@@ -11,7 +11,7 @@ import Data.Bifoldable (class Bifoldable, bifoldl, bifoldr, bifoldrDefault, bifo
 import Data.Bifunctor (class Bifunctor, bimap)
 import Data.Bitraversable (class Bitraversable, bitraverse, bisequenceDefault)
 import Data.Foldable (class Foldable, foldl, foldr, foldrDefault, foldMapDefaultL)
-import Data.Interval.Duration as DurationExports
+import Data.Interval.Duration (Duration(..), DurationComponent(..), day, hour, millisecond, minute, month, second, week, year) as Exports
 import Data.Maybe (Maybe)
 import Data.Traversable (class Traversable, traverse, sequenceDefault)
 

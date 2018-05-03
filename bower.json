@@ -21,7 +21,7 @@
     "purescript-generics-rep": "#compiler/0.12",
     "purescript-integers": "#compiler/0.12",
     "purescript-foldable-traversable": "#compiler/0.12",
-    "purescript-maps": "#compiler/0.12",
+    "purescript-ordered-collections": "#compiler/0.12",
     "purescript-math": "#compiler/0.12",
     "purescript-proxy": "#compiler/0.12"
   },
