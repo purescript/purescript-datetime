@@ -64,7 +64,7 @@ mkIsoDuration d = case fromList (checkValidIsoDuration d) of
 checkValidIsoDuration :: Duration -> List Error
 checkValidIsoDuration (Duration asMap) = check {asList, asMap}
   where
-  asList = reverse (Map.toAscUnfoldable asMap)
+  asList = reverse (Map.toUnfoldable asMap)
   check = fold
     [ checkWeekUsage
     , checkEmptiness
