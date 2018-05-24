@@ -17,7 +17,6 @@ import Prelude
 import Data.Date (Date, Day, Month(..), Weekday(..), Year, canonicalDate, day, exactDate, month, weekday, year)
 import Data.Enum (toEnum, fromEnum)
 import Data.Function.Uncurried (Fn2, runFn2)
-import Data.Generic (class Generic)
 import Data.Time (Hour, Millisecond, Minute, Second, Time(..), hour, setHour, millisecond, setMillisecond, minute, setMinute, second, setSecond)
 import Data.Time.Duration (class Duration, fromDuration, toDuration, Milliseconds)
 import Data.Maybe (Maybe(..))
@@ -27,7 +26,6 @@ data DateTime = DateTime Date Time
 
 derive instance eqDateTime :: Eq DateTime
 derive instance ordDateTime :: Ord DateTime
-derive instance genericDateTime :: Generic DateTime
 
 instance boundedDateTime :: Bounded DateTime where
   bottom = DateTime bottom bottom

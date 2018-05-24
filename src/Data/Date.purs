@@ -17,10 +17,8 @@ import Prelude
 import Data.Date.Component (Day, Month(..), Weekday(..), Year)
 import Data.Enum (toEnum, fromEnum)
 import Data.Function.Uncurried (Fn3, runFn3, Fn4, runFn4, Fn6, runFn6)
-import Data.Generic (class Generic)
 import Data.Maybe (Maybe(..), fromJust)
-import Data.Time.Duration (class Duration, toDuration, Milliseconds)
-
+import Data.Time.Duration (class Duration, Milliseconds, toDuration)
 import Partial.Unsafe (unsafePartial)
 
 -- | A date value in the Gregorian calendar.
@@ -45,7 +43,6 @@ exactDate y m d =
 
 derive instance eqDate :: Eq Date
 derive instance ordDate :: Ord Date
-derive instance genericDate :: Generic Date
 
 instance boundedDate :: Bounded Date where
   bottom = Date bottom bottom bottom
@@ -78,29 +75,30 @@ diff :: forall d. Duration d => Date -> Date -> d
 diff (Date y1 m1 d1) (Date y2 m2 d2) =
   toDuration $ runFn6 calcDiff y1 (fromEnum m1) d1 y2 (fromEnum m2) d2
 
--- | Is this year a leap year according to the proleptic Gregorian calendar?
+-- | Checks whether a year is a leap year according to the proleptic Gregorian
+-- | calendar.
 isLeapYear :: Year -> Boolean
 isLeapYear y = (mod y' 4 == 0) && ((mod y' 400 == 0) || not (mod y' 100 == 0))
   where
   y' = fromEnum y
 
--- | Get the final day of a month and year, accounting for leap years
+-- | Get the final day of a month and year, accounting for leap years.
 lastDayOfMonth :: Year -> Month -> Day
 lastDayOfMonth y m = case m of
-  January   -> unsafeDay 31
+  January -> unsafeDay 31
   February
     | isLeapYear y -> unsafeDay 29
-    | otherwise    -> unsafeDay 28
-  March     -> unsafeDay 31
-  April     -> unsafeDay 30
-  May       -> unsafeDay 31
-  June      -> unsafeDay 30
-  July      -> unsafeDay 31
-  August    -> unsafeDay 31
+    | otherwise -> unsafeDay 28
+  March -> unsafeDay 31
+  April -> unsafeDay 30
+  May -> unsafeDay 31
+  June -> unsafeDay 30
+  July -> unsafeDay 31
+  August -> unsafeDay 31
   September -> unsafeDay 30
-  October   -> unsafeDay 31
-  November  -> unsafeDay 30
-  December  -> unsafeDay 31
+  October -> unsafeDay 31
+  November -> unsafeDay 30
+  December -> unsafeDay 31
   where
     unsafeDay = unsafePartial fromJust <<< toEnum
 

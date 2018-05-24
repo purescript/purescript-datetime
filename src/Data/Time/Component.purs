@@ -8,7 +8,6 @@ module Data.Time.Component
 import Prelude
 
 import Data.Enum (class Enum, class BoundedEnum, toEnum, fromEnum, Cardinality(..))
-import Data.Generic (class Generic)
 import Data.Maybe (Maybe(..))
 
 -- | An hour component for a time value.
@@ -21,7 +20,6 @@ newtype Hour = Hour Int
 
 derive newtype instance eqHour :: Eq Hour
 derive newtype instance ordHour :: Ord Hour
-derive instance genericHour :: Generic Hour
 
 instance boundedHour :: Bounded Hour where
   bottom = Hour 0
@@ -51,7 +49,6 @@ newtype Minute = Minute Int
 
 derive newtype instance eqMinute :: Eq Minute
 derive newtype instance ordMinute :: Ord Minute
-derive instance genericMinute :: Generic Minute
 
 instance boundedMinute :: Bounded Minute where
   bottom = Minute 0
@@ -81,7 +78,6 @@ newtype Second = Second Int
 
 derive newtype instance eqSecond :: Eq Second
 derive newtype instance ordSecond :: Ord Second
-derive instance genericSecond :: Generic Second
 
 instance boundedSecond :: Bounded Second where
   bottom = Second 0
@@ -112,7 +108,6 @@ newtype Millisecond = Millisecond Int
 
 derive newtype instance eqMillisecond :: Eq Millisecond
 derive newtype instance ordMillisecond :: Ord Millisecond
-derive instance genericMillisecond :: Generic Millisecond
 
 instance boundedMillisecond :: Bounded Millisecond where
   bottom = Millisecond 0

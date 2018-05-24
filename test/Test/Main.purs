@@ -2,34 +2,27 @@ module Test.Main where
 
 import Prelude
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Effect (Effect)
+import Effect.Console (log)
 import Data.Array as Array
 import Data.Date as Date
 import Data.DateTime as DateTime
 import Data.DateTime.Instant as Instant
-import Data.DateTime.Locale as Locale
 import Data.Either (Either(..), isRight)
 import Data.Enum (class BoundedEnum, Cardinality, toEnum, enumFromTo, cardinality, succ, fromEnum, pred)
-import Data.Foldable (foldl, foldr, foldMap)
 import Data.Interval as Interval
 import Data.Interval.Duration.Iso as IsoDuration
 import Data.Maybe (Maybe(..), fromJust)
-import Data.Monoid (mempty)
 import Data.Newtype (over, unwrap)
-import Data.String (length)
 import Data.Time as Time
 import Data.Time.Duration as Duration
-import Data.Traversable (sequence, traverse)
 import Data.Tuple (Tuple(..), snd)
 import Math (floor)
 import Partial.Unsafe (unsafePartial)
-import Test.Assert (ASSERT, assert)
+import Test.Assert (assert)
 import Type.Proxy (Proxy(..))
 
-type Tests = Eff (console :: CONSOLE, assert :: ASSERT) Unit
-
-main :: Tests
+main :: Effect Unit
 main = do
   log "check Duration monoid"
   assert $ Interval.year 1.0 == mempty <> Interval.year 2.0 <> Interval.year 1.0 <> Interval.year (-2.0)
@@ -80,10 +73,10 @@ main = do
   log "Check that adjust behaves as expected"
   assert $ Time.adjust (Duration.Milliseconds 1.0) top == Tuple (Duration.Days 1.0) bottom
   assert $ Time.adjust (Duration.Milliseconds (-1.0)) bottom == Tuple (Duration.Days (-1.0)) top
-  assert $ Time.adjust (Duration.Minutes 40.0) t1 == Tuple zero t2
+  assert $ Time.adjust (Duration.Minutes 40.0) t1 == Tuple (Duration.Days 0.0) t2
   assert $ Time.adjust (Duration.Days 40.0) t1 == Tuple (Duration.Days 40.0) t1
-  assert $ Time.adjust (Duration.fromDuration (Duration.Days 2.0) + Duration.fromDuration (Duration.Minutes 40.0)) t1 == Tuple (Duration.Days 2.0) t2
-  assert $ Time.adjust (Duration.fromDuration (Duration.Days 2.0) - Duration.fromDuration (Duration.Minutes 40.0)) t1 == Tuple (Duration.Days 2.0) t3
+  assert $ Time.adjust (Duration.fromDuration (Duration.Days 2.0) <> Duration.fromDuration (Duration.Minutes 40.0)) t1 == Tuple (Duration.Days 2.0) t2
+  assert $ Time.adjust (Duration.fromDuration (Duration.Days 2.0) <> Duration.fromDuration (Duration.Minutes (-40.0))) t1 == Tuple (Duration.Days 2.0) t3
   assert $ snd (Time.adjust (Duration.fromDuration (Duration.Days 3.872)) t1) == snd (Time.adjust (Duration.fromDuration (Duration.Days 0.872)) t1)
   assert $ Time.adjust (Duration.Hours 2.0) t4 == Tuple (Duration.Days 1.0) t5
 
@@ -148,7 +141,7 @@ main = do
   let dt5 = DateTime.DateTime d3 t1
 
   log "Check that adjust behaves as expected"
-  assert $ DateTime.adjust (Duration.fromDuration (Duration.Days 31.0) + Duration.fromDuration (Duration.Minutes 40.0)) dt1 == Just dt4
+  assert $ DateTime.adjust (Duration.fromDuration (Duration.Days 31.0) <> Duration.fromDuration (Duration.Minutes 40.0)) dt1 == Just dt4
   assert $ (Date.year <<< DateTime.date <$>
            (DateTime.adjust (Duration.Days 735963.0) epochDateTime))
            == toEnum 2016
@@ -159,7 +152,7 @@ main = do
   assert $ DateTime.diff dt3 dt1 == Duration.Days 31.0
   assert $ DateTime.diff dt5 dt3 == Duration.Days 29.0
   assert $ DateTime.diff dt1 dt3 == Duration.Days (-31.0)
-  assert $ DateTime.diff dt4 dt1 == Duration.fromDuration (Duration.Days 31.0) + Duration.fromDuration (Duration.Minutes 40.0)
+  assert $ DateTime.diff dt4 dt1 == Duration.fromDuration (Duration.Days 31.0) <> Duration.fromDuration (Duration.Minutes 40.0)
   assert $ over Duration.Days floor (DateTime.diff dt1 epochDateTime)
            == Duration.Days 735963.0
 
@@ -184,41 +177,16 @@ main = do
   assert $ Instant.toDateTime (Instant.fromDateTime dt3) == dt3
   assert $ Instant.toDateTime (Instant.fromDateTime dt4) == dt4
 
-  -- locale ------------------------------------------------------------------
-
-  let locale = Locale.Locale (Just $ Locale.LocaleName "UTC")
-               $ Duration.Minutes 0.0
-  let crLocalVal = Locale.LocalValue locale
-
-  log "Check that LocalValue folds left"
-  assert $ foldl (<>) "prepend " (crLocalVal "foo") == "prepend foo"
-
-  log "Check that LocalValue folds right"
-  assert $ foldr (<>) " append" (crLocalVal "foo") == "foo append"
-
-  log "Check that LocalValue fold-maps"
-  assert $ foldMap ((<>) "prepend ") (crLocalVal "foo") == "prepend foo"
-
-  log "Check that LocalValue sequences"
-  assert $ sequence (Locale.LocalValue locale $ Just "foo")
-           == (Just $ Locale.LocalValue locale "foo")
-  assert $ sequence (Locale.LocalValue locale (Nothing :: Maybe Int))
-           == Nothing
-
-  log "Check that LocalValue traverses"
-  assert $ traverse (Just <<< length) (crLocalVal "foo")
-           == (Just $ Locale.LocalValue locale 3)
-
   log "All tests done"
 
-checkBounded :: forall e. Bounded e => Proxy e -> Tests
+checkBounded :: forall e. Bounded e => Proxy e -> Effect Unit
 checkBounded _ = do
   assert $ Just (bottom :: Time.Hour) == toEnum (fromEnum (bottom :: Time.Hour))
   assert $ pred (bottom :: Time.Hour) == Nothing
   assert $ Just (top :: Time.Hour) == toEnum (fromEnum (top :: Time.Hour))
   assert $ succ (top :: Time.Hour) == Nothing
 
-checkBoundedEnum :: forall e. BoundedEnum e => Proxy e -> Tests
+checkBoundedEnum :: forall e. BoundedEnum e => Proxy e -> Effect Unit
 checkBoundedEnum p = do
   checkBounded p
   let card = unwrap (cardinality :: Cardinality e)

@@ -2,18 +2,20 @@ module Data.Time.Duration where
 
 import Prelude
 
-import Data.Generic (class Generic)
 import Data.Newtype (class Newtype, over)
 
 -- | A duration measured in milliseconds.
 newtype Milliseconds = Milliseconds Number
 
 derive instance newtypeMilliseconds :: Newtype Milliseconds _
-derive instance genericMilliseconds :: Generic Milliseconds
 derive newtype instance eqMilliseconds :: Eq Milliseconds
 derive newtype instance ordMilliseconds :: Ord Milliseconds
-derive newtype instance semiringMilliseconds :: Semiring Milliseconds
-derive newtype instance ringMilliseconds :: Ring Milliseconds
+
+instance semigroupMilliseconds :: Semigroup Milliseconds where
+  append (Milliseconds x) (Milliseconds y) = Milliseconds (x + y)
+
+instance monoidMilliseconds :: Monoid Milliseconds where
+  mempty = Milliseconds 0.0
 
 instance showMilliseconds :: Show Milliseconds where
   show (Milliseconds n) = "(Milliseconds " <> show n <> ")"
@@ -22,11 +24,14 @@ instance showMilliseconds :: Show Milliseconds where
 newtype Seconds = Seconds Number
 
 derive instance newtypeSeconds :: Newtype Seconds _
-derive instance genericSeconds :: Generic Seconds
 derive newtype instance eqSeconds :: Eq Seconds
 derive newtype instance ordSeconds :: Ord Seconds
-derive newtype instance semiringSeconds :: Semiring Seconds
-derive newtype instance ringSeconds :: Ring Seconds
+
+instance semigroupSeconds :: Semigroup Seconds where
+  append (Seconds x) (Seconds y) = Seconds (x + y)
+
+instance monoidSeconds :: Monoid Seconds where
+  mempty = Seconds 0.0
 
 instance showSeconds :: Show Seconds where
   show (Seconds n) = "(Seconds " <> show n <> ")"
@@ -35,11 +40,14 @@ instance showSeconds :: Show Seconds where
 newtype Minutes = Minutes Number
 
 derive instance newtypeMinutes :: Newtype Minutes _
-derive instance genericMinutes :: Generic Minutes
 derive newtype instance eqMinutes :: Eq Minutes
 derive newtype instance ordMinutes :: Ord Minutes
-derive newtype instance semiringMinutes :: Semiring Minutes
-derive newtype instance ringMinutes :: Ring Minutes
+
+instance semigroupMinutes :: Semigroup Minutes where
+  append (Minutes x) (Minutes y) = Minutes (x + y)
+
+instance monoidMinutes :: Monoid Minutes where
+  mempty = Minutes 0.0
 
 instance showMinutes :: Show Minutes where
   show (Minutes n) = "(Minutes " <> show n <> ")"
@@ -48,11 +56,14 @@ instance showMinutes :: Show Minutes where
 newtype Hours = Hours Number
 
 derive instance newtypeHours :: Newtype Hours _
-derive instance genericHours :: Generic Hours
 derive newtype instance eqHours :: Eq Hours
 derive newtype instance ordHours :: Ord Hours
-derive newtype instance semiringHours :: Semiring Hours
-derive newtype instance ringHours :: Ring Hours
+
+instance semigroupHours :: Semigroup Hours where
+  append (Hours x) (Hours y) = Hours (x + y)
+
+instance monoidHours :: Monoid Hours where
+  mempty = Hours 0.0
 
 instance showHours :: Show Hours where
   show (Hours n) = "(Hours " <> show n <> ")"
@@ -61,11 +72,14 @@ instance showHours :: Show Hours where
 newtype Days = Days Number
 
 derive instance newtypeDays :: Newtype Days _
-derive instance genericDays :: Generic Days
 derive newtype instance eqDays :: Eq Days
 derive newtype instance ordDays :: Ord Days
-derive newtype instance semiringDays :: Semiring Days
-derive newtype instance ringDays :: Ring Days
+
+instance semigroupDays :: Semigroup Days where
+  append (Days x) (Days y) = Days (x + y)
+
+instance monoidDays :: Monoid Days where
+  mempty = Days 0.0
 
 instance showDays :: Show Days where
   show (Days n) = "(Days " <> show n <> ")"
@@ -79,9 +93,14 @@ class Duration a where
 convertDuration :: forall a b. Duration a => Duration b => a -> b
 convertDuration = toDuration <<< fromDuration
 
+-- | Negates a duration, turning a positive duration negative or a negative
+-- | duration positive.
+negateDuration :: forall a. Duration a => a -> a
+negateDuration = toDuration <<< over Milliseconds negate <<< fromDuration
+
 instance durationMilliseconds :: Duration Milliseconds where
-  fromDuration = id
-  toDuration = id
+  fromDuration = identity
+  toDuration = identity
 
 instance durationSeconds :: Duration Seconds where
   fromDuration = over Seconds (_ * 1000.0)

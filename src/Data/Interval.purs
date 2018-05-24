@@ -1,7 +1,7 @@
 module Data.Interval
   ( Interval(..)
   , RecurringInterval(..)
-  , module DurationExports
+  , module Exports
   ) where
 
 import Prelude
@@ -11,7 +11,7 @@ import Data.Bifoldable (class Bifoldable, bifoldl, bifoldr, bifoldrDefault, bifo
 import Data.Bifunctor (class Bifunctor, bimap)
 import Data.Bitraversable (class Bitraversable, bitraverse, bisequenceDefault)
 import Data.Foldable (class Foldable, foldl, foldr, foldrDefault, foldMapDefaultL)
-import Data.Interval.Duration as DurationExports
+import Data.Interval.Duration (Duration(..), DurationComponent(..), day, hour, millisecond, minute, month, second, week, year) as Exports
 import Data.Maybe (Maybe)
 import Data.Traversable (class Traversable, traverse, sequenceDefault)
 
@@ -70,7 +70,7 @@ instance showInterval :: (Show d, Show a) => Show (Interval d a) where
   show (DurationOnly d) = "(DurationOnly " <> show d <> ")"
 
 instance functorInterval :: Functor (Interval d) where
-  map = bimap id
+  map = bimap identity
 
 instance bifunctorInterval :: Bifunctor Interval where
   bimap _ f (StartEnd x y) = StartEnd (f x) (f y)

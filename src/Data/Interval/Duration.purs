@@ -14,7 +14,6 @@ module Data.Interval.Duration
 import Prelude
 
 import Data.Map as Map
-import Data.Monoid (class Monoid, mempty)
 import Data.Newtype (class Newtype)
 
 newtype Duration = Duration (Map.Map DurationComponent Number)

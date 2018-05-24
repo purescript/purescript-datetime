@@ -8,7 +8,6 @@ module Data.Date.Component
 import Prelude
 
 import Data.Enum (class Enum, class BoundedEnum, toEnum, fromEnum, Cardinality(..))
-import Data.Generic (class Generic)
 import Data.Maybe (Maybe(..))
 
 -- | A year component for a date.
@@ -20,7 +19,6 @@ newtype Year = Year Int
 
 derive newtype instance eqYear :: Eq Year
 derive newtype instance ordYear :: Ord Year
-derive instance genericYear :: Generic Year
 
 -- Note: these seemingly arbitrary bounds come from relying on JS for date
 -- manipulations, as it only supports date ±100,000,000 days of the Unix epoch.
@@ -61,7 +59,6 @@ data Month
 
 derive instance eqMonth :: Eq Month
 derive instance ordMonth :: Ord Month
-derive instance genericMonth :: Generic Month
 
 instance boundedMonth :: Bounded Month where
   bottom = January
@@ -124,7 +121,6 @@ newtype Day = Day Int
 
 derive newtype instance eqDay :: Eq Day
 derive newtype instance ordDay :: Ord Day
-derive instance genericDay :: Generic Day
 
 instance boundedDay :: Bounded Day where
   bottom = Day 1
@@ -156,7 +152,6 @@ data Weekday
 
 derive instance eqWeekday :: Eq Weekday
 derive instance ordWeekday :: Ord Weekday
-derive instance genericWeekday :: Generic Weekday
 
 instance boundedWeekday :: Bounded Weekday where
   bottom = Monday

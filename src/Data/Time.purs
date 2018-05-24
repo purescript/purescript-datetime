@@ -12,23 +12,19 @@ module Data.Time
 import Prelude
 
 import Data.Enum (fromEnum, toEnum)
-import Data.Generic (class Generic)
 import Data.Int as Int
 import Data.Maybe (fromJust)
 import Data.Newtype (unwrap)
 import Data.Time.Component (Hour, Millisecond, Minute, Second)
-import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), fromDuration, toDuration)
+import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), fromDuration, negateDuration, toDuration)
 import Data.Tuple (Tuple(..))
-
 import Math as Math
-
 import Partial.Unsafe (unsafePartial)
 
 data Time = Time Hour Minute Second Millisecond
 
 derive instance eqTime :: Eq Time
 derive instance ordTime :: Ord Time
-derive instance genericTime :: Generic Time
 
 instance boundedTime :: Bounded Time where
   bottom = Time bottom bottom bottom bottom
@@ -82,16 +78,19 @@ adjust d t =
     tLength = timeToMillis t
     dayLength = 86400000.0
     wholeDays = Days $ Math.floor (unwrap d' / dayLength)
-    msAdjust = d' - fromDuration wholeDays
-    msAdjusted = tLength + msAdjust
-    wrap = if msAdjusted > maxTime then 1.0 else if msAdjusted < -maxTime then -1.0 else 0.0
+    msAdjust = d' <> negateDuration (fromDuration wholeDays)
+    msAdjusted = tLength <> msAdjust
+    wrap = if msAdjusted > maxTime then 1.0 else if msAdjusted < minTime then -1.0 else 0.0
   in
     Tuple
-      (wholeDays + Days wrap)
-      (millisToTime (msAdjusted - Milliseconds (dayLength * wrap)))
+      (wholeDays <> Days wrap)
+      (millisToTime (msAdjusted <> Milliseconds (dayLength * -wrap)))
 
 maxTime :: Milliseconds
 maxTime = timeToMillis top
+
+minTime :: Milliseconds
+minTime = timeToMillis bottom
 
 timeToMillis :: Time -> Milliseconds
 timeToMillis t = Milliseconds
@@ -121,4 +120,4 @@ millisToTime ms@(Milliseconds ms') =
 -- | Calculates the difference between two times, returning the result as a
 -- | duration.
 diff :: forall d. Duration d => Time -> Time -> d
-diff t1 t2 = toDuration (timeToMillis t1 - timeToMillis t2)
+diff t1 t2 = toDuration (timeToMillis t1 <> negateDuration (timeToMillis t2))
