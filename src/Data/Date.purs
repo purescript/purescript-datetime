@@ -9,16 +9,19 @@ module Data.Date
   , diff
   , isLeapYear
   , lastDayOfMonth
+  , adjust
   , module Data.Date.Component
   ) where
 
 import Prelude
 
 import Data.Date.Component (Day, Month(..), Weekday(..), Year)
-import Data.Enum (toEnum, fromEnum)
+import Data.Enum (class Enum, toEnum, fromEnum, succ, pred)
 import Data.Function.Uncurried (Fn3, runFn3, Fn4, runFn4, Fn6, runFn6)
-import Data.Maybe (Maybe(..), fromJust)
-import Data.Time.Duration (class Duration, Milliseconds, toDuration)
+import Data.Int (fromNumber)
+import Data.Ord (abs)
+import Data.Maybe (Maybe(..), fromJust, fromMaybe, isNothing, maybe)
+import Data.Time.Duration (class Duration, Days(..), Milliseconds, toDuration)
 import Partial.Unsafe (unsafePartial)
 
 -- | A date value in the Gregorian calendar.
@@ -51,6 +54,24 @@ instance boundedDate :: Bounded Date where
 instance showDate :: Show Date where
   show (Date y m d) = "(Date " <> show y <> " " <> show m <> " " <> show d <> ")"
 
+instance enumDate :: Enum Date where
+  succ (Date y m d) = Date <$> y' <*> pure m' <*> d'
+    where
+      d' = if isNothing sd then toEnum 1 else sd
+      m' = if isNothing sd then fromMaybe January sm else m
+      y' = if isNothing sd && isNothing sm then succ y else Just y
+      sd = let v = succ d in if v > Just l then Nothing else v
+      sm = succ m
+      l = lastDayOfMonth y m
+  pred (Date y m d) = Date <$> y' <*> pure m' <*> d'
+    where
+      d' = if isNothing pd then Just l else pd
+      m' = if isNothing pd then fromMaybe December pm else m
+      y' = if isNothing pd && isNothing pm then pred y else Just y
+      pd = let v = pred d in if v < toEnum 1 then Nothing else v
+      pm = pred m
+      l = lastDayOfMonth y m'
+
 -- | The year component of a date value.
 year :: Date -> Year
 year (Date y _ _) = y
@@ -68,6 +89,15 @@ weekday :: Date -> Weekday
 weekday = unsafePartial \(Date y m d) ->
   let n = runFn3 calcWeekday y (fromEnum m) d
   in if n == 0 then fromJust (toEnum 7) else fromJust (toEnum n)
+
+-- | Adjusts a date with a Duration in days. The day duration is
+-- | converted to an Int using fromNumber.
+adjust :: Days -> Date -> Maybe Date
+adjust (Days n) dt = maybe Nothing (\i -> go (abs i) (Just dt)) (fromNumber n)
+  where
+    adj = if n < 0.0 then pred else succ
+    go 0  dt' = dt'
+    go n' dt' = go (n' - 1) (adj =<< dt')
 
 -- | Calculates the difference between two dates, returning the result as a
 -- | duration.
