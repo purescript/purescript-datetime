@@ -20,7 +20,7 @@ import Data.Enum (class Enum, toEnum, fromEnum, succ, pred)
 import Data.Function.Uncurried (Fn3, runFn3, Fn4, runFn4, Fn6, runFn6)
 import Data.Int (fromNumber)
 import Data.Ord (abs)
-import Data.Maybe (Maybe(..), fromJust, fromMaybe, isNothing, maybe)
+import Data.Maybe (Maybe(..), fromJust, fromMaybe, isNothing)
 import Data.Time.Duration (class Duration, Days(..), Milliseconds, toDuration)
 import Partial.Unsafe (unsafePartial)
 
@@ -68,7 +68,7 @@ instance enumDate :: Enum Date where
       d' = if isNothing pd then Just l else pd
       m' = if isNothing pd then fromMaybe December pm else m
       y' = if isNothing pd && isNothing pm then pred y else Just y
-      pd = let v = pred d in if v < toEnum 1 then Nothing else v
+      pd = pred d
       pm = pred m
       l = lastDayOfMonth y m'
 
@@ -93,7 +93,7 @@ weekday = unsafePartial \(Date y m d) ->
 -- | Adjusts a date with a Duration in days. The day duration is
 -- | converted to an Int using fromNumber.
 adjust :: Days -> Date -> Maybe Date
-adjust (Days n) dt = maybe Nothing (\i -> go (abs i) (Just dt)) (fromNumber n)
+adjust (Days n) dt = fromNumber n >>= (\i -> go (abs i) (Just dt))
   where
     adj = if n < 0.0 then pred else succ
     go 0  dt' = dt'
