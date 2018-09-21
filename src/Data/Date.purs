@@ -92,34 +92,21 @@ weekday = unsafePartial \(Date y m d) ->
 -- | Adjusts a date with a Duration in days. The day duration is
 -- | converted to an Int using fromNumber.
 adjust :: Days -> Date -> Maybe Date
-adjust (Days n) date =
-  fromNumber n >>= \i -> (if i < 0 then adjustDown else adjustUp) i date
+adjust (Days n) date = fromNumber n >>= flip adj date
   where
-    adjustUp :: Int -> Date -> Maybe Date
-    adjustUp 0 dt = Just dt
-    adjustUp i (Date y m d) = adjustUp i' =<< Date <$> y' <*> pure m' <*> d'
+    adj 0 dt           = Just dt
+    adj i (Date y m d) = adj i' =<< dt'
       where
-        i' = if isNothing md then j - l - 1 else 0
-        d' = if isNothing md then toEnum 1 else md
-        m' = if isNothing md then fromMaybe January sm else m
-        y' = if isNothing md && isNothing sm then succ y else Just y
+        i'  | low       = j
+            | hi        = j - fromEnum l - 1
+            | otherwise = 0
+        dt' | low       = pred =<< Date y m <$> toEnum 1
+            | hi        = succ (Date y m l)
+            | otherwise = Date y m <$> toEnum j
         j   = i + fromEnum d
-        md = if j > l then Nothing else toEnum j
-        sm = succ m
-        l  = fromEnum $ lastDayOfMonth y m
-
-    adjustDown :: Int -> Date -> Maybe Date
-    adjustDown 0 dt = Just dt
-    adjustDown i (Date y m d) = adjustDown i' =<< Date <$> y' <*> pure m' <*> d'
-      where
-        i' = if isNothing md then j else 0
-        d' = if isNothing md then Just l else md
-        m' = if isNothing md then fromMaybe December pm else m
-        y' = if isNothing md && isNothing pm then pred y else Just y
-        j   = i + fromEnum d
-        md = if j < 1 then Nothing else toEnum j
-        pm = pred m
-        l  = lastDayOfMonth y m'
+        low = j < 1
+        hi  = j > fromEnum l
+        l   = lastDayOfMonth y (if low then fromMaybe December (pred m) else m)
 
 -- | Calculates the difference between two dates, returning the result as a
 -- | duration.
