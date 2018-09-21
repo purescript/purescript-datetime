@@ -137,6 +137,9 @@ main = do
   log "Check that adjust behaves as expected"
   assert $ Date.adjust (Duration.Days 31.0) d1 == Just d2
   assert $ Date.adjust (Duration.Days 999.0) d1 == Just d4
+  assert $ Date.adjust (Duration.Days 10000.0) d5 == Just d1
+  assert $ Date.adjust (Duration.Days (-31.0)) d2 == Just d1
+  assert $ Date.adjust (Duration.Days (- 999.0)) d4 == Just d1
   assert $ Date.adjust (Duration.Days (-10000.0)) d1 == Just d5
 
   -- datetime ----------------------------------------------------------------

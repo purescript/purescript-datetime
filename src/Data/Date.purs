@@ -19,7 +19,6 @@ import Data.Date.Component (Day, Month(..), Weekday(..), Year)
 import Data.Enum (class Enum, toEnum, fromEnum, succ, pred)
 import Data.Function.Uncurried (Fn3, runFn3, Fn4, runFn4, Fn6, runFn6)
 import Data.Int (fromNumber)
-import Data.Ord (abs)
 import Data.Maybe (Maybe(..), fromJust, fromMaybe, isNothing)
 import Data.Time.Duration (class Duration, Days(..), Milliseconds, toDuration)
 import Partial.Unsafe (unsafePartial)
@@ -93,11 +92,34 @@ weekday = unsafePartial \(Date y m d) ->
 -- | Adjusts a date with a Duration in days. The day duration is
 -- | converted to an Int using fromNumber.
 adjust :: Days -> Date -> Maybe Date
-adjust (Days n) dt = fromNumber n >>= (\i -> go (abs i) (Just dt))
+adjust (Days n) date =
+  fromNumber n >>= \i -> (if i < 0 then adjustDown else adjustUp) i date
   where
-    adj = if n < 0.0 then pred else succ
-    go 0  dt' = dt'
-    go n' dt' = go (n' - 1) (adj =<< dt')
+    adjustUp :: Int -> Date -> Maybe Date
+    adjustUp 0 dt = Just dt
+    adjustUp i (Date y m d) = adjustUp i' =<< Date <$> y' <*> pure m' <*> d'
+      where
+        i' = if isNothing md then j - l - 1 else 0
+        d' = if isNothing md then toEnum 1 else md
+        m' = if isNothing md then fromMaybe January sm else m
+        y' = if isNothing md && isNothing sm then succ y else Just y
+        j   = i + fromEnum d
+        md = if j > l then Nothing else toEnum j
+        sm = succ m
+        l  = fromEnum $ lastDayOfMonth y m
+
+    adjustDown :: Int -> Date -> Maybe Date
+    adjustDown 0 dt = Just dt
+    adjustDown i (Date y m d) = adjustDown i' =<< Date <$> y' <*> pure m' <*> d'
+      where
+        i' = if isNothing md then j else 0
+        d' = if isNothing md then Just l else md
+        m' = if isNothing md then fromMaybe December pm else m
+        y' = if isNothing md && isNothing pm then pred y else Just y
+        j   = i + fromEnum d
+        md = if j < 1 then Nothing else toEnum j
+        pm = pred m
+        l  = lastDayOfMonth y m'
 
 -- | Calculates the difference between two dates, returning the result as a
 -- | duration.
