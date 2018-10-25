@@ -90,8 +90,8 @@ weekday = unsafePartial \(Date y m d) ->
   in if n == 0 then fromJust (toEnum 7) else fromJust (toEnum n)
 
 -- | Adjusts a date with a Duration in days. The number of days must
--- | fall within the valid range for an `Int` type otherwise `Nothing`
--- | is returned.
+-- | already be an integer and fall within the valid range of values
+-- | for the Int type.
 adjust :: Days -> Date -> Maybe Date
 adjust (Days n) date = fromNumber n >>= flip adj date
   where
