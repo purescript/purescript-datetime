@@ -35,7 +35,7 @@ instance enumYear :: Enum Year where
 instance boundedEnumYear :: BoundedEnum Year where
   cardinality = Cardinality 547580
   toEnum n
-    | n >= (-271821) && n <= 275759 = Just (Year n)
+    | n >= (-271820) && n <= 275759 = Just (Year n)
     | otherwise = Nothing
   fromEnum (Year n) = n
 
