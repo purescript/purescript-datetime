@@ -1,14 +1,14 @@
 # purescript-datetime
 
 [![Latest release](http://img.shields.io/github/release/purescript/purescript-datetime.svg)](https://github.com/purescript/purescript-datetime/releases)
-[![Build status](https://travis-ci.org/purescript/purescript-datetime.svg?branch=master)](https://travis-ci.org/purescript/purescript-datetime)
+[![Build status](https://github.com/purescript/purescript-datetime/workflows/CI/badge.svg?branch=master)](https://github.com/purescript/purescript-datetime/actions?query=workflow%3ACI+branch%3Amaster)
 
 Date and time types and functions.
 
 ## Installation
 
 ```
-bower install purescript-datetime
+spago install datetime
 ```
 
 ## Documentation
