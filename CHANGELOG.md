@@ -5,12 +5,16 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
+  - Added support for PureScript 0.14 and dropped support for all previous versions (#81)
 
 New features:
 
 Bugfixes:
+- Fixed `genDate` generator frequency (#83)
 
 Other improvements:
+  - Migrated CI to GitHub Actions and updated installation instructions to use Spago (#82)
+  - Added a CHANGELOG.md file and pull request template (#84, #85)
 
 ## [v4.1.1](https://github.com/purescript/purescript-datetime/releases/tag/v4.1.1) - 2019-02-09
 
