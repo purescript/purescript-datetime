@@ -29,7 +29,7 @@ instance semigroupDuration :: Semigroup Duration where
   append (Duration a) (Duration b) = Duration (Map.unionWith (+) a b)
 
 instance monoidDuration :: Monoid Duration where
-  mempty = Duration mempty
+  mempty = Duration Map.empty
 
 data DurationComponent = Second | Minute | Hour | Day | Week | Month | Year
 derive instance eqDurationComponent :: Eq DurationComponent
