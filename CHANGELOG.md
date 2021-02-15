@@ -15,6 +15,7 @@ Bugfixes:
 Other improvements:
   - Migrated CI to GitHub Actions and updated installation instructions to use Spago (#82)
   - Added a CHANGELOG.md file and pull request template (#84, #85)
+  - Spago configuration
 
 ## [v4.1.1](https://github.com/purescript/purescript-datetime/releases/tag/v4.1.1) - 2019-02-09
 
