@@ -100,7 +100,7 @@ timeToMillis t = Milliseconds
   + Int.toNumber (fromEnum (millisecond t))
 
 millisToTime :: Milliseconds -> Time
-millisToTime ms@(Milliseconds ms') =
+millisToTime (Milliseconds ms') =
   let
     hourLength = 3600000.0
     minuteLength = 60000.0
