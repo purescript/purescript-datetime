@@ -112,4 +112,4 @@ instance extendInterval :: Extend (Interval d) where
   extend f a@(StartEnd _ _) = StartEnd (f a) (f a)
   extend f a@(DurationEnd d _) = DurationEnd d (f a)
   extend f a@(StartDuration _ d) = StartDuration (f a) d
-  extend f (DurationOnly d) = DurationOnly d
+  extend _ (DurationOnly d) = DurationOnly d
