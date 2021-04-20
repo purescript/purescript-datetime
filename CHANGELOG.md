@@ -11,6 +11,7 @@ New features:
 Bugfixes:
 
 Other improvements:
+- Fix UnusedName warnings revealed by v0.14.1 PS release (#91)
 
 ## [v5.0.0](https://github.com/purescript/purescript-datetime/releases/tag/v5.0.0) - 2021-02-26
 

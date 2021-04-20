@@ -80,8 +80,8 @@ instance bifunctorInterval :: Bifunctor Interval where
 
 instance foldableInterval :: Foldable (Interval d) where
   foldl f z (StartEnd x y) = (z `f` x) `f` y
-  foldl f z (DurationEnd d x) = z `f` x
-  foldl f z (StartDuration x d) = z `f` x
+  foldl f z (DurationEnd _ x) = z `f` x
+  foldl f z (StartDuration x _) = z `f` x
   foldl _ z _ = z
   foldr x = foldrDefault x
   foldMap = foldMapDefaultL
@@ -109,7 +109,7 @@ instance bitraversableInterval :: Bitraversable Interval where
   bisequence = bisequenceDefault
 
 instance extendInterval :: Extend (Interval d) where
-  extend f a@(StartEnd x y) = StartEnd (f a) (f a)
-  extend f a@(DurationEnd d x) = DurationEnd d (f a)
-  extend f a@(StartDuration x d) = StartDuration (f a) d
+  extend f a@(StartEnd _ _) = StartEnd (f a) (f a)
+  extend f a@(DurationEnd d _) = DurationEnd d (f a)
+  extend f a@(StartDuration _ d) = StartDuration (f a) d
   extend f (DurationOnly d) = DurationOnly d
