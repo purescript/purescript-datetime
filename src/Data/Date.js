@@ -1,5 +1,3 @@
-"use strict";
-
 var createDate = function (y, m, d) {
   var date = new Date(Date.UTC(y, m, d));
   if (y >= 0 && y < 100) {
