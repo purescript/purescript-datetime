@@ -15,26 +15,26 @@
     "package.json"
   ],
   "dependencies": {
-    "purescript-bifunctors": "^5.0.0",
-    "purescript-control": "^5.0.0",
-    "purescript-either": "^5.0.0",
-    "purescript-enums": "^5.0.0",
-    "purescript-foldable-traversable": "^5.0.0",
-    "purescript-functions": "^5.0.0",
-    "purescript-gen": "^3.0.0",
-    "purescript-integers": "^5.0.0",
-    "purescript-lists": "^6.0.0",
-    "purescript-math": "^3.0.0",
-    "purescript-maybe": "^5.0.0",
-    "purescript-newtype": "^4.0.0",
-    "purescript-ordered-collections": "^2.0.0",
-    "purescript-partial": "^3.0.0",
-    "purescript-prelude": "^5.0.0",
-    "purescript-tuples": "^6.0.0"
+    "purescript-bifunctors": "master",
+    "purescript-control": "master",
+    "purescript-either": "master",
+    "purescript-enums": "master",
+    "purescript-foldable-traversable": "master",
+    "purescript-functions": "master",
+    "purescript-gen": "master",
+    "purescript-integers": "master",
+    "purescript-lists": "master",
+    "purescript-math": "master",
+    "purescript-maybe": "master",
+    "purescript-newtype": "master",
+    "purescript-ordered-collections": "master",
+    "purescript-partial": "master",
+    "purescript-prelude": "master",
+    "purescript-tuples": "master"
   },
   "devDependencies": {
-    "purescript-assert": "^5.0.0",
-    "purescript-console": "^5.0.0",
-    "purescript-strings": "^5.0.0"
+    "purescript-assert": "master",
+    "purescript-console": "master",
+    "purescript-strings": "master"
   }
 }

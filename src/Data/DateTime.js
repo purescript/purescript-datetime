@@ -1,5 +1,3 @@
-"use strict";
-
 var createUTC = function (y, mo, d, h, m, s, ms) {
   var date = new Date(Date.UTC(y, mo, d, h, m, s, ms));
   if (y >= 0 && y < 100) {
@@ -8,13 +6,13 @@ var createUTC = function (y, mo, d, h, m, s, ms) {
   return date.getTime();
 };
 
-exports.calcDiff = function (rec1, rec2) {
+export function calcDiff(rec1, rec2) {
   var msUTC1 = createUTC(rec1.year, rec1.month - 1, rec1.day, rec1.hour, rec1.minute, rec1.second, rec1.millisecond);
   var msUTC2 = createUTC(rec2.year, rec2.month - 1, rec2.day, rec2.hour, rec2.minute, rec2.second, rec2.millisecond);
   return msUTC1 - msUTC2;
-};
+}
 
-exports.adjustImpl = function (just) {
+export function adjustImpl(just) {
   return function (nothing) {
     return function (offset) {
       return function (rec) {
@@ -32,4 +30,4 @@ exports.adjustImpl = function (just) {
       };
     };
   };
-};
+}
