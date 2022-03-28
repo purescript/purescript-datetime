@@ -14,10 +14,10 @@ import Data.Interval as Interval
 import Data.Interval.Duration.Iso as IsoDuration
 import Data.Maybe (Maybe(..), fromJust)
 import Data.Newtype (over, unwrap)
+import Data.Number (floor)
 import Data.Time as Time
 import Data.Time.Duration as Duration
 import Data.Tuple (Tuple(..), snd)
-import Math (floor)
 import Partial.Unsafe (unsafePartial)
 import Test.Assert (assert)
 import Type.Proxy (Proxy(..))

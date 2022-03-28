@@ -17,11 +17,11 @@ import Data.List (List(..), reverse, span, null)
 import Data.List.NonEmpty (fromList)
 import Data.List.Types (NonEmptyList)
 import Data.Map as Map
+import Data.Number as Number
 import Data.Maybe (Maybe(..), isJust)
 import Data.Monoid.Additive (Additive(..))
 import Data.Newtype (unwrap)
 import Data.Tuple (Tuple(..), snd)
-import Math as Math
 
 newtype IsoDuration = IsoDuration Duration
 
@@ -89,8 +89,8 @@ checkFractionalUse {asList} = case _.rest (span (snd >>> not isFractional) asLis
   Cons (Tuple c _) rest | checkRest rest -> pure (InvalidFractionalUse c)
   _ -> empty
   where
-  isFractional a = Math.floor a /= a
-  checkRest rest = unwrap (foldMap (snd >>> Math.abs >>> Additive) rest) > 0.0
+  isFractional a = Number.floor a /= a
+  checkRest rest = unwrap (foldMap (snd >>> Number.abs >>> Additive) rest) > 0.0
 
 checkNegativeValues :: CheckEnv -> List Error
 checkNegativeValues {asList} = flip foldMap asList \(Tuple c num) ->
