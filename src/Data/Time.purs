@@ -14,11 +14,11 @@ import Prelude
 import Data.Enum (fromEnum, toEnum)
 import Data.Int as Int
 import Data.Maybe (fromJust)
+import Data.Number as Number
 import Data.Newtype (unwrap)
 import Data.Time.Component (Hour, Millisecond, Minute, Second)
 import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), fromDuration, negateDuration, toDuration)
 import Data.Tuple (Tuple(..))
-import Math as Math
 import Partial.Unsafe (unsafePartial)
 
 data Time = Time Hour Minute Second Millisecond
@@ -77,7 +77,7 @@ adjust d t =
     d' = fromDuration d
     tLength = timeToMillis t
     dayLength = 86400000.0
-    wholeDays = Days $ Math.floor (unwrap d' / dayLength)
+    wholeDays = Days $ Number.floor (unwrap d' / dayLength)
     msAdjust = d' <> negateDuration (fromDuration wholeDays)
     msAdjusted = tLength <> msAdjust
     wrap = if msAdjusted > maxTime then 1.0 else if msAdjusted < minTime then -1.0 else 0.0
@@ -105,9 +105,9 @@ millisToTime (Milliseconds ms') =
     hourLength = 3600000.0
     minuteLength = 60000.0
     secondLength = 1000.0
-    hours = Math.floor (ms' / hourLength)
-    minutes = Math.floor ((ms' - hours * hourLength) / minuteLength)
-    seconds = Math.floor ((ms' - (hours * hourLength + minutes * minuteLength)) / secondLength)
+    hours = Number.floor (ms' / hourLength)
+    minutes = Number.floor ((ms' - hours * hourLength) / minuteLength)
+    seconds = Number.floor ((ms' - (hours * hourLength + minutes * minuteLength)) / secondLength)
     milliseconds = ms' - (hours * hourLength + minutes * minuteLength + seconds * secondLength)
   in
     unsafePartial fromJust $
