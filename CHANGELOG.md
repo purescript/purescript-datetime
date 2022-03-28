@@ -12,6 +12,7 @@ New features:
 Bugfixes:
 
 Other improvements:
+- Drop deprecated `math` dependency; update imports (#94 by @JordanMartinez)
 
 ## [v5.0.2](https://github.com/purescript/purescript-datetime/releases/tag/v5.0.2) - 2021-04-19
 
