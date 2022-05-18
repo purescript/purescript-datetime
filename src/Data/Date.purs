@@ -1,6 +1,7 @@
 module Data.Date
   ( Date
   , canonicalDate
+  , canonicalDate'
   , exactDate
   , year
   , month
@@ -15,13 +16,18 @@ module Data.Date
 
 import Prelude
 
-import Data.Date.Component (Day, Month(..), Weekday(..), Year)
+import Data.Date.Component (Day, MaxDay, MaxMonth, MaxYear, MinDay, MinMonth, MinYear, Month(..), Weekday(..), Year)
+import Data.Date.Component as DC
 import Data.Enum (class Enum, toEnum, fromEnum, succ, pred)
 import Data.Function.Uncurried (Fn3, runFn3, Fn4, runFn4, Fn6, runFn6)
 import Data.Int (fromNumber)
+import Data.Reflectable (class Reflectable)
 import Data.Maybe (Maybe(..), fromJust, fromMaybe, isNothing)
 import Data.Time.Duration (class Duration, Days(..), Milliseconds, toDuration)
 import Partial.Unsafe (unsafePartial)
+import Prim.Ordering as PO
+import Prim.Int as PI
+import Type.Proxy (Proxy(..))
 
 -- | A date value in the Gregorian calendar.
 data Date = Date Year Month Day
@@ -35,6 +41,41 @@ canonicalDate y m d = runFn4 canonicalDateImpl mkDate y (fromEnum m) d
   where
   mkDate :: Year -> Int -> Day -> Date
   mkDate = unsafePartial \y' m' d' -> Date y' (fromJust (toEnum m')) d'
+
+-- | Same as `canonicalDate`, but the `Year`, `Month`, and `Day`
+-- | arguments can be constructed without being wrapped in `Maybe`
+-- |
+-- | ```
+-- | import Type.Proxy (Proxy(..))
+-- |
+-- | let
+-- |   y = Proxy :: Proxy 2022
+-- |   m = Proxy :: Proxy 10
+-- |   d = Proxy :: Proxy 14
+-- | in canonicalDate' y m d
+-- | ```
+canonicalDate'
+  :: forall year month day yearLower yearUpper monthLower monthUpper dayLower dayUpper
+   . Reflectable year Int
+  => PI.Add MinYear (-1) yearLower
+  => PI.Compare year yearLower PO.GT
+  => PI.Add MaxYear 1 yearUpper
+  => PI.Compare year yearUpper PO.LT
+  => Reflectable month Int
+  => PI.Add MinMonth (-1) monthLower
+  => PI.Compare month monthLower PO.GT
+  => PI.Add MaxMonth 1 monthUpper
+  => PI.Compare month monthUpper PO.LT
+  => Reflectable day Int
+  => PI.Add MinDay (-1) dayLower
+  => PI.Compare day dayLower PO.GT
+  => PI.Add MinDay 1 dayUpper
+  => PI.Compare day dayUpper PO.LT
+  => Proxy year
+  -> Proxy month
+  -> Proxy day
+  -> Date
+canonicalDate' y m d = canonicalDate (DC.year y) (DC.month m) (DC.day d)
 
 -- | Constructs a date from year, month, and day components. The result will be
 -- | `Nothing` if the provided values result in an invalid date.
