@@ -1,5 +1,7 @@
 module Data.DateTime.Instant
-  ( Instant
+  ( duration
+  , durationMillis
+  , Instant
   , instant
   , unInstant
   , fromDateTime
@@ -13,8 +15,7 @@ import Data.DateTime (Millisecond, Second, Minute, Hour, Day, Year, DateTime(..)
 import Data.Enum (fromEnum, toEnum)
 import Data.Function.Uncurried (Fn7, runFn7)
 import Data.Maybe (Maybe(..), fromJust)
-import Data.Time.Duration (Milliseconds(..))
-
+import Data.Time.Duration (class Duration, Milliseconds(..), negateDuration, toDuration)
 import Partial.Unsafe (unsafePartial)
 
 -- | An instant is a duration in milliseconds relative to the Unix epoch
@@ -74,3 +75,32 @@ toDateTime = toDateTimeImpl mkDateTime
 -- TODO: these could (and probably should) be implemented in PS
 foreign import fromDateTimeImpl :: Fn7 Year Int Day Hour Minute Second Millisecond Instant
 foreign import toDateTimeImpl :: (Year -> Int -> Day -> Hour -> Minute -> Second -> Millisecond -> DateTime) -> Instant -> DateTime
+
+-- | Get the amount of milliseconds between start and end
+-- | for example:
+-- | ```
+-- | do
+-- |   start <- Instant.now
+-- |   aLongRunningEffect
+-- |   end <- Instant.now
+-- |   let millis = duration end start
+-- |   log ("A long running effect took " <> show millis)
+-- | ```
+durationMillis :: { start :: Instant, end :: Instant } → Milliseconds
+durationMillis { start, end } =
+  unInstant end <> negateDuration (unInstant start)
+
+-- | Get the duration between start and end
+-- | for example:
+-- | ```
+-- | do
+-- |   start <- Instant.now # liftEffect
+-- |   aLongRunningAff
+-- |   end <- Instant.now # liftEffect
+-- |   let
+-- |     hours :: Hours
+-- |     hours = duration end start
+-- |   log ("A long running Aff took " <> show hours)
+-- | ```
+duration :: forall d. Duration d => { start :: Instant, end :: Instant } → d
+duration = durationMillis >>> toDuration
