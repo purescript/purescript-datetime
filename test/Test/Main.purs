@@ -163,10 +163,15 @@ main = do
   assert $ DateTime.diff dt5 dt3 == Duration.Days 29.0
   assert $ DateTime.diff dt1 dt3 == Duration.Days (-31.0)
   assert $ DateTime.diff dt4 dt1 == Duration.fromDuration (Duration.Days 31.0) <> Duration.fromDuration (Duration.Minutes 40.0)
-  assert $ over Duration.Days floor (DateTime.diff dt1 epochDateTime)
-           == Duration.Days 735963.0
+  assert $ over Duration.Days floor (DateTime.diff dt1 epochDateTime) == Duration.Days 735963.0
 
   -- instant -----------------------------------------------------------------
+
+  let i1 = Instant.fromDateTime dt1
+  let i2 = Instant.fromDateTime dt2
+  let i3 = Instant.fromDateTime dt3
+  let i4 = Instant.fromDateTime dt4
+  let i5 = Instant.fromDateTime dt5
 
   log "Check that the earliest date is a valid Instant"
   let bottomInstant = Instant.fromDateTime bottom
@@ -182,10 +187,19 @@ main = do
   log "Check that instant/datetime conversion is bijective"
   assert $ Instant.toDateTime (Instant.fromDateTime bottom) == bottom
   assert $ Instant.toDateTime (Instant.fromDateTime top) == top
-  assert $ Instant.toDateTime (Instant.fromDateTime dt1) == dt1
-  assert $ Instant.toDateTime (Instant.fromDateTime dt2) == dt2
-  assert $ Instant.toDateTime (Instant.fromDateTime dt3) == dt3
-  assert $ Instant.toDateTime (Instant.fromDateTime dt4) == dt4
+  assert $ Instant.toDateTime i1 == dt1
+  assert $ Instant.toDateTime i2 == dt2
+  assert $ Instant.toDateTime i3 == dt3
+  assert $ Instant.toDateTime i4 == dt4
+  assert $ Instant.toDateTime i5 == dt5
+
+  log "Check that diff behaves as expected"
+  assert $ Instant.diff i2 i1 == Duration.Minutes 40.0
+  assert $ Instant.diff i1 i2 == Duration.Minutes (-40.0)
+  assert $ Instant.diff i3 i1 == Duration.Days 31.0
+  assert $ Instant.diff i5 i3 == Duration.Days 29.0
+  assert $ Instant.diff i1 i3 == Duration.Days (-31.0)
+  assert $ Instant.diff i4 i1 == Duration.fromDuration (Duration.Days 31.0) <> Duration.fromDuration (Duration.Minutes 40.0)
 
   log "All tests done"
 

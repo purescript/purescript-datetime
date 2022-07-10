@@ -1,12 +1,11 @@
 module Data.DateTime.Instant
-  ( duration
-  , durationMillis
-  , Instant
+  ( Instant
   , instant
   , unInstant
   , fromDateTime
   , fromDate
   , toDateTime
+  , diff
   ) where
 
 import Prelude
@@ -76,31 +75,17 @@ toDateTime = toDateTimeImpl mkDateTime
 foreign import fromDateTimeImpl :: Fn7 Year Int Day Hour Minute Second Millisecond Instant
 foreign import toDateTimeImpl :: (Year -> Int -> Day -> Hour -> Minute -> Second -> Millisecond -> DateTime) -> Instant -> DateTime
 
--- | Get the amount of milliseconds between start and end
--- | for example:
+-- | Calculates the difference between two instants, returning the result as a duration.
+-- | For example:
 -- | ```
 -- | do
--- |   start <- Instant.now
--- |   aLongRunningEffect
--- |   end <- Instant.now
--- |   let millis = duration end start
--- |   log ("A long running effect took " <> show millis)
--- | ```
-durationMillis :: { start :: Instant, end :: Instant } → Milliseconds
-durationMillis { start, end } =
-  unInstant end <> negateDuration (unInstant start)
-
--- | Get the duration between start and end
--- | for example:
--- | ```
--- | do
--- |   start <- Instant.now # liftEffect
+-- |   start <- liftEffect Now.now
 -- |   aLongRunningAff
--- |   end <- Instant.now # liftEffect
+-- |   end <- liftEffect Now.now
 -- |   let
--- |     hours :: Hours
--- |     hours = duration end start
+-- |     hours :: Duration.Hours
+-- |     hours = Instant.diff end start
 -- |   log ("A long running Aff took " <> show hours)
 -- | ```
-duration :: forall d. Duration d => { start :: Instant, end :: Instant } → d
-duration = durationMillis >>> toDuration
+diff :: forall d. Duration d => Instant → Instant → d
+diff dt1 dt2 = toDuration (unInstant dt1 <> negateDuration (unInstant dt2))
