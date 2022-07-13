@@ -12,6 +12,17 @@ Bugfixes:
 
 Other improvements:
 
+## [v6.1.0](https://github.com/purescript/purescript-datetime/releases/tag/v6.1.0) - 2022-07-13
+
+Breaking changes:
+
+New features:
+- Added `diff` for `Instant` (#99 by @i-am-the-slime, #100 by @garyb)
+
+Bugfixes:
+
+Other improvements:
+
 ## [v6.0.0](https://github.com/purescript/purescript-datetime/releases/tag/v6.0.0) - 2022-04-27
 
 Breaking changes:
