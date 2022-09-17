@@ -16,6 +16,8 @@ module Data.Date
 import Prelude
 
 import Data.Date.Component (Day, Month(..), Weekday(..), Year)
+import Data.Debug (class Debug, debug)
+import Data.Debug.Type as D
 import Data.Enum (class Enum, toEnum, fromEnum, succ, pred)
 import Data.Function.Uncurried (Fn3, runFn3, Fn4, runFn4, Fn6, runFn6)
 import Data.Int (fromNumber)
@@ -45,6 +47,9 @@ exactDate y m d =
 
 derive instance eqDate :: Eq Date
 derive instance ordDate :: Ord Date
+
+instance debugDate :: Debug Date where
+  debug (Date y m d) = D.constructor "Date" [ debug y, debug m, debug d ]
 
 instance boundedDate :: Bounded Date where
   bottom = Date bottom bottom bottom

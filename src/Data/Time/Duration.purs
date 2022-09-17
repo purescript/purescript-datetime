@@ -2,6 +2,8 @@ module Data.Time.Duration where
 
 import Prelude
 
+import Data.Debug (class Debug, debug)
+import Data.Debug.Type as D
 import Data.Newtype (class Newtype, over)
 
 -- | A duration measured in milliseconds.
@@ -10,6 +12,9 @@ newtype Milliseconds = Milliseconds Number
 derive instance newtypeMilliseconds :: Newtype Milliseconds _
 derive newtype instance eqMilliseconds :: Eq Milliseconds
 derive newtype instance ordMilliseconds :: Ord Milliseconds
+
+instance Debug Milliseconds where
+  debug (Milliseconds ms) = D.constructor "Milliseconds" [ debug ms ]
 
 instance semigroupMilliseconds :: Semigroup Milliseconds where
   append (Milliseconds x) (Milliseconds y) = Milliseconds (x + y)
@@ -27,6 +32,9 @@ derive instance newtypeSeconds :: Newtype Seconds _
 derive newtype instance eqSeconds :: Eq Seconds
 derive newtype instance ordSeconds :: Ord Seconds
 
+instance Debug Seconds where
+  debug (Seconds s) = D.constructor "Seconds" [ debug s ]
+
 instance semigroupSeconds :: Semigroup Seconds where
   append (Seconds x) (Seconds y) = Seconds (x + y)
 
@@ -42,6 +50,9 @@ newtype Minutes = Minutes Number
 derive instance newtypeMinutes :: Newtype Minutes _
 derive newtype instance eqMinutes :: Eq Minutes
 derive newtype instance ordMinutes :: Ord Minutes
+
+instance Debug Minutes where
+  debug (Minutes ms) = D.constructor "Minutes" [ debug ms ]
 
 instance semigroupMinutes :: Semigroup Minutes where
   append (Minutes x) (Minutes y) = Minutes (x + y)
@@ -59,6 +70,9 @@ derive instance newtypeHours :: Newtype Hours _
 derive newtype instance eqHours :: Eq Hours
 derive newtype instance ordHours :: Ord Hours
 
+instance Debug Hours where
+  debug (Hours h) = D.constructor "Hours" [ debug h ]
+
 instance semigroupHours :: Semigroup Hours where
   append (Hours x) (Hours y) = Hours (x + y)
 
@@ -74,6 +88,9 @@ newtype Days = Days Number
 derive instance newtypeDays :: Newtype Days _
 derive newtype instance eqDays :: Eq Days
 derive newtype instance ordDays :: Ord Days
+
+instance Debug Days where
+  debug (Days d) = D.constructor "Days" [ debug d ]
 
 instance semigroupDays :: Semigroup Days where
   append (Days x) (Days y) = Days (x + y)

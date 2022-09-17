@@ -11,6 +11,8 @@ module Data.Time
 
 import Prelude
 
+import Data.Debug (class Debug, debug)
+import Data.Debug.Type as D
 import Data.Enum (fromEnum, toEnum)
 import Data.Int as Int
 import Data.Maybe (fromJust)
@@ -25,6 +27,9 @@ data Time = Time Hour Minute Second Millisecond
 
 derive instance eqTime :: Eq Time
 derive instance ordTime :: Ord Time
+
+instance Debug Time where
+  debug (Time h m s ms) = D.constructor "Time" [ debug h, debug m, debug s, debug ms ]
 
 instance boundedTime :: Bounded Time where
   bottom = Time bottom bottom bottom bottom

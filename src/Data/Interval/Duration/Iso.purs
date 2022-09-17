@@ -10,6 +10,8 @@ module Data.Interval.Duration.Iso
 import Prelude
 
 import Control.Plus (empty)
+import Data.Debug (class Debug, debug)
+import Data.Debug.Type as D
 import Data.Either (Either(..))
 import Data.Foldable (fold, foldMap)
 import Data.Interval.Duration (Duration(..), DurationComponent(..))
@@ -30,6 +32,9 @@ derive instance ordIsoDuration :: Ord IsoDuration
 instance showIsoDuration :: Show IsoDuration where
   show (IsoDuration d) = "(IsoDuration " <> show d <> ")"
 
+instance Debug IsoDuration where
+  debug (IsoDuration d) = D.constructor "IsoDuration" [ debug d ]
+
 type Errors = NonEmptyList Error
 
 data Error
@@ -37,6 +42,13 @@ data Error
   | InvalidWeekComponentUsage
   | ContainsNegativeValue DurationComponent
   | InvalidFractionalUse DurationComponent
+
+instance Debug Error where
+  debug = case _ of
+    IsEmpty -> D.constructor "IsEmpty" []
+    InvalidWeekComponentUsage -> D.constructor "InvalidWeekComponentUsage" []
+    ContainsNegativeValue a -> D.constructor "ContainsNegativeValue" [ debug a ]
+    InvalidFractionalUse a -> D.constructor "InvalidFractionalUse" [ debug a ]
 
 derive instance eqError :: Eq Error
 derive instance ordError :: Ord Error

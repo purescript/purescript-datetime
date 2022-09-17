@@ -10,6 +10,8 @@ import Control.Extend (class Extend, extend)
 import Data.Bifoldable (class Bifoldable, bifoldl, bifoldr, bifoldrDefault, bifoldMapDefaultL)
 import Data.Bifunctor (class Bifunctor, bimap)
 import Data.Bitraversable (class Bitraversable, bitraverse, bisequenceDefault)
+import Data.Debug (class Debug, debug)
+import Data.Debug.Type as D
 import Data.Foldable (class Foldable, foldl, foldr, foldrDefault, foldMapDefaultL)
 import Data.Interval.Duration (Duration(..), DurationComponent(..), day, hour, millisecond, minute, month, second, week, year) as Exports
 import Data.Maybe (Maybe)
@@ -21,6 +23,9 @@ derive instance eqRecurringInterval :: (Eq d, Eq a) => Eq (RecurringInterval d a
 derive instance ordRecurringInterval :: (Ord d, Ord a) => Ord (RecurringInterval d a)
 instance showRecurringInterval :: (Show d, Show a) => Show (RecurringInterval d a) where
   show (RecurringInterval x y) = "(RecurringInterval " <> show x <> " " <> show y <> ")"
+
+instance (Debug d, Debug a) => Debug (RecurringInterval d a) where
+  debug (RecurringInterval a b) = D.constructor "RecurringInterval" [ debug a, debug b ]
 
 interval :: ∀ d a. RecurringInterval d a -> Interval d a
 interval (RecurringInterval _ i) = i
@@ -68,6 +73,13 @@ instance showInterval :: (Show d, Show a) => Show (Interval d a) where
   show (DurationEnd d x) = "(DurationEnd " <> show d <> " " <> show x <> ")"
   show (StartDuration x d) = "(StartDuration " <> show x <> " " <> show d <> ")"
   show (DurationOnly d) = "(DurationOnly " <> show d <> ")"
+
+instance (Debug d, Debug a) => Debug (Interval d a) where
+  debug = case _ of
+    StartEnd      a a -> D.constructor "StartEnd" [ debug a, debug a ]
+    DurationEnd   d a -> D.constructor "DurationEnd" [ debug d, debug a ]
+    StartDuration a d -> D.constructor "StartDuration" [ debug a, debug d ]
+    DurationOnly  d -> D.constructor "DurationOnly" [ debug d ]
 
 instance functorInterval :: Functor (Interval d) where
   map = bimap identity

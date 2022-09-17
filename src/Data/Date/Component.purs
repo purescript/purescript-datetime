@@ -7,6 +7,8 @@ module Data.Date.Component
 
 import Prelude
 
+import Data.Debug (class Debug, debug)
+import Data.Debug.Type as D
 import Data.Enum (class Enum, class BoundedEnum, toEnum, fromEnum, Cardinality(..))
 import Data.Maybe (Maybe(..))
 
@@ -19,6 +21,9 @@ newtype Year = Year Int
 
 derive newtype instance eqYear :: Eq Year
 derive newtype instance ordYear :: Ord Year
+
+instance Debug Year where
+  debug (Year y) = D.constructor "Year" [ debug y ]
 
 -- Note: these seemingly arbitrary bounds come from relying on JS for date
 -- manipulations, as it only supports date ±100,000,000 days of the Unix epoch.
@@ -59,6 +64,21 @@ data Month
 
 derive instance eqMonth :: Eq Month
 derive instance ordMonth :: Ord Month
+
+instance Debug Month where
+  debug = case _ of
+    January -> D.constructor "January" []
+    February -> D.constructor "February" []
+    March -> D.constructor "March" []
+    April -> D.constructor "April" []
+    May -> D.constructor "May" []
+    June -> D.constructor "June" []
+    July -> D.constructor "July" []
+    August -> D.constructor "August" []
+    September -> D.constructor "September" []
+    October -> D.constructor "October" []
+    November -> D.constructor "November" []
+    December -> D.constructor "December" []
 
 instance boundedMonth :: Bounded Month where
   bottom = January
@@ -122,6 +142,9 @@ newtype Day = Day Int
 derive newtype instance eqDay :: Eq Day
 derive newtype instance ordDay :: Ord Day
 
+instance Debug Day where
+  debug (Day y) = D.constructor "Day" [ debug y ]
+
 instance boundedDay :: Bounded Day where
   bottom = Day 1
   top = Day 31
@@ -152,6 +175,16 @@ data Weekday
 
 derive instance eqWeekday :: Eq Weekday
 derive instance ordWeekday :: Ord Weekday
+
+instance Debug Weekday where
+  debug = case _ of
+    Monday -> D.constructor "Monday" []
+    Tuesday -> D.constructor "Tuesday" []
+    Wednesday -> D.constructor "Wednesday" []
+    Thursday -> D.constructor "Thursday" []
+    Friday -> D.constructor "Friday" []
+    Saturday -> D.constructor "Saturday" []
+    Sunday -> D.constructor "Sunday" []
 
 instance boundedWeekday :: Bounded Weekday where
   bottom = Monday

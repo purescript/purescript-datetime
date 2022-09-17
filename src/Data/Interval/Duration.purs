@@ -13,6 +13,8 @@ module Data.Interval.Duration
 
 import Prelude
 
+import Data.Debug (class Debug, debug)
+import Data.Debug.Type as D
 import Data.Map as Map
 import Data.Newtype (class Newtype)
 
@@ -21,6 +23,9 @@ newtype Duration = Duration (Map.Map DurationComponent Number)
 derive instance eqDuration :: Eq Duration
 derive instance ordDuration :: Ord Duration
 derive instance newtypeDuration :: Newtype Duration _
+
+instance Debug Duration where
+  debug (Duration m) = D.constructor "Duration" [ debug m ]
 
 instance showDuration :: Show Duration where
   show (Duration d) = "(Duration " <> show d <> ")"
@@ -34,6 +39,16 @@ instance monoidDuration :: Monoid Duration where
 data DurationComponent = Second | Minute | Hour | Day | Week | Month | Year
 derive instance eqDurationComponent :: Eq DurationComponent
 derive instance ordDurationComponent :: Ord DurationComponent
+
+instance Debug DurationComponent where
+  debug = case _ of
+    Second -> D.constructor "Second" []
+    Minute -> D.constructor "Minute" []
+    Hour -> D.constructor "Hour" []
+    Day -> D.constructor "Day" []
+    Week -> D.constructor "Week" []
+    Month -> D.constructor "Month" []
+    Year -> D.constructor "Year" []
 
 instance showDurationComponent :: Show DurationComponent where
   show Minute = "Minute"

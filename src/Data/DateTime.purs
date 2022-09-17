@@ -15,6 +15,8 @@ module Data.DateTime
 import Prelude
 
 import Data.Date (Date, Day, Month(..), Weekday(..), Year, canonicalDate, day, exactDate, month, weekday, year)
+import Data.Debug (class Debug, debug)
+import Data.Debug.Type as D
 import Data.Enum (toEnum, fromEnum)
 import Data.Function.Uncurried (Fn2, runFn2)
 import Data.Time (Hour, Millisecond, Minute, Second, Time(..), hour, setHour, millisecond, setMillisecond, minute, setMinute, second, setSecond)
@@ -26,6 +28,9 @@ data DateTime = DateTime Date Time
 
 derive instance eqDateTime :: Eq DateTime
 derive instance ordDateTime :: Ord DateTime
+
+instance Debug DateTime where
+  debug (DateTime d t) = D.constructor "DateTime" [ debug d, debug t ]
 
 instance boundedDateTime :: Bounded DateTime where
   bottom = DateTime bottom bottom

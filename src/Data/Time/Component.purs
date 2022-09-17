@@ -7,6 +7,8 @@ module Data.Time.Component
 
 import Prelude
 
+import Data.Debug (class Debug, debug)
+import Data.Debug.Type as D
 import Data.Enum (class Enum, class BoundedEnum, toEnum, fromEnum, Cardinality(..))
 import Data.Maybe (Maybe(..))
 
@@ -20,6 +22,9 @@ newtype Hour = Hour Int
 
 derive newtype instance eqHour :: Eq Hour
 derive newtype instance ordHour :: Ord Hour
+
+instance Debug Hour where
+  debug (Hour h) = D.constructor "Hour" [ debug h ]
 
 instance boundedHour :: Bounded Hour where
   bottom = Hour 0
@@ -50,6 +55,9 @@ newtype Minute = Minute Int
 derive newtype instance eqMinute :: Eq Minute
 derive newtype instance ordMinute :: Ord Minute
 
+instance Debug Minute where
+  debug (Minute m) = D.constructor "Minute" [ debug m ]
+
 instance boundedMinute :: Bounded Minute where
   bottom = Minute 0
   top = Minute 59
@@ -78,6 +86,9 @@ newtype Second = Second Int
 
 derive newtype instance eqSecond :: Eq Second
 derive newtype instance ordSecond :: Ord Second
+
+instance Debug Second where
+  debug (Second s) = D.constructor "Second" [ debug s ]
 
 instance boundedSecond :: Bounded Second where
   bottom = Second 0
@@ -108,6 +119,9 @@ newtype Millisecond = Millisecond Int
 
 derive newtype instance eqMillisecond :: Eq Millisecond
 derive newtype instance ordMillisecond :: Ord Millisecond
+
+instance Debug Millisecond where
+  debug (Millisecond ms) = D.constructor "Millisecond" [ debug ms ]
 
 instance boundedMillisecond :: Bounded Millisecond where
   bottom = Millisecond 0

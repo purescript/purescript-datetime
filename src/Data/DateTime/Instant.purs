@@ -11,6 +11,8 @@ module Data.DateTime.Instant
 import Prelude
 
 import Data.DateTime (Millisecond, Second, Minute, Hour, Day, Year, DateTime(..), Date, Time(..), canonicalDate, millisecond, second, minute, hour, day, month, year)
+import Data.Debug (class Debug, debug)
+import Data.Debug.Type as D
 import Data.Enum (fromEnum, toEnum)
 import Data.Function.Uncurried (Fn7, runFn7)
 import Data.Maybe (Maybe(..), fromJust)
@@ -26,6 +28,9 @@ newtype Instant = Instant Milliseconds
 
 derive newtype instance eqDateTime :: Eq Instant
 derive newtype instance ordDateTime :: Ord Instant
+
+instance Debug Instant where
+  debug (Instant ms) = D.constructor "Instant" [ debug ms ]
 
 instance boundedInstant :: Bounded Instant where
   bottom = Instant (Milliseconds (-8639977881600000.0))
