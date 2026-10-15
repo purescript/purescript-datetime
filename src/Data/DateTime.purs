@@ -15,11 +15,11 @@ module Data.DateTime
 import Prelude
 
 import Data.Date (Date, Day, Month(..), Weekday(..), Year, canonicalDate, day, exactDate, month, weekday, year)
-import Data.Enum (toEnum, fromEnum)
+import Data.Enum (fromEnum, toEnum)
 import Data.Function.Uncurried (Fn2, runFn2)
-import Data.Time (Hour, Millisecond, Minute, Second, Time(..), hour, setHour, millisecond, setMillisecond, minute, setMinute, second, setSecond)
-import Data.Time.Duration (class Duration, fromDuration, toDuration, Milliseconds)
 import Data.Maybe (Maybe(..))
+import Data.Time (Hour, Millisecond, Minute, Second, Time(..), hour, millisecond, minute, second, setHour, setMillisecond, setMinute, setSecond)
+import Data.Time.Duration (class Duration, Milliseconds, fromDuration, toDuration)
 
 -- | A date/time value in the Gregorian calendar/UTC time zone.
 data DateTime = DateTime Date Time

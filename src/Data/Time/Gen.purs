@@ -4,6 +4,7 @@ module Data.Time.Gen
   ) where
 
 import Prelude
+
 import Control.Monad.Gen (class MonadGen)
 import Data.Time (Time(..))
 import Data.Time.Component.Gen (genHour, genMillisecond, genMinute, genSecond)

@@ -10,7 +10,7 @@ module Data.DateTime.Instant
 
 import Prelude
 
-import Data.DateTime (Millisecond, Second, Minute, Hour, Day, Year, DateTime(..), Date, Time(..), canonicalDate, millisecond, second, minute, hour, day, month, year)
+import Data.DateTime (Date, DateTime(..), Day, Hour, Millisecond, Minute, Second, Time(..), Year, canonicalDate, day, hour, millisecond, minute, month, second, year)
 import Data.Enum (fromEnum, toEnum)
 import Data.Function.Uncurried (Fn7, runFn7)
 import Data.Maybe (Maybe(..), fromJust)
@@ -54,15 +54,25 @@ unInstant (Instant ms) = ms
 fromDateTime :: DateTime -> Instant
 fromDateTime (DateTime d t) =
   runFn7 fromDateTimeImpl
-    (year d) (fromEnum (month d)) (day d)
-    (hour t) (minute t) (second t) (millisecond t)
+    (year d)
+    (fromEnum (month d))
+    (day d)
+    (hour t)
+    (minute t)
+    (second t)
+    (millisecond t)
 
 -- | Creates an `Instant` from a `Date` value, using the assumed time 00:00:00.
 fromDate :: Date -> Instant
 fromDate d =
   runFn7 fromDateTimeImpl
-    (year d) (fromEnum (month d)) (day d)
-    bottom bottom bottom bottom
+    (year d)
+    (fromEnum (month d))
+    (day d)
+    bottom
+    bottom
+    bottom
+    bottom
 
 -- | Creates a `DateTime` value from an `Instant`.
 toDateTime :: Instant -> DateTime
@@ -87,5 +97,5 @@ foreign import toDateTimeImpl :: (Year -> Int -> Day -> Hour -> Minute -> Second
 -- |     hours = Instant.diff end start
 -- |   log ("A long running Aff took " <> show hours)
 -- | ```
-diff :: forall d. Duration d => Instant → Instant → d
+diff :: forall d. Duration d => Instant -> Instant -> d
 diff dt1 dt2 = toDuration (unInstant dt1 <> negateDuration (unInstant dt2))

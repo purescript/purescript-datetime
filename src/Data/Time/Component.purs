@@ -7,7 +7,7 @@ module Data.Time.Component
 
 import Prelude
 
-import Data.Enum (class Enum, class BoundedEnum, toEnum, fromEnum, Cardinality(..))
+import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), fromEnum, toEnum)
 import Data.Maybe (Maybe(..))
 
 -- | An hour component for a time value.

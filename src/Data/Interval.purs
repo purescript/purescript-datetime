@@ -7,13 +7,13 @@ module Data.Interval
 import Prelude
 
 import Control.Extend (class Extend, extend)
-import Data.Bifoldable (class Bifoldable, bifoldl, bifoldr, bifoldrDefault, bifoldMapDefaultL)
+import Data.Bifoldable (class Bifoldable, bifoldMapDefaultL, bifoldl, bifoldr, bifoldrDefault)
 import Data.Bifunctor (class Bifunctor, bimap)
-import Data.Bitraversable (class Bitraversable, bitraverse, bisequenceDefault)
-import Data.Foldable (class Foldable, foldl, foldr, foldrDefault, foldMapDefaultL)
+import Data.Bitraversable (class Bitraversable, bisequenceDefault, bitraverse)
+import Data.Foldable (class Foldable, foldMapDefaultL, foldl, foldr, foldrDefault)
 import Data.Interval.Duration (Duration(..), DurationComponent(..), day, hour, millisecond, minute, month, second, week, year) as Exports
 import Data.Maybe (Maybe)
-import Data.Traversable (class Traversable, traverse, sequenceDefault)
+import Data.Traversable (class Traversable, sequenceDefault, traverse)
 
 data RecurringInterval d a = RecurringInterval (Maybe Int) (Interval d a)
 
@@ -22,10 +22,10 @@ derive instance ordRecurringInterval :: (Ord d, Ord a) => Ord (RecurringInterval
 instance showRecurringInterval :: (Show d, Show a) => Show (RecurringInterval d a) where
   show (RecurringInterval x y) = "(RecurringInterval " <> show x <> " " <> show y <> ")"
 
-interval :: ∀ d a. RecurringInterval d a -> Interval d a
+interval :: forall d a. RecurringInterval d a -> Interval d a
 interval (RecurringInterval _ i) = i
 
-over :: ∀ f d a d' a'. Functor f => (Interval d a -> f (Interval d' a')) -> RecurringInterval d a -> f (RecurringInterval d' a')
+over :: forall f d a d' a'. Functor f => (Interval d a -> f (Interval d' a')) -> RecurringInterval d a -> f (RecurringInterval d' a')
 over f (RecurringInterval n i) = map (RecurringInterval n) (f i)
 
 instance functorRecurringInterval :: Functor (RecurringInterval d) where
@@ -56,10 +56,10 @@ instance extendRecurringInterval :: Extend (RecurringInterval d) where
   extend f a@(RecurringInterval n i) = RecurringInterval n (extend (const (f a)) i)
 
 data Interval d a
-  = StartEnd      a a
-  | DurationEnd   d a
+  = StartEnd a a
+  | DurationEnd d a
   | StartDuration a d
-  | DurationOnly  d
+  | DurationOnly d
 
 derive instance eqInterval :: (Eq d, Eq a) => Eq (Interval d a)
 derive instance ordInterval :: (Ord d, Ord a) => Ord (Interval d a)
@@ -95,7 +95,7 @@ instance bifoldableInterval :: Bifoldable Interval where
   bifoldMap = bifoldMapDefaultL
 
 instance traversableInterval :: Traversable (Interval d) where
-  traverse f (StartEnd x y) = StartEnd <$> f x  <*> f y
+  traverse f (StartEnd x y) = StartEnd <$> f x <*> f y
   traverse f (DurationEnd d x) = f x <#> DurationEnd d
   traverse f (StartDuration x d) = f x <#> (_ `StartDuration` d)
   traverse _ (DurationOnly d) = pure (DurationOnly d)

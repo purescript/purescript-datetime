@@ -4,6 +4,7 @@ module Data.Date.Gen
   ) where
 
 import Prelude
+
 import Control.Monad.Gen (class MonadGen, chooseInt)
 import Data.Date (Date, adjust, exactDate, isLeapYear)
 import Data.Date.Component.Gen (genDay, genMonth, genWeekday, genYear)

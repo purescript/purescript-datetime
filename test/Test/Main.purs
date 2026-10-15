@@ -2,14 +2,12 @@ module Test.Main where
 
 import Prelude
 
-import Effect (Effect)
-import Effect.Console (log)
 import Data.Array as Array
 import Data.Date as Date
 import Data.DateTime as DateTime
 import Data.DateTime.Instant as Instant
 import Data.Either (Either(..), isRight)
-import Data.Enum (class BoundedEnum, Cardinality, toEnum, enumFromTo, cardinality, succ, fromEnum, pred)
+import Data.Enum (class BoundedEnum, Cardinality, cardinality, enumFromTo, fromEnum, pred, succ, toEnum)
 import Data.Interval as Interval
 import Data.Interval.Duration.Iso as IsoDuration
 import Data.Maybe (Maybe(..), fromJust)
@@ -18,6 +16,8 @@ import Data.Number (floor)
 import Data.Time as Time
 import Data.Time.Duration as Duration
 import Data.Tuple (Tuple(..), snd)
+import Effect (Effect)
+import Effect.Console (log)
 import Partial.Unsafe (unsafePartial)
 import Test.Assert (assert)
 import Type.Proxy (Proxy(..))
@@ -41,10 +41,11 @@ main = do
   assert $ IsoDuration.mkIsoDuration (mempty)
     == Left (pure IsoDuration.IsEmpty)
 
-  let epochDate = unsafePartial fromJust $ Date.canonicalDate
-                  <$> toEnum 1
-                  <*> pure bottom
-                  <*> pure bottom
+  let
+    epochDate = unsafePartial fromJust $ Date.canonicalDate
+      <$> toEnum 1
+      <*> pure bottom
+      <*> pure bottom
   let epochDateTime = DateTime.DateTime epochDate bottom
   let epochMillis = -62135596800000.0
   -- time --------------------------------------------------------------------
@@ -139,7 +140,7 @@ main = do
   assert $ Date.adjust (Duration.Days 999.0) d1 == Just d4
   assert $ Date.adjust (Duration.Days 10000.0) d5 == Just d1
   assert $ Date.adjust (Duration.Days (-31.0)) d2 == Just d1
-  assert $ Date.adjust (Duration.Days (- 999.0)) d4 == Just d1
+  assert $ Date.adjust (Duration.Days (-999.0)) d4 == Just d1
   assert $ Date.adjust (Duration.Days (-10000.0)) d1 == Just d5
 
   -- datetime ----------------------------------------------------------------
@@ -152,9 +153,11 @@ main = do
 
   log "Check that adjust behaves as expected"
   assert $ DateTime.adjust (Duration.fromDuration (Duration.Days 31.0) <> Duration.fromDuration (Duration.Minutes 40.0)) dt1 == Just dt4
-  assert $ (Date.year <<< DateTime.date <$>
-           (DateTime.adjust (Duration.Days 735963.0) epochDateTime))
-           == toEnum 2016
+  assert $
+    ( Date.year <<< DateTime.date <$>
+        (DateTime.adjust (Duration.Days 735963.0) epochDateTime)
+    )
+      == toEnum 2016
 
   log "Check that diff behaves as expected"
   assert $ DateTime.diff dt2 dt1 == Duration.Minutes 40.0

@@ -1,9 +1,13 @@
 module Data.Time
   ( Time(..)
-  , hour, setHour
-  , minute, setMinute
-  , second, setSecond
-  , millisecond, setMillisecond
+  , hour
+  , setHour
+  , minute
+  , setMinute
+  , second
+  , setSecond
+  , millisecond
+  , setMillisecond
   , adjust
   , diff
   , module Data.Time.Component
@@ -14,8 +18,8 @@ import Prelude
 import Data.Enum (fromEnum, toEnum)
 import Data.Int as Int
 import Data.Maybe (fromJust)
-import Data.Number as Number
 import Data.Newtype (unwrap)
+import Data.Number as Number
 import Data.Time.Component (Hour, Millisecond, Minute, Second)
 import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), fromDuration, negateDuration, toDuration)
 import Data.Tuple (Tuple(..))
@@ -95,9 +99,9 @@ minTime = timeToMillis bottom
 timeToMillis :: Time -> Milliseconds
 timeToMillis t = Milliseconds
   $ 3600000.0 * Int.toNumber (fromEnum (hour t))
-  + 60000.0 * Int.toNumber (fromEnum (minute t))
-  + 1000.0 * Int.toNumber (fromEnum (second t))
-  + Int.toNumber (fromEnum (millisecond t))
+      + 60000.0 * Int.toNumber (fromEnum (minute t))
+      + 1000.0 * Int.toNumber (fromEnum (second t))
+      + Int.toNumber (fromEnum (millisecond t))
 
 millisToTime :: Milliseconds -> Time
 millisToTime (Milliseconds ms') =
