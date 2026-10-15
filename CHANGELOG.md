@@ -6,7 +6,7 @@ Notable changes to this project are documented in this file. The format is based
 
 Other improvements:
 
-- Migrate from Bower/Pulp to Spago and update CI.
+- Migrate from Bower/Pulp to Spago and update CI (#103 by @thomashoneyman).
 
 ## [v6.1.0](https://github.com/purescript/purescript-datetime/releases/tag/v6.1.0) - 2022-07-13
 
