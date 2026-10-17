@@ -42,9 +42,11 @@ instance showInstant :: Show Instant where
 -- | minimum acceptable value equates to the `bottom` `DateTime` and the maximum
 -- | acceptable value equates to the `top` `DateTime`.
 instant :: Milliseconds -> Maybe Instant
-instant ms@(Milliseconds n)
-  | n >= -8639977881600000.0 && n <= 8639977881599999.0 = Just (Instant ms)
-  | otherwise = Nothing
+instant ms@(Milliseconds n) =
+  if n >= -8639977881600000.0 && n <= 8639977881599999.0 then
+    Just (Instant ms)
+  else
+    Nothing
 
 -- | Lowers an `Instant` to a `Milliseconds` duration.
 unInstant :: Instant -> Milliseconds

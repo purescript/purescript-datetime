@@ -153,11 +153,8 @@ main = do
 
   log "Check that adjust behaves as expected"
   assert $ DateTime.adjust (Duration.fromDuration (Duration.Days 31.0) <> Duration.fromDuration (Duration.Minutes 40.0)) dt1 == Just dt4
-  assert $
-    ( Date.year <<< DateTime.date <$>
-        (DateTime.adjust (Duration.Days 735963.0) epochDateTime)
-    )
-      == toEnum 2016
+  let adjustedYear = map (Date.year <<< DateTime.date) $ DateTime.adjust (Duration.Days 735963.0) epochDateTime
+  assert $ adjustedYear == toEnum 2016
 
   log "Check that diff behaves as expected"
   assert $ DateTime.diff dt2 dt1 == Duration.Minutes 40.0

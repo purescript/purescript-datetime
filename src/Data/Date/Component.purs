@@ -34,9 +34,11 @@ instance enumYear :: Enum Year where
 
 instance boundedEnumYear :: BoundedEnum Year where
   cardinality = Cardinality 547580
-  toEnum n
-    | n >= (-271820) && n <= 275759 = Just (Year n)
-    | otherwise = Nothing
+  toEnum n =
+    if n >= (-271820) && n <= 275759 then
+      Just (Year n)
+    else
+      Nothing
   fromEnum (Year n) = n
 
 instance showYear :: Show Year where
@@ -99,18 +101,19 @@ instance boundedEnumMonth :: BoundedEnum Month where
     December -> 12
 
 instance showMonth :: Show Month where
-  show January = "January"
-  show February = "February"
-  show March = "March"
-  show April = "April"
-  show May = "May"
-  show June = "June"
-  show July = "July"
-  show August = "August"
-  show September = "September"
-  show October = "October"
-  show November = "November"
-  show December = "December"
+  show = case _ of
+    January -> "January"
+    February -> "February"
+    March -> "March"
+    April -> "April"
+    May -> "May"
+    June -> "June"
+    July -> "July"
+    August -> "August"
+    September -> "September"
+    October -> "October"
+    November -> "November"
+    December -> "December"
 
 -- | A day component for a date.
 -- |
@@ -132,9 +135,11 @@ instance enumDay :: Enum Day where
 
 instance boundedEnumDay :: BoundedEnum Day where
   cardinality = Cardinality 31
-  toEnum n
-    | n >= 1 && n <= 31 = Just (Day n)
-    | otherwise = Nothing
+  toEnum n =
+    if n >= 1 && n <= 31 then
+      Just (Day n)
+    else
+      Nothing
   fromEnum (Day n) = n
 
 instance showDay :: Show Day where
@@ -182,10 +187,11 @@ instance boundedEnumWeekday :: BoundedEnum Weekday where
     Sunday -> 7
 
 instance showWeekday :: Show Weekday where
-  show Monday = "Monday"
-  show Tuesday = "Tuesday"
-  show Wednesday = "Wednesday"
-  show Thursday = "Thursday"
-  show Friday = "Friday"
-  show Saturday = "Saturday"
-  show Sunday = "Sunday"
+  show = case _ of
+    Monday -> "Monday"
+    Tuesday -> "Tuesday"
+    Wednesday -> "Wednesday"
+    Thursday -> "Thursday"
+    Friday -> "Friday"
+    Saturday -> "Saturday"
+    Sunday -> "Sunday"

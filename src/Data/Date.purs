@@ -39,11 +39,9 @@ canonicalDate y m d = runFn4 canonicalDateImpl mkDate y (fromEnum m) d
 -- | Constructs a date from year, month, and day components. The result will be
 -- | `Nothing` if the provided values result in an invalid date.
 exactDate :: Year -> Month -> Day -> Maybe Date
-exactDate y m d =
-  let
-    dt = Date y m d
-  in
-    if canonicalDate y m d == dt then Just dt else Nothing
+exactDate y m d = do
+  let dt = Date y m d
+  if canonicalDate y m d == dt then Just dt else Nothing
 
 derive instance eqDate :: Eq Date
 derive instance ordDate :: Ord Date
@@ -61,7 +59,9 @@ instance enumDate :: Enum Date where
     d' = if isNothing sd then toEnum 1 else sd
     m' = if isNothing sd then fromMaybe January sm else m
     y' = if isNothing sd && isNothing sm then succ y else Just y
-    sd = let v = succ d in if v > Just l then Nothing else v
+    sd = do
+      let v = succ d
+      if v > Just l then Nothing else v
     sm = succ m
     l = lastDayOfMonth y m
   pred (Date y m d) = Date <$> y' <*> pure m' <*> d'
@@ -87,11 +87,9 @@ day (Date _ _ d) = d
 
 -- | The weekday for a date value.
 weekday :: Date -> Weekday
-weekday = unsafePartial \(Date y m d) ->
-  let
-    n = runFn3 calcWeekday y (fromEnum m) d
-  in
-    if n == 0 then fromJust (toEnum 7) else fromJust (toEnum n)
+weekday = unsafePartial \(Date y m d) -> do
+  let n = runFn3 calcWeekday y (fromEnum m) d
+  if n == 0 then fromJust (toEnum 7) else fromJust (toEnum n)
 
 -- | Adjusts a date with a Duration in days. The number of days must
 -- | already be an integer and fall within the valid range of values
@@ -99,21 +97,30 @@ weekday = unsafePartial \(Date y m d) ->
 adjust :: Days -> Date -> Maybe Date
 adjust (Days n) date = fromNumber n >>= flip adj date
   where
-  adj 0 dt = Just dt
-  adj i (Date y m d) = adj i' =<< dt'
-    where
-    i'
-      | low = j
-      | hi = j - fromEnum l - 1
-      | otherwise = 0
-    dt'
-      | low = pred =<< Date y m <$> toEnum 1
-      | hi = succ (Date y m l)
-      | otherwise = Date y m <$> toEnum j
-    j = i + fromEnum d
-    low = j < 1
-    hi = j > fromEnum l
-    l = lastDayOfMonth y (if low then fromMaybe December (pred m) else m)
+  adj i dt = case i of
+    0 -> Just dt
+    _ -> do
+      let
+        Date y m d = dt
+        i' =
+          if low then
+            j
+          else if hi then
+            j - fromEnum l - 1
+          else
+            0
+        dt' =
+          if low then
+            pred =<< Date y m <$> toEnum 1
+          else if hi then
+            succ (Date y m l)
+          else
+            Date y m <$> toEnum j
+        j = i + fromEnum d
+        low = j < 1
+        hi = j > fromEnum l
+        l = lastDayOfMonth y (if low then fromMaybe December (pred m) else m)
+      adj i' =<< dt'
 
 -- | Calculates the difference between two dates, returning the result as a
 -- | duration.

@@ -41,16 +41,18 @@ data Error
 derive instance eqError :: Eq Error
 derive instance ordError :: Ord Error
 instance showError :: Show Error where
-  show (IsEmpty) = "(IsEmpty)"
-  show (InvalidWeekComponentUsage) = "(InvalidWeekComponentUsage)"
-  show (ContainsNegativeValue c) = "(ContainsNegativeValue " <> show c <> ")"
-  show (InvalidFractionalUse c) = "(InvalidFractionalUse " <> show c <> ")"
+  show = case _ of
+    IsEmpty -> "(IsEmpty)"
+    InvalidWeekComponentUsage -> "(InvalidWeekComponentUsage)"
+    ContainsNegativeValue c -> "(ContainsNegativeValue " <> show c <> ")"
+    InvalidFractionalUse c -> "(InvalidFractionalUse " <> show c <> ")"
 
 prettyError :: Error -> String
-prettyError (IsEmpty) = "Duration is empty (has no components)"
-prettyError (InvalidWeekComponentUsage) = "Week component of Duration is used with other components"
-prettyError (ContainsNegativeValue c) = "Component `" <> show c <> "` contains negative value"
-prettyError (InvalidFractionalUse c) = "Invalid usage of Fractional value at component `" <> show c <> "`"
+prettyError = case _ of
+  IsEmpty -> "Duration is empty (has no components)"
+  InvalidWeekComponentUsage -> "Week component of Duration is used with other components"
+  ContainsNegativeValue c -> "Component `" <> show c <> "` contains negative value"
+  InvalidFractionalUse c -> "Invalid usage of Fractional value at component `" <> show c <> "`"
 
 unIsoDuration :: IsoDuration -> Duration
 unIsoDuration (IsoDuration a) = a
@@ -77,9 +79,12 @@ type CheckEnv =
   }
 
 checkWeekUsage :: CheckEnv -> List Error
-checkWeekUsage { asMap } =
-  if isJust (Map.lookup Week asMap) && Map.size asMap > 1 then pure InvalidWeekComponentUsage
-  else empty
+checkWeekUsage { asMap } = do
+  let hasWeekWithOtherComponents = isJust (Map.lookup Week asMap) && Map.size asMap > 1
+  if hasWeekWithOtherComponents then
+    pure InvalidWeekComponentUsage
+  else
+    empty
 
 checkEmptiness :: CheckEnv -> List Error
 checkEmptiness { asList } = if null asList then pure IsEmpty else empty
