@@ -2,7 +2,7 @@
 
 Notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Unreleased](https://github.com/purescript/purescript-datetime/compare/v6.1.1...HEAD)
 
 Breaking changes:
 
@@ -12,11 +12,18 @@ Bugfixes:
 
 Other improvements:
 
+## [v6.1.1](https://github.com/purescript/purescript-datetime/releases/tag/v6.1.1) - 2026-10-17
+
+Other improvements:
+
+- Migrate from Bower/Pulp to Spago and update CI (#103 by @thomashoneyman).
+
 ## [v6.1.0](https://github.com/purescript/purescript-datetime/releases/tag/v6.1.0) - 2022-07-13
 
 Breaking changes:
 
 New features:
+
 - Added `diff` for `Instant` (#99 by @i-am-the-slime, #100 by @garyb)
 
 Bugfixes:
@@ -26,6 +33,7 @@ Other improvements:
 ## [v6.0.0](https://github.com/purescript/purescript-datetime/releases/tag/v6.0.0) - 2022-04-27
 
 Breaking changes:
+
 - Migrate FFI to ES modules (#93 by @JordanMartinez)
 
 New features:
@@ -33,31 +41,37 @@ New features:
 Bugfixes:
 
 Other improvements:
+
 - Drop deprecated `math` dependency; update imports (#94 by @JordanMartinez)
 
 ## [v5.0.2](https://github.com/purescript/purescript-datetime/releases/tag/v5.0.2) - 2021-04-19
 
 Other improvements:
+
 - Fix one more UnusedName warning revealed by v0.14.1 PureScript release (@thomashoneyman)
 
 ## [v5.0.1](https://github.com/purescript/purescript-datetime/releases/tag/v5.0.1) - 2021-04-19
 
 Other improvements:
+
 - Fix UnusedName warnings revealed by v0.14.1 PureScript release (#91 by @JordanMartinez)
 
 ## [v5.0.0](https://github.com/purescript/purescript-datetime/releases/tag/v5.0.0) - 2021-02-26
 
 Breaking changes:
-  - Added support for PureScript 0.14 and dropped support for all previous versions (#81)
+
+- Added support for PureScript 0.14 and dropped support for all previous versions (#81)
 
 New features:
 
 Bugfixes:
+
 - Fixed `genDate` generator frequency (#83)
 
 Other improvements:
-  - Migrated CI to GitHub Actions and updated installation instructions to use Spago (#82)
-  - Added a CHANGELOG.md file and pull request template (#84, #85)
+
+- Migrated CI to GitHub Actions and updated installation instructions to use Spago (#82)
+- Added a CHANGELOG.md file and pull request template (#84, #85)
 
 ## [v4.1.1](https://github.com/purescript/purescript-datetime/releases/tag/v4.1.1) - 2019-02-09
 
@@ -178,6 +192,7 @@ Initial release candidate of the library intended for the 0.7 compiler.
 ## [v0.3.0](https://github.com/purescript/purescript-datetime/releases/tag/v0.3.0) - 2015-02-21
 
 **This release requires PureScript v0.6.8 or later**
+
 - Updated dependencies
 
 ## [v0.2.0](https://github.com/purescript/purescript-datetime/releases/tag/v0.2.0) - 2015-01-11
@@ -199,4 +214,3 @@ Added `fromStringStrict` and updated dependencies (@jdegoes)
 ## [v0.0.1](https://github.com/purescript/purescript-datetime/releases/tag/v0.0.1) - 2014-10-14
 
 Initial version release.
-

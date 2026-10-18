@@ -32,18 +32,19 @@ instance monoidDuration :: Monoid Duration where
   mempty = Duration Map.empty
 
 data DurationComponent = Second | Minute | Hour | Day | Week | Month | Year
+
 derive instance eqDurationComponent :: Eq DurationComponent
 derive instance ordDurationComponent :: Ord DurationComponent
 
 instance showDurationComponent :: Show DurationComponent where
-  show Minute = "Minute"
-  show Second = "Second"
-  show Hour = "Hour"
-  show Day = "Day"
-  show Week = "Week"
-  show Month = "Month"
-  show Year = "Year"
-
+  show = case _ of
+    Minute -> "Minute"
+    Second -> "Second"
+    Hour -> "Hour"
+    Day -> "Day"
+    Week -> "Week"
+    Month -> "Month"
+    Year -> "Year"
 
 week :: Number -> Duration
 week = durationFromComponent Week

@@ -7,7 +7,7 @@ module Data.Time.Component
 
 import Prelude
 
-import Data.Enum (class Enum, class BoundedEnum, toEnum, fromEnum, Cardinality(..))
+import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), fromEnum, toEnum)
 import Data.Maybe (Maybe(..))
 
 -- | An hour component for a time value.
@@ -31,9 +31,11 @@ instance enumHour :: Enum Hour where
 
 instance boundedEnumHour :: BoundedEnum Hour where
   cardinality = Cardinality 24
-  toEnum n
-    | n >= 0 && n <= 23 = Just (Hour n)
-    | otherwise = Nothing
+  toEnum n =
+    if n >= 0 && n <= 23 then
+      Just (Hour n)
+    else
+      Nothing
   fromEnum (Hour n) = n
 
 instance showHour :: Show Hour where
@@ -60,9 +62,11 @@ instance enumMinute :: Enum Minute where
 
 instance boundedEnumMinute :: BoundedEnum Minute where
   cardinality = Cardinality 60
-  toEnum n
-    | n >= 0 && n <= 59 = Just (Minute n)
-    | otherwise = Nothing
+  toEnum n =
+    if n >= 0 && n <= 59 then
+      Just (Minute n)
+    else
+      Nothing
   fromEnum (Minute n) = n
 
 instance showMinute :: Show Minute where
@@ -89,9 +93,11 @@ instance enumSecond :: Enum Second where
 
 instance boundedEnumSecond :: BoundedEnum Second where
   cardinality = Cardinality 60
-  toEnum n
-    | n >= 0 && n <= 59 = Just (Second n)
-    | otherwise = Nothing
+  toEnum n =
+    if n >= 0 && n <= 59 then
+      Just (Second n)
+    else
+      Nothing
   fromEnum (Second n) = n
 
 instance showSecond :: Show Second where
@@ -119,9 +125,11 @@ instance enumMillisecond :: Enum Millisecond where
 
 instance boundedEnumMillisecond :: BoundedEnum Millisecond where
   cardinality = Cardinality 1000
-  toEnum n
-    | n >= 0 && n <= 999 = Just (Millisecond n)
-    | otherwise = Nothing
+  toEnum n =
+    if n >= 0 && n <= 999 then
+      Just (Millisecond n)
+    else
+      Nothing
   fromEnum (Millisecond n) = n
 
 instance showMillisecond :: Show Millisecond where

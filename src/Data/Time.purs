@@ -1,9 +1,13 @@
 module Data.Time
   ( Time(..)
-  , hour, setHour
-  , minute, setMinute
-  , second, setSecond
-  , millisecond, setMillisecond
+  , hour
+  , setHour
+  , minute
+  , setMinute
+  , second
+  , setSecond
+  , millisecond
+  , setMillisecond
   , adjust
   , diff
   , module Data.Time.Component
@@ -14,8 +18,8 @@ import Prelude
 import Data.Enum (fromEnum, toEnum)
 import Data.Int as Int
 import Data.Maybe (fromJust)
-import Data.Number as Number
 import Data.Newtype (unwrap)
+import Data.Number as Number
 import Data.Time.Component (Hour, Millisecond, Minute, Second)
 import Data.Time.Duration (class Duration, Days(..), Milliseconds(..), fromDuration, negateDuration, toDuration)
 import Data.Tuple (Tuple(..))
@@ -72,7 +76,7 @@ setMillisecond ms (Time h m s _) = Time h m s ms
 -- | duration is negative, a negative number of days may also be returned as
 -- | the remainder.
 adjust :: forall d. Duration d => d -> Time -> Tuple Days Time
-adjust d t =
+adjust d t = do
   let
     d' = fromDuration d
     tLength = timeToMillis t
@@ -81,10 +85,9 @@ adjust d t =
     msAdjust = d' <> negateDuration (fromDuration wholeDays)
     msAdjusted = tLength <> msAdjust
     wrap = if msAdjusted > maxTime then 1.0 else if msAdjusted < minTime then -1.0 else 0.0
-  in
-    Tuple
-      (wholeDays <> Days wrap)
-      (millisToTime (msAdjusted <> Milliseconds (dayLength * -wrap)))
+  Tuple
+    (wholeDays <> Days wrap)
+    (millisToTime (msAdjusted <> Milliseconds (dayLength * -wrap)))
 
 maxTime :: Milliseconds
 maxTime = timeToMillis top
@@ -95,12 +98,12 @@ minTime = timeToMillis bottom
 timeToMillis :: Time -> Milliseconds
 timeToMillis t = Milliseconds
   $ 3600000.0 * Int.toNumber (fromEnum (hour t))
-  + 60000.0 * Int.toNumber (fromEnum (minute t))
-  + 1000.0 * Int.toNumber (fromEnum (second t))
-  + Int.toNumber (fromEnum (millisecond t))
+      + 60000.0 * Int.toNumber (fromEnum (minute t))
+      + 1000.0 * Int.toNumber (fromEnum (second t))
+      + Int.toNumber (fromEnum (millisecond t))
 
 millisToTime :: Milliseconds -> Time
-millisToTime (Milliseconds ms') =
+millisToTime (Milliseconds ms') = do
   let
     hourLength = 3600000.0
     minuteLength = 60000.0
@@ -109,13 +112,12 @@ millisToTime (Milliseconds ms') =
     minutes = Number.floor ((ms' - hours * hourLength) / minuteLength)
     seconds = Number.floor ((ms' - (hours * hourLength + minutes * minuteLength)) / secondLength)
     milliseconds = ms' - (hours * hourLength + minutes * minuteLength + seconds * secondLength)
-  in
-    unsafePartial fromJust $
-      Time
-        <$> toEnum (Int.floor hours)
-        <*> toEnum (Int.floor minutes)
-        <*> toEnum (Int.floor seconds)
-        <*> toEnum (Int.floor milliseconds)
+  unsafePartial fromJust $
+    Time
+      <$> toEnum (Int.floor hours)
+      <*> toEnum (Int.floor minutes)
+      <*> toEnum (Int.floor seconds)
+      <*> toEnum (Int.floor milliseconds)
 
 -- | Calculates the difference between two times, returning the result as a
 -- | duration.

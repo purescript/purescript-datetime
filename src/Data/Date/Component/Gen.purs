@@ -1,6 +1,7 @@
 module Data.Date.Component.Gen where
 
 import Prelude
+
 import Control.Monad.Gen (class MonadGen, chooseInt)
 import Data.Date.Component (Day, Month, Weekday, Year)
 import Data.Enum (toEnum)

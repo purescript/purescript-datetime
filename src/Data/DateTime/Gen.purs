@@ -5,6 +5,7 @@ module Data.DateTime.Gen
   ) where
 
 import Prelude
+
 import Control.Monad.Gen (class MonadGen)
 import Data.Date.Gen (genDate, genDay, genMonth, genWeekday, genYear)
 import Data.DateTime (DateTime(..))
